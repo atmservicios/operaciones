@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Bell, Shield, Database, Mail, Globe, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Save, Bell, Shield, Database, Mail, Globe, Eye, EyeOff, CheckCircle, Lock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const tabs = [
