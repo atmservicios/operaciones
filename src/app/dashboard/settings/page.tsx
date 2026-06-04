@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Bell, Shield, Database, Mail, Globe, Palette, User, Key, Lock } from "lucide-react";
+import { Save, Bell, Shield, Database, Mail, Globe, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const tabs = [
   { id: "general", label: "General", icon: Globe },
@@ -14,7 +15,16 @@ const tabs = [
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
   const [saved, setSaved] = useState(false);
-  const [userRole, setUserRole] = useState("Usuario");
+  const [userRole, setUserRole] = useState("");
+
+  // Password change state
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwSuccess, setPwSuccess] = useState("");
+  const [pwError, setPwError] = useState("");
 
   const [formData, setFormData] = useState({
     nombre: "OpsATM",
@@ -29,23 +39,38 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("opsatm_user");
-    if (storedUser) {
-      setUserRole(JSON.parse(storedUser).role);
-    }
+    const loadUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase.from('profiles').select('rol').eq('id', user.id).single();
+        if (data) setUserRole(data.rol);
+      }
+    };
+    loadUser();
     const storedSettings = localStorage.getItem("opsatm_settings");
-    if (storedSettings) {
-      setFormData(JSON.parse(storedSettings));
-    }
+    if (storedSettings) setFormData(JSON.parse(storedSettings));
   }, []);
 
-  const isAdmin = userRole === "Administrador";
+  const isAdmin = userRole === "administrador";
 
   const handleSave = () => {
     if (!isAdmin) return;
     localStorage.setItem("opsatm_settings", JSON.stringify(formData));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwError("");
+    setPwSuccess("");
+    if (newPassword.length < 6) { setPwError("La contraseña debe tener al menos 6 caracteres."); return; }
+    if (newPassword !== confirmPassword) { setPwError("Las contraseñas no coinciden."); return; }
+    setPwLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) { setPwError("Error al cambiar la contraseña: " + error.message); }
+    else { setPwSuccess("¡Contraseña actualizada exitosamente!"); setNewPassword(""); setConfirmPassword(""); }
+    setPwLoading(false);
   };
 
   const handleChange = (field: string, value: string) => {
@@ -191,33 +216,73 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "security" && (
-            <div className="glass-card p-6 space-y-4">
-              <h3 className="font-bold mb-4" style={{ color: "#f1f5f9" }}>Seguridad y Accesos</h3>
-              {[
-                { label: "Autenticación de dos factores (MFA)", sub: "Requiere código adicional al iniciar sesión", icon: Shield, enabled: false },
-                { label: "Sesión automática (minutos de inactividad)", sub: "Cierra sesión automáticamente", icon: Key, enabled: true, input: "30" },
-                { label: "Log de accesos", sub: "Registra todos los inicios de sesión", icon: Shield, enabled: true },
-              ].map((s) => (
-                <div key={s.label} className="flex items-center justify-between p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div className="flex items-center gap-3">
-                    <s.icon size={16} style={{ color: "#72b01d" }} />
-                    <div>
-                      <div className="text-sm font-semibold" style={{ color: "#e2e8f0" }}>{s.label}</div>
-                      <div className="text-xs" style={{ color: "#475569" }}>{s.sub}</div>
+            <div className="space-y-6">
+              {/* Cambiar Contraseña — visible para TODOS los roles */}
+              <div className="glass-card p-6">
+                <h3 className="font-bold mb-1" style={{ color: "#f1f5f9" }}>Cambiar Contraseña</h3>
+                <p className="text-xs mb-5" style={{ color: "#475569" }}>Tu nueva contraseña se guardará en la base de datos inmediatamente.</p>
+                <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: "#94a3b8" }}>Nueva contraseña</label>
+                    <div className="relative">
+                      <input
+                        type={showNew ? "text" : "password"}
+                        className="ops-input pr-10"
+                        placeholder="Mínimo 6 caracteres"
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                        required
+                      />
+                      <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: "#475569", background: "none", border: "none", cursor: "pointer" }}>
+                        {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
                     </div>
                   </div>
-                  {s.input ? (
-                    <input type="number" className="ops-input w-20 text-right" defaultValue={s.input} />
-                  ) : (
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" defaultChecked={s.enabled} className="sr-only peer" />
-                      <div className="w-9 h-5 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all" style={{ background: s.enabled ? "#72b01d" : "rgba(255,255,255,0.1)" }} />
-                    </label>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: "#94a3b8" }}>Confirmar contraseña</label>
+                    <div className="relative">
+                      <input
+                        type={showConfirm ? "text" : "password"}
+                        className="ops-input pr-10"
+                        placeholder="Repite la nueva contraseña"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                      <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: "#475569", background: "none", border: "none", cursor: "pointer" }}>
+                        {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {pwError && (
+                    <div className="p-3 rounded-lg text-sm" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171" }}>
+                      {pwError}
+                    </div>
                   )}
-                </div>
-              ))}
+                  {pwSuccess && (
+                    <div className="p-3 rounded-lg text-sm flex items-center gap-2" style={{ background: "rgba(114,176,29,0.1)", border: "1px solid rgba(114,176,29,0.2)", color: "#93c947" }}>
+                      <CheckCircle size={16} /> {pwSuccess}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={pwLoading}
+                    className="btn-primary py-2.5 text-sm"
+                    style={{ opacity: pwLoading ? 0.7 : 1 }}
+                  >
+                    {pwLoading ? (
+                      <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Guardando…</>
+                    ) : (
+                      "Actualizar contraseña"
+                    )}
+                  </button>
+                </form>
+              </div>
             </div>
           )}
+
 
           {activeTab === "integrations" && (
             <div className="glass-card p-6 space-y-4">

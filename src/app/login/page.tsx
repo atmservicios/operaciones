@@ -3,12 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Cpu, ShieldCheck, Zap } from "lucide-react";
-
-const DEMO_USERS = [
-  { email: "admin@opsatm.cl", password: "Admin2025!", role: "Administrador" },
-  { email: "supervisor@opsatm.cl", password: "Super2025!", role: "Supervisor" },
-  { email: "ops@opsatm.cl", password: "Ops2025!", role: "Operaciones" },
-];
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,15 +18,15 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    await new Promise((r) => setTimeout(r, 800));
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
-    const user = DEMO_USERS.find((u) => u.email === email && u.password === password);
-    if (user) {
-      localStorage.setItem("opsatm_user", JSON.stringify({ email: user.email, role: user.role }));
-      router.push("/dashboard");
-    } else {
-      setError("Credenciales incorrectas. Usa las credenciales demo abajo.");
+    if (authError) {
+      setError("Correo o contraseña incorrectos. Intenta nuevamente.");
+      setLoading(false);
+      return;
     }
+
+    router.push("/dashboard");
     setLoading(false);
   };
 
@@ -64,7 +59,7 @@ export default function LoginPage() {
         <div className="space-y-3">
           {[
             { icon: <Zap size={15} />, label: "Monitoreo en tiempo real", sub: "248 ATMs activos" },
-            { icon: <ShieldCheck size={15} />, label: "Control de acceso por roles", sub: "5 niveles de permiso" },
+            { icon: <ShieldCheck size={15} />, label: "Control de acceso por roles", sub: "Administrador, Supervisor y Operaria" },
             { icon: <Cpu size={15} />, label: "Informes automáticos PDF", sub: "Generación en un clic" },
           ].map((f, i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
@@ -105,7 +100,7 @@ export default function LoginPage() {
                 id="email-input"
                 type="email"
                 className="ops-input"
-                placeholder="tu@empresa.cl"
+                placeholder="tu@atmservicios.cl"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -163,28 +158,9 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Demo credentials */}
-          <div className="mt-8 p-4 rounded-xl" style={{ background: "rgba(114,176,29,0.05)", border: "1px solid rgba(114,176,29,0.15)" }}>
-            <p className="text-xs font-semibold mb-3" style={{ color: "#72b01d" }}>ACCESOS DEMO</p>
-            <div className="space-y-2">
-              {DEMO_USERS.map((u) => (
-                <button
-                   key={u.email}
-                   type="button"
-                   onClick={() => { setEmail(u.email); setPassword(u.password); }}
-                   className="w-full text-left p-2 rounded-lg transition-colors"
-                   style={{ background: "rgba(255,255,255,0.02)", fontSize: "12px" }}
-                >
-                   <span className="font-semibold" style={{ color: "#93c947" }}>{u.role}</span>
-                   <span style={{ color: "#475569" }}> — {u.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           <p className="mt-6 text-center text-xs" style={{ color: "#334155" }}>
-            ¿Olvidaste tu contraseña?{" "}
-            <a href="#" style={{ color: "#72b01d" }}>Recuperar acceso</a>
+            ¿Problemas para ingresar?{" "}
+            <span style={{ color: "#72b01d" }}>Contacta al Administrador</span>
           </p>
         </div>
       </div>

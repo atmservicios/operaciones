@@ -8,20 +8,30 @@ import {
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
   Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
+type Rol = 'administrador' | 'supervisor' | 'operaria';
+
+interface UserProfile {
+  nombre: string;
+  correo: string;
+  rol: Rol;
+}
+
+// Menú completo con restricciones por rol
 const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", badge: null },
-  { href: "/dashboard/orders", icon: ClipboardList, label: "Órdenes de Trabajo", badge: 47 },
-  { href: "/dashboard/coordinacion", icon: CalendarDays, label: "Coordinación", badge: null },
-  { href: "/dashboard/atms", icon: Monitor, label: "Cajeros ATM", badge: null },
-  { href: "/dashboard/technicians", icon: Users, label: "Técnicos", badge: null },
-  { href: "/dashboard/map", icon: MapPin, label: "Mapa Operacional", badge: null },
-  { href: "/dashboard/inventory", icon: Package, label: "Inventario", badge: 8 },
-  { href: "/dashboard/reports", icon: FileText, label: "Informes Técnicos", badge: null },
-  { href: "/dashboard/documents", icon: FolderOpen, label: "Documentos", badge: null },
-  { href: "/dashboard/executive", icon: BarChart3, label: "Reportes Ejecutivos", badge: null },
-  { href: "/dashboard/audit", icon: ScrollText, label: "Auditoría", badge: null },
-  { href: "/dashboard/settings", icon: Settings, label: "Configuración", badge: null },
+  { href: "/dashboard",              icon: LayoutDashboard, label: "Dashboard",           badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",        badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/technicians",  icon: Users,           label: "Técnicos",            badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/atms",         icon: Monitor,         label: "Cajeros ATM",         badge: null,  roles: ['administrador','supervisor'] },
+  { href: "/dashboard/reports",      icon: FileText,        label: "Informes Técnicos",   badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/orders",       icon: ClipboardList,   label: "Órdenes de Trabajo",  badge: null,  roles: ['administrador','supervisor'] },
+  { href: "/dashboard/map",          icon: MapPin,          label: "Mapa Operacional",    badge: null,  roles: ['administrador','supervisor'] },
+  { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor'] },
+  { href: "/dashboard/documents",    icon: FolderOpen,      label: "Documentos",          badge: null,  roles: ['administrador','supervisor'] },
+  { href: "/dashboard/executive",    icon: BarChart3,       label: "Reportes Ejecutivos", badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/audit",        icon: ScrollText,      label: "Auditoría",           badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/settings",     icon: Settings,        label: "Configuración",       badge: null,  roles: ['administrador'] },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -29,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState<{ email: string; role: string } | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState([
     { id: 1, unread: true, color: "#ef4444", title: "SLA Vencido — OT-2025-1840", time: "hace 2h", sub: "Banco de Chile — Antofagasta" },
@@ -45,24 +55,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("opsatm_user");
-    if (!stored) { router.push("/login"); return; }
-    setUserInfo(JSON.parse(stored));
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push("/login"); return; }
+
+      const { data } = await supabase
+        .from('profiles')
+        .select('nombre, correo, rol')
+        .eq('id', user.id)
+        .single();
+
+      if (data) setProfile(data as UserProfile);
+    };
+    loadProfile();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("opsatm_user");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push("/login");
   };
 
-  const handleSwitchUser = (email: string, role: string) => {
-    const newUser = { email, role };
-    localStorage.setItem("opsatm_user", JSON.stringify(newUser));
-    setUserInfo(newUser);
-    setUserMenuOpen(false);
-  };
+  // Filtrar menú según el rol del usuario
+  const visibleNav = profile
+    ? navItems.filter(item => item.roles.includes(profile.rol))
+    : [];
 
   const currentPage = navItems.find((n) => pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href)));
+
+  // Iniciales del nombre
+  const initiales = profile?.nombre
+    ? profile.nombre.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
+    : "U";
+
+  const rolLabel = profile?.rol === 'administrador' ? 'Administrador'
+    : profile?.rol === 'supervisor' ? 'Supervisor'
+    : 'Operaria';
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "#121418" }}>
@@ -103,7 +130,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-1 mt-2">
-          {navItems.map((item) => {
+          {visibleNav.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
             return (
@@ -116,7 +143,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Icon size={16} style={{ flexShrink: 0 }} />
                 <span className="flex-1">{item.label}</span>
                 {item.badge && (
-                  <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: item.badge > 5 ? "rgba(239,68,68,0.15)" : "rgba(114,176,29,0.15)", color: item.badge > 5 ? "#f87171" : "#93c947", minWidth: "20px", textAlign: "center" }}>
+                  <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", minWidth: "20px", textAlign: "center" }}>
                     {item.badge}
                   </span>
                 )}
@@ -129,11 +156,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="p-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
           <div className="flex items-center gap-3">
             <div className="tech-avatar w-9 h-9 text-sm">
-              {userInfo?.email?.charAt(0).toUpperCase() ?? "U"}
+              {initiales}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold truncate" style={{ color: "#e2e8f0" }}>{userInfo?.role ?? "Usuario"}</div>
-              <div className="text-xs truncate" style={{ color: "#475569" }}>{userInfo?.email ?? ""}</div>
+              <div className="text-sm font-semibold truncate" style={{ color: "#e2e8f0" }}>{profile?.nombre ?? "Cargando..."}</div>
+              <div className="text-xs truncate" style={{ color: "#475569" }}>{rolLabel}</div>
             </div>
             <button onClick={handleLogout} title="Cerrar sesión" style={{ color: "#475569", background: "none", border: "none", cursor: "pointer", padding: "4px" }}>
               <LogOut size={16} />
@@ -182,9 +209,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <div className="p-4 border-b flex justify-between items-center" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                     <div className="font-semibold text-sm" style={{ color: "#f1f5f9" }}>Notificaciones</div>
                     {unreadCount > 0 && (
-                      <button 
+                      <button
                         onClick={() => setNotifications(prev => prev.map(n => ({ ...n, unread: false })))}
-                        className="text-xs" 
+                        className="text-xs"
                         style={{ color: "#72b01d", background: "none", border: "none", cursor: "pointer" }}
                       >
                         Marcar todas leídas
@@ -192,27 +219,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     )}
                   </div>
                   <div className="max-h-[300px] overflow-y-auto">
-                    {notifications.length === 0 ? (
-                      <div className="p-4 text-center text-xs" style={{ color: "#475569" }}>No tienes notificaciones</div>
-                    ) : (
-                      notifications.map((n) => (
-                        <div 
-                          key={n.id} 
-                          onClick={() => markAsRead(n.id)}
-                          className={`p-3 cursor-pointer transition-colors ${n.unread ? "bg-white/5 hover:bg-white/10" : "hover:bg-white/5"}`} 
-                          style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                        >
-                          <div className="flex items-start gap-3">
-                            <Circle size={8} style={{ color: n.unread ? n.color : "#475569", flexShrink: 0, marginTop: 5 }} fill={n.unread ? n.color : "transparent"} />
-                            <div className={n.unread ? "opacity-100" : "opacity-60"}>
-                              <div className="text-xs font-semibold" style={{ color: "#e2e8f0" }}>{n.title}</div>
-                              <div className="text-xs" style={{ color: "#475569" }}>{n.sub}</div>
-                            </div>
-                            <span className={`text-[10px] ml-auto flex-shrink-0 ${n.unread ? "font-bold" : ""}`} style={{ color: n.unread ? "#94a3b8" : "#334155" }}>{n.time}</span>
+                    {notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        onClick={() => markAsRead(n.id)}
+                        className={`p-3 cursor-pointer transition-colors ${n.unread ? "bg-white/5 hover:bg-white/10" : "hover:bg-white/5"}`}
+                        style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <Circle size={8} style={{ color: n.unread ? n.color : "#475569", flexShrink: 0, marginTop: 5 }} fill={n.unread ? n.color : "transparent"} />
+                          <div className={n.unread ? "opacity-100" : "opacity-60"}>
+                            <div className="text-xs font-semibold" style={{ color: "#e2e8f0" }}>{n.title}</div>
+                            <div className="text-xs" style={{ color: "#475569" }}>{n.sub}</div>
                           </div>
+                          <span className={`text-[10px] ml-auto flex-shrink-0 ${n.unread ? "font-bold" : ""}`} style={{ color: n.unread ? "#94a3b8" : "#334155" }}>{n.time}</span>
                         </div>
-                      ))
-                    )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -220,43 +243,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* User dropdown */}
             <div className="relative">
-              <div 
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-white/5" 
+              <div
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-white/5"
                 style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
                 <div className="tech-avatar" style={{ width: 26, height: 26, fontSize: 11 }}>
-                  {userInfo?.email?.charAt(0).toUpperCase() ?? "U"}
+                  {initiales}
                 </div>
-                <span style={{ fontSize: 13, color: "#cbd5e1", fontWeight: 500 }}>{userInfo?.role}</span>
+                <span style={{ fontSize: 13, color: "#cbd5e1", fontWeight: 500 }}>{profile?.nombre?.split(' ')[0] ?? ''}</span>
                 <ChevronDown size={13} style={{ color: "#475569" }} />
               </div>
 
               {userMenuOpen && (
                 <div className="absolute right-0 top-12 w-56 rounded-xl shadow-2xl z-50 overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
                   <div className="p-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-                    <div className="font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2">Cambiar Perfil</div>
-                    <div className="space-y-1">
-                      {[
-                        { email: "admin@opsatm.cl", role: "Administrador", color: "#ef4444" },
-                        { email: "supervisor@opsatm.cl", role: "Supervisor", color: "#f59e0b" },
-                        { email: "ops@opsatm.cl", role: "Operaciones", color: "#72b01d" }
-                      ].map((u) => (
-                        <button
-                          key={u.email}
-                          onClick={() => handleSwitchUser(u.email, u.role)}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-colors ${userInfo?.email === u.email ? "bg-white/10" : "hover:bg-white/5"}`}
-                        >
-                          <span style={{ color: userInfo?.email === u.email ? "#f1f5f9" : "#cbd5e1", fontWeight: userInfo?.email === u.email ? 700 : 500 }}>
-                            {u.role}
-                          </span>
-                          {userInfo?.email === u.email && <div className="w-1.5 h-1.5 rounded-full" style={{ background: u.color }} />}
-                        </button>
-                      ))}
+                    <div className="text-sm font-semibold" style={{ color: "#f1f5f9" }}>{profile?.nombre}</div>
+                    <div className="text-xs mt-0.5" style={{ color: "#475569" }}>{profile?.correo}</div>
+                    <div className="mt-2 inline-flex px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: "rgba(114,176,29,0.15)", color: "#93c947" }}>
+                      {rolLabel}
                     </div>
                   </div>
                   <div className="p-1">
-                    <button 
+                    <Link
+                      href="/dashboard/settings"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="w-full text-left px-4 py-2 text-xs flex items-center gap-2 hover:bg-white/5 transition-colors"
+                      style={{ color: "#94a3b8", display: "flex" }}
+                    >
+                      <Settings size={14} />
+                      Cambiar contraseña
+                    </Link>
+                    <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-xs flex items-center gap-2 hover:bg-white/5 transition-colors text-red-400"
                     >
