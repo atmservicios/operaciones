@@ -28,6 +28,7 @@ function AddTechModal({
   onClose: () => void;
   onAdd: (tech: Technician) => void;
 }) {
+  // supabase is imported at top level
   const [form, setForm] = useState({
     techNumber: "",
     name: "",
@@ -63,10 +64,11 @@ function AddTechModal({
     return Object.keys(e).length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
+    const newId = `tech-${Date.now()}`;
     const newTech: Technician = {
-      id: `tech-${Date.now()}`,
+      id: newId,
       techNumber: form.techNumber.trim(),
       name: form.name.trim(),
       rut: form.rut.trim(),
@@ -80,6 +82,22 @@ function AddTechModal({
       avgTime: 0,
       productivity: 0,
     };
+    // Guardar en Supabase
+    await supabase.from('tecnicos').insert({
+      id: newId,
+      tech_number: newTech.techNumber,
+      name: newTech.name,
+      rut: newTech.rut,
+      phone: newTech.phone,
+      email: newTech.email,
+      region: newTech.region,
+      vehicle: newTech.vehicle,
+      certifications: newTech.certifications,
+      status: newTech.status,
+      completed_orders: 0,
+      avg_time: 0,
+      productivity: 0,
+    });
     setSaved(true);
     setTimeout(() => {
       onAdd(newTech);
@@ -475,31 +493,54 @@ function TechCard({ tech, onClick }: { tech: Technician; onClick: () => void }) 
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function TechniciansPage() {
-  const [technicians, setTechnicians] = useState<Technician[]>(mockTechnicians);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedTech, setSelectedTech] = useState<Technician | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [coordinacionesCount, setCoordinacionesCount] = useState<Record<string, number>>({});
+  const [loadingTechs, setLoadingTechs] = useState(true);
 
   useEffect(() => {
-    async function fetchCoordinaciones() {
-      const { data, error } = await supabase.from("servicios").select("asignado_a");
-      if (data && !error) {
+    async function fetchAll() {
+      // Cargar técnicos desde Supabase
+      const { data: techData } = await supabase
+        .from('tecnicos')
+        .select('*')
+        .order('tech_number', { ascending: true });
+      if (techData) {
+        setTechnicians(techData.map(t => ({
+          id: t.id,
+          techNumber: t.tech_number ?? '',
+          name: t.name,
+          rut: t.rut ?? '',
+          phone: t.phone ?? '',
+          email: t.email ?? '',
+          region: t.region ?? '',
+          vehicle: t.vehicle ?? '',
+          certifications: t.certifications ?? [],
+          status: t.status as TechnicianStatus,
+          completedOrders: t.completed_orders ?? 0,
+          avgTime: t.avg_time ?? 0,
+          productivity: t.productivity ?? 0,
+        })));
+      }
+      setLoadingTechs(false);
+
+      // Cargar conteo de coordinaciones
+      const { data: coordData } = await supabase.from('servicios').select('asignado_a');
+      if (coordData) {
         const counts: Record<string, number> = {};
-        data.forEach(row => {
+        coordData.forEach(row => {
           if (row.asignado_a) {
-            // Split by comma or hyphen to handle both formats robustly
             const names = String(row.asignado_a).split(/[,\-]+/).map(normalizeString).filter(Boolean);
-            names.forEach(name => {
-              counts[name] = (counts[name] || 0) + 1;
-            });
+            names.forEach(name => { counts[name] = (counts[name] || 0) + 1; });
           }
         });
         setCoordinacionesCount(counts);
       }
     }
-    fetchCoordinaciones();
+    fetchAll();
   }, []);
 
   const enrichedTechnicians = technicians.map(t => ({
