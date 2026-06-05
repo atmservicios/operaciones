@@ -48,10 +48,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { id: 4, unread: true, color: "#72b01d", title: "OT-2025-1844 Finalizada", time: "ayer", sub: "Carlos Muñoz — Banco Itaú" },
   ]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("opsatm_notifs");
+    if (saved) {
+      try { setNotifications(JSON.parse(saved)); } catch (e) { console.error(e); }
+    }
+  }, []);
+
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const markAsRead = (id: number) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+    setNotifications(prev => {
+      const updated = prev.map(n => n.id === id ? { ...n, unread: false } : n);
+      localStorage.setItem("opsatm_notifs", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => {
+      const updated = prev.map(n => ({ ...n, unread: false }));
+      localStorage.setItem("opsatm_notifs", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   useEffect(() => {
@@ -207,7 +226,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="font-semibold text-sm" style={{ color: "#f1f5f9" }}>Notificaciones</div>
                     {unreadCount > 0 && (
                       <button
-                        onClick={() => setNotifications(prev => prev.map(n => ({ ...n, unread: false })))}
+                        onClick={markAllAsRead}
                         className="text-xs"
                         style={{ color: "#72b01d", background: "none", border: "none", cursor: "pointer" }}
                       >
