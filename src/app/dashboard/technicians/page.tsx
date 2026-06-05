@@ -43,6 +43,7 @@ function AddTechModal({
   const [certifications, setCertifications] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saveError, setSaveError] = useState("");
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -83,7 +84,7 @@ function AddTechModal({
       productivity: 0,
     };
     // Guardar en Supabase
-    await supabase.from('tecnicos').insert({
+    const { error: insertError } = await supabase.from('tecnicos').insert({
       id: newId,
       tech_number: newTech.techNumber,
       name: newTech.name,
@@ -98,6 +99,10 @@ function AddTechModal({
       avg_time: 0,
       productivity: 0,
     });
+    if (insertError) {
+      setSaveError('Error al guardar: ' + insertError.message);
+      return;
+    }
     setSaved(true);
     setTimeout(() => {
       onAdd(newTech);
