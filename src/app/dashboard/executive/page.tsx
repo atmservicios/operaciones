@@ -96,7 +96,11 @@ export default function ExecutivePage() {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
               <XAxis type="number" domain={[70, 100]} tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} unit="%" />
               <YAxis type="category" dataKey="bank" tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} width={70} />
-              <Tooltip contentStyle={{ background: "#1b1e24", border: "1px solid rgba(114,176,29,0.2)", borderRadius: 8, color: "#e2e8f0", fontSize: 12 }} />
+              <Tooltip 
+                contentStyle={{ background: "rgba(255,255,255,0.95)", border: "none", borderRadius: 8, color: "#0f172a", fontSize: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+                itemStyle={{ color: "#334155", fontWeight: 600 }}
+                labelStyle={{ color: "#64748b", marginBottom: 4 }}
+              />
               <Bar dataKey="sla" radius={[0, 6, 6, 0]} name="SLA %" fill="#72b01d">
                 {slaByBank.map((entry, i) => (
                   <Cell key={i} fill={entry.sla >= 95 ? "#72b01d" : entry.sla >= 90 ? "#93c947" : entry.sla >= 85 ? "#f59e0b" : "#ef4444"} />
@@ -124,7 +128,12 @@ export default function ExecutivePage() {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
               <XAxis dataKey="month" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={fmtCLP} />
-              <Tooltip contentStyle={{ background: "#1b1e24", border: "1px solid rgba(114,176,29,0.2)", borderRadius: 8, color: "#e2e8f0", fontSize: 12 }} formatter={(v: any) => [`$${(Number(v) / 1000).toFixed(0)}k`, ""]} />
+              <Tooltip 
+                contentStyle={{ background: "rgba(255,255,255,0.95)", border: "none", borderRadius: 8, color: "#0f172a", fontSize: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }} 
+                itemStyle={{ color: "#334155", fontWeight: 600 }}
+                labelStyle={{ color: "#64748b", marginBottom: 4 }}
+                formatter={(v: any) => [`$${(Number(v) / 1000).toFixed(0)}k`, ""]} 
+              />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Area type="monotone" dataKey="preventivo" stroke="#72b01d" fill="url(#prevGrad)" strokeWidth={2} name="Preventivo" />
               <Area type="monotone" dataKey="correctivo" stroke="#ef4444" fill="url(#corrGrad)" strokeWidth={2} name="Correctivo" />
@@ -143,7 +152,11 @@ export default function ExecutivePage() {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
               <XAxis type="number" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="name" tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} width={90} />
-              <Tooltip contentStyle={{ background: "#1b1e24", border: "1px solid rgba(114,176,29,0.2)", borderRadius: 8, color: "#e2e8f0", fontSize: 12 }} />
+              <Tooltip 
+                contentStyle={{ background: "rgba(255,255,255,0.95)", border: "none", borderRadius: 8, color: "#0f172a", fontSize: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+                itemStyle={{ color: "#334155", fontWeight: 600 }}
+                labelStyle={{ color: "#64748b", marginBottom: 4 }}
+              />
               <Bar dataKey="ordenes" radius={[0, 6, 6, 0]} fill="#72b01d" name="Órdenes" />
             </BarChart>
           </ResponsiveContainer>
@@ -178,7 +191,10 @@ export default function ExecutivePage() {
             <ResponsiveContainer width="100%" height={80}>
               <LineChart data={monthlyData}>
                 <Line type="monotone" dataKey="incidencias" stroke="#ef4444" strokeWidth={2} dot={false} name="Incidencias" />
-                <Tooltip contentStyle={{ background: "#1b1e24", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, fontSize: 11 }} />
+                <Tooltip 
+                  contentStyle={{ background: "rgba(255,255,255,0.95)", border: "none", borderRadius: 8, color: "#0f172a", fontSize: 11, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+                  itemStyle={{ color: "#334155", fontWeight: 600 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>

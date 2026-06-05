@@ -200,8 +200,10 @@ export default function DashboardPage() {
                   />
                   <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
                   <Tooltip 
-                    contentStyle={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#e2e8f0", fontSize: 12 }} 
-                    cursor={{ fill: "rgba(255,255,255,0.02)" }}
+                    contentStyle={{ background: "rgba(255,255,255,0.95)", border: "none", borderRadius: 8, color: "#0f172a", fontSize: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+                    itemStyle={{ color: "#334155", fontWeight: 600 }}
+                    labelStyle={{ color: "#64748b", marginBottom: 4 }}
+                    cursor={{ fill: "rgba(255,255,255,0.05)" }}
                   />
                   <Bar dataKey="value" name="Servicios" radius={[4, 4, 0, 0]}>
                     {bancoCounts.map((entry, index) => (
@@ -235,7 +237,10 @@ export default function DashboardPage() {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#f1f5f9", fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{ background: "rgba(255,255,255,0.95)", border: "none", borderRadius: 8, color: "#0f172a", fontSize: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+                    itemStyle={{ color: "#334155", fontWeight: 600 }}
+                  />
                 </PieChart>
               </div>
               <div className="space-y-2 mt-auto">
@@ -278,7 +283,9 @@ export default function DashboardPage() {
                   />
                   <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
                   <Tooltip 
-                    contentStyle={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#e2e8f0", fontSize: 12 }} 
+                    contentStyle={{ background: "rgba(255,255,255,0.95)", border: "none", borderRadius: 8, color: "#0f172a", fontSize: 12, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
+                    itemStyle={{ color: "#334155", fontWeight: 600 }}
+                    labelStyle={{ color: "#64748b", marginBottom: 4 }}
                   />
                   <Area type="monotone" dataKey="value" name="Coordinaciones" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorTime)" />
                 </AreaChart>
