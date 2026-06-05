@@ -412,13 +412,14 @@
 
 /* ─── Recharts dark theme overrides ──────────────────────────────────────── */
 .recharts-default-tooltip {
-  background: rgba(27,30,36,0.98) !important;
-  border: 1px solid rgba(114,176,29,0.2) !important;
-  border-radius: 10px !important;
-  color: #e2e8f0 !important;
+  background: rgba(255,255,255,0.95) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #0f172a !important;
   font-size: 12px !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
 }
+.recharts-tooltip-item { color: #334155 !important; font-weight: 600 !important; }
 .recharts-tooltip-label { color: #94a3b8 !important; font-weight: 600 !important; }
 .recharts-legend-item-text { color: #64748b !important; }
 .recharts-cartesian-axis-tick-value { fill: #475569 !important; }
