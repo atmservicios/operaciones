@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   Search, Calendar, Clock, MapPin, User, Building2, FileText,
-  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check
+  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { mockTechnicians } from "@/lib/mock-data";
@@ -327,6 +327,7 @@ export default function CoordinacionPage() {
                   { label: "Solicitado Por", icon: User },
                   { label: "Banco/Empresa", icon: Building2 },
                   { label: "Informe", icon: null },
+                  { label: "Acciones", icon: null },
                 ].map(({ label, icon: Icon }) => (
                   <th
                     key={label}
@@ -479,6 +480,27 @@ export default function CoordinacionPage() {
                         }}>
                           {row.informe || "—"}
                         </span>
+                      </td>
+                      {/* Acciones */}
+                      <td style={{ padding: "10px 14px", textAlign: "right" }}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleOpenEdit(row); }}
+                          style={{
+                            background: "rgba(114,176,29,0.1)",
+                            color: "#72b01d",
+                            border: "1px solid rgba(114,176,29,0.2)",
+                            borderRadius: "6px",
+                            padding: "4px 8px",
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            fontSize: "11px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <Pencil size={12} /> Editar
+                        </button>
                       </td>
                     </tr>
                   );
