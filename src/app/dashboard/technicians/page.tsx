@@ -629,7 +629,12 @@ function TechCard({ tech, onClick }: { tech: Technician; onClick: () => void }) 
             <span className="truncate">{tech.email}</span>
           </div>
         )}
+        <div className="flex items-center gap-2 text-xs" style={{ color: "#64748b" }}>
+          <MapPin size={11} style={{ color: "#72b01d", flexShrink: 0 }} />
+          <span className="truncate">{tech.region || "—"}</span>
+        </div>
       </div>
+
 
       {/* KPI row */}
       <div className="grid grid-cols-2 gap-2 mb-3">
