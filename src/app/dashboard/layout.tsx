@@ -186,11 +186,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", width: "220px" }}>
-              <Search size={14} style={{ color: "#475569" }} />
-              <input placeholder="Buscar OT, ATM, técnico…" style={{ background: "transparent", border: "none", outline: "none", color: "#94a3b8", fontSize: "13px", width: "100%", fontFamily: "inherit" }} />
-            </div>
+            {/* Search removed to avoid confusion with page-specific search bars */}
+
 
             {/* Notifications */}
             <div className="relative">
