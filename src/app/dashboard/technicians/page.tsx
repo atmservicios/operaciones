@@ -742,12 +742,16 @@ export default function TechniciansPage() {
     setSelectedTech(updated);
   };
 
-  const handleUpdateStatus = (id: string, newStatus: TechnicianStatus) => {
+  const handleUpdateStatus = async (id: string, newStatus: TechnicianStatus) => {
+    // Actualizar estado en pantalla inmediatamente
     setTechnicians((prev) => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
     if (selectedTech && selectedTech.id === id) {
       setSelectedTech({ ...selectedTech, status: newStatus });
     }
+    // Guardar en Supabase para que persista
+    await supabase.from('tecnicos').update({ status: newStatus }).eq('id', id);
   };
+
 
   return (
     <div className="space-y-6">
