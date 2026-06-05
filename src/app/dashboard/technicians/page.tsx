@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import {
-  Search, Phone, Mail, MapPin, Award, X, TrendingUp, Clock,
-  CheckCircle2, Plus, Save, User, Truck,
+  Search, Phone, Mail, MapPin, Award, X, TrendingUp,
+  CheckCircle2, Plus, Save, User, Pencil, Truck,
 } from "lucide-react";
-import { mockTechnicians } from "@/lib/mock-data";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
 import { supabase } from "@/lib/supabase";
@@ -298,8 +297,160 @@ function AddTechModal({
   );
 }
 
+// ─── Edit Tech Modal ───────────────────────────────────────────────────────────
+function EditTechModal({
+  tech, onClose, onSave,
+}: {
+  tech: Technician;
+  onClose: () => void;
+  onSave: (updated: Technician) => void;
+}) {
+  const [form, setForm] = useState({
+    techNumber: tech.techNumber,
+    name: tech.name,
+    rut: tech.rut,
+    phone: tech.phone,
+    email: tech.email,
+    region: tech.region,
+    vehicle: tech.vehicle,
+    status: tech.status,
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    setForm(f => ({ ...f, [field]: e.target.value }));
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", background: "rgba(27,30,36,0.95)",
+    border: "1px solid rgba(255,255,255,0.09)", borderRadius: 8,
+    padding: "10px 14px", fontSize: 13.5, color: "#e2e8f0",
+    outline: "none", fontFamily: "inherit",
+  };
+
+  const handleSave = async () => {
+    setSaving(true); setSaveError("");
+    const { error } = await supabase.from('tecnicos').update({
+      tech_number: form.techNumber,
+      name: form.name,
+      rut: form.rut,
+      phone: form.phone,
+      email: form.email,
+      region: form.region,
+      vehicle: form.vehicle,
+      status: form.status,
+    }).eq('id', tech.id);
+    if (error) { setSaveError('Error: ' + error.message); setSaving(false); return; }
+    setSaved(true);
+    const updated: Technician = { ...tech, ...form };
+    setTimeout(() => { onSave(updated); onClose(); }, 800);
+    setSaving(false);
+  };
+
+  const REGIONS = ["Metropolitana","Valparaíso","Biobío","Tarapacá","Antofagasta","Atacama","Coquimbo","O'Higgins","Maule","Ñuble","La Araucanía","Los Ríos","Los Lagos","Aysén","Magallanes","Arica y Parinacota"];
+
+  return (
+    <div className="fixed inset-0 z-[60] overflow-y-auto" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
+      <div className="min-h-screen py-8 px-4 flex items-start justify-center">
+        <div className="w-full max-w-xl rounded-2xl overflow-hidden" style={{ background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(114,176,29,0.12)" }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(114,176,29,0.12)" }}>
+                <Pencil size={18} style={{ color: "#72b01d" }} />
+              </div>
+              <div>
+                <div className="font-bold text-lg" style={{ color: "#f1f5f9" }}>Editar Técnico</div>
+                <div className="text-xs" style={{ color: "#475569" }}>{tech.name}</div>
+              </div>
+            </div>
+            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}><X size={20} /></button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div className="grid grid-cols-[100px_1fr] gap-3">
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>N° Asoc.</label>
+                <input style={inputStyle} value={form.techNumber} onChange={set("techNumber")} />
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Nombre completo <span style={{ color:"#72b01d" }}>*</span></label>
+                <input style={inputStyle} value={form.name} onChange={set("name")} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>RUT</label>
+                <input style={inputStyle} value={form.rut} onChange={set("rut")} />
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Teléfono</label>
+                <input style={inputStyle} value={form.phone} onChange={set("phone")} />
+              </div>
+            </div>
+            <div>
+              <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Correo electrónico</label>
+              <input style={inputStyle} type="email" value={form.email} onChange={set("email")} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Región</label>
+                <select style={{ ...inputStyle, cursor:"pointer" }} value={form.region} onChange={set("region")}>
+                  {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Estado</label>
+                <select style={{ ...inputStyle, cursor:"pointer" }} value={form.status} onChange={set("status")}>
+                  <option value="disponible">Disponible</option>
+                  <option value="en ruta">En ruta</option>
+                  <option value="trabajando">Trabajando</option>
+                  <option value="offline">Offline</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style={{ display:"block", fontSize:13, fontWeight:500, color:"#94a3b8", marginBottom:6 }}>Vehículo</label>
+              <input style={inputStyle} placeholder="Ej: Camioneta Hilux TJ-4521" value={form.vehicle} onChange={set("vehicle")} />
+            </div>
+
+            {saveError && (
+              <div className="p-3 rounded-lg text-sm" style={{ background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#f87171" }}>{saveError}</div>
+            )}
+
+            <div className="flex items-center justify-between pt-2">
+              <button onClick={onClose} className="btn-secondary text-sm">Cancelar</button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                style={{
+                  display:"inline-flex", alignItems:"center", gap:8, padding:"10px 24px",
+                  background: saved ? "#578814" : "linear-gradient(135deg,#72b01d,#578814)",
+                  color:"white", borderRadius:9, fontSize:14, fontWeight:700,
+                  border:"none", cursor:"pointer", opacity: saving ? 0.7 : 1,
+                  boxShadow:"0 4px 16px rgba(114,176,29,0.35)", fontFamily:"inherit",
+                }}
+              >
+                {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
+                {saved ? "¡Guardado!" : saving ? "Guardando…" : "Guardar cambios"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Tech Detail Modal ─────────────────────────────────────────────────────────
-function TechModal({ tech, onClose, onUpdateStatus }: { tech: Technician; onClose: () => void; onUpdateStatus: (id: string, s: TechnicianStatus) => void }) {
+function TechModal({
+  tech, onClose, onUpdateStatus, onEdit,
+}: {
+  tech: Technician;
+  onClose: () => void;
+  onUpdateStatus: (id: string, s: TechnicianStatus) => void;
+  onEdit: () => void;
+}) {
   const radarData = [
     { subject: "Productividad", value: tech.productivity },
     { subject: "Velocidad", value: tech.avgTime > 0 ? Math.min(100, Math.round(100 / tech.avgTime * 2)) : 0 },
@@ -345,6 +496,21 @@ function TechModal({ tech, onClose, onUpdateStatus }: { tech: Technician; onClos
           </div>
           <button onClick={onClose} style={{ color: "#475569", background: "none", border: "none", cursor: "pointer" }}>
             <X size={20} />
+          </button>
+        </div>
+
+        {/* Edit button */}
+        <div className="px-6 pt-4">
+          <button
+            onClick={onEdit}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 16px", background: "rgba(114,176,29,0.12)",
+              color: "#93c947", borderRadius: 8, fontSize: 13, fontWeight: 600,
+              border: "1px solid rgba(114,176,29,0.25)", cursor: "pointer", fontFamily: "inherit",
+            }}
+          >
+            <Pencil size={14} /> Editar datos
           </button>
         </div>
 
@@ -505,6 +671,7 @@ export default function TechniciansPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [coordinacionesCount, setCoordinacionesCount] = useState<Record<string, number>>({});
   const [loadingTechs, setLoadingTechs] = useState(true);
+  const [editingTech, setEditingTech] = useState<Technician | null>(null);
 
   useEffect(() => {
     async function fetchAll() {
@@ -570,6 +737,11 @@ export default function TechniciansPage() {
     setTechnicians((prev) => [newTech, ...prev]);
   };
 
+  const handleEdit = (updated: Technician) => {
+    setTechnicians(prev => prev.map(t => t.id === updated.id ? updated : t));
+    setSelectedTech(updated);
+  };
+
   const handleUpdateStatus = (id: string, newStatus: TechnicianStatus) => {
     setTechnicians((prev) => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
     if (selectedTech && selectedTech.id === id) {
@@ -629,7 +801,21 @@ export default function TechniciansPage() {
         ))}
       </div>
 
-      {selectedTech && <TechModal tech={selectedTech} onClose={() => setSelectedTech(null)} onUpdateStatus={handleUpdateStatus} />}
+      {selectedTech && !editingTech && (
+        <TechModal
+          tech={selectedTech}
+          onClose={() => setSelectedTech(null)}
+          onUpdateStatus={handleUpdateStatus}
+          onEdit={() => setEditingTech(selectedTech)}
+        />
+      )}
+      {editingTech && (
+        <EditTechModal
+          tech={editingTech}
+          onClose={() => setEditingTech(null)}
+          onSave={(updated) => { handleEdit(updated); setEditingTech(null); }}
+        />
+      )}
       {showAddModal && (
         <AddTechModal
           onClose={() => setShowAddModal(false)}
