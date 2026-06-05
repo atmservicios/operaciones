@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   Search, Calendar, Clock, MapPin, User, Building2, FileText,
-  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil
+  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { mockTechnicians } from "@/lib/mock-data";
@@ -215,6 +215,22 @@ export default function CoordinacionPage() {
       }
     }
     setIsSaving(false);
+  };
+
+  const handleDelete = async (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    if (!window.confirm("¿Estás seguro de que deseas eliminar esta coordinación? Esta acción no se puede deshacer.")) {
+      return;
+    }
+    const { error } = await supabase
+      .from("servicios")
+      .delete()
+      .eq("id", id);
+    if (error) {
+      alert(`Error al eliminar: ${error.message}`);
+    } else {
+      fetchServicios();
+    }
   };
 
   // Mapeo de campos para el formulario
@@ -483,24 +499,45 @@ export default function CoordinacionPage() {
                       </td>
                       {/* Acciones */}
                       <td style={{ padding: "10px 14px", textAlign: "right" }}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleOpenEdit(row); }}
-                          style={{
-                            background: "rgba(114,176,29,0.1)",
-                            color: "#72b01d",
-                            border: "1px solid rgba(114,176,29,0.2)",
-                            borderRadius: "6px",
-                            padding: "4px 8px",
-                            cursor: "pointer",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            fontSize: "11px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          <Pencil size={12} /> Editar
-                        </button>
+                        <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleOpenEdit(row); }}
+                            style={{
+                              background: "rgba(114,176,29,0.1)",
+                              color: "#72b01d",
+                              border: "1px solid rgba(114,176,29,0.2)",
+                              borderRadius: "6px",
+                              padding: "4px 8px",
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              fontSize: "11px",
+                              fontWeight: 600,
+                            }}
+                          >
+                            <Pencil size={12} /> Editar
+                          </button>
+                          <button
+                            onClick={(e) => handleDelete(e, row.id)}
+                            style={{
+                              background: "rgba(239,68,68,0.1)",
+                              color: "#ef4444",
+                              border: "1px solid rgba(239,68,68,0.2)",
+                              borderRadius: "6px",
+                              padding: "4px 8px",
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              fontSize: "11px",
+                              fontWeight: 600,
+                            }}
+                            title="Eliminar registro"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
