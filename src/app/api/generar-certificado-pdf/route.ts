@@ -63,8 +63,8 @@ export async function POST(request: NextRequest): Promise<Response> {
             },
             {
               text: [
-                { text: 'FOLIO N° ', bold: true, fontSize: 12 },
-                { text: cert.folio || "_______", decoration: 'underline', fontSize: 12 }
+                { text: 'FOLIO N° ', bold: true, fontSize: 11 },
+                { text: cert.folio || "_______", decoration: 'underline', bold: true, fontSize: 11 }
               ],
               alignment: 'right',
               margin: [0, 20, 0, 0]

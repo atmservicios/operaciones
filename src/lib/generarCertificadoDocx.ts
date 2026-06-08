@@ -69,8 +69,8 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                       new Paragraph({
                         alignment: AlignmentType.RIGHT,
                         children: [
-                          new TextRun({ text: "FOLIO N° ", bold: true, font: "Arial", size: 24 }),
-                          new TextRun({ text: cert.folio || "_______", underline: {} })
+                          new TextRun({ text: "FOLIO N° ", bold: true, font: "Arial", size: 22 }),
+                          new TextRun({ text: cert.folio || "_______", bold: true, font: "Arial", size: 22, underline: {} })
                         ]
                       })
                     ],
