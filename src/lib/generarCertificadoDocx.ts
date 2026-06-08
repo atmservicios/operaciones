@@ -124,7 +124,6 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
               createRow("Región", cert.region),
             ]
           }),
-          new Paragraph({ text: "", spacing: { after: 100 } }),
 
           // Párrafo legal 1
           new Paragraph({
