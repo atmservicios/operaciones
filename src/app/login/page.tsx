@@ -37,9 +37,9 @@ export default function LoginPage() {
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-16">
-            <img src="/Imagen1.jpg" alt="inetmatica Logo" style={{ height: "42px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            <img src="/Imagen1.jpg" alt="OpsATM Logo" style={{ height: "42px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
             <div>
-              <div className="font-bold text-white text-lg leading-none">inetmatica</div>
+              <div className="font-bold text-white text-lg leading-none">OpsATM</div>
               <div className="text-xs font-medium mt-1" style={{ color: "#72b01d" }}>Sistema de Operaciones</div>
             </div>
           </div>
@@ -82,8 +82,8 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <img src="/Imagen1.jpg" alt="inetmatica Logo" style={{ height: "40px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
-            <div className="font-bold text-white text-xl">inetmatica</div>
+            <img src="/Imagen1.jpg" alt="OpsATM Logo" style={{ height: "40px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            <div className="font-bold text-white text-xl">OpsATM</div>
           </div>
 
           <div className="mb-8">
