@@ -22,9 +22,9 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
           page: {
             margin: {
               top: 720,
-              right: 720,
+              right: 1440,
               bottom: 720,
-              left: 720,
+              left: 1440,
             },
           },
         },
@@ -135,7 +135,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 20
               })
             ],
-            spacing: { after: 100, line: 240 }
+            spacing: { before: 100, after: 100, line: 240 }
           }),
 
           // Párrafo técnico 2

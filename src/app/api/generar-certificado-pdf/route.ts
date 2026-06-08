@@ -52,7 +52,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const docDefinition = {
       pageSize: 'LETTER',
-      pageMargins: [30, 30, 30, 30],
+      pageMargins: [60, 30, 60, 30],
       content: [
         { text: '\n', margin: [0, 0, 0, 0] },
         {
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest): Promise<Response> {
             paddingTop: () => 2,
             paddingBottom: () => 2,
           },
-          margin: [0, 0, 0, 5]
+          margin: [0, 0, 0, 15]
         },
         {
           text: "De acuerdo a lo establecido en el Decreto Exento No. 222 de fecha 07 de Marzo del 2013, con toma de razón por la Contraloría General de la República con fecha 04 de Julio del 2013 del Ministerio del Interior y Seguridad Pública, Articulo 6 letra (a), respecto a los dispuesto por la Subsecretaría de Prevención del Delito, “ la cual regula  las medidas mínimas aplicables a la instalación y operación  de cajeros automáticos  dispensadores o contenedores de dinero de cualquier especie, instalados al interior o exterior de locales, establecimientos y/o recintos bancarios.",
