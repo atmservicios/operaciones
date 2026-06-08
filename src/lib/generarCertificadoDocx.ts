@@ -48,35 +48,23 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
             spacing: { after: 800 }
           }),
 
-          // Datos de los equipos en tabla invisible o texto
-          new Paragraph({
-            children: [
-              new TextRun({ text: "Marca / Modelo MMBB: ", bold: true }),
-              new TextRun({ text: cert.marcaModeloMMBB || "" }),
-            ],
-            spacing: { after: 200 }
+          // Datos de los equipos en tabla
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              createRow("Marca / Modelo MMBB", cert.marcaModeloMMBB),
+              createRow("Serie MMBB", cert.serieMMBB),
+              createRow("Marca / Modelo ATM", cert.marcaModeloATM),
+              createRow("Serie ATM", cert.serieATM),
+              createRow("Tipo de Bóveda", cert.tipoBoveda),
+              createRow("Banco", cert.banco),
+              createRow("Ubicación", cert.ubicacion),
+              createRow("Dirección", cert.direccion),
+              createRow("Comuna", cert.comuna),
+              createRow("Región", cert.region),
+            ]
           }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: "Serie MMBB: ", bold: true }),
-              new TextRun({ text: cert.serieMMBB || "" }),
-            ],
-            spacing: { after: 200 }
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: "Marca / Modelo ATM: ", bold: true }),
-              new TextRun({ text: cert.marcaModeloATM || "" }),
-            ],
-            spacing: { after: 200 }
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: "Tipo de Bóveda: ", bold: true }),
-              new TextRun({ text: cert.tipoBoveda || "" }),
-            ],
-            spacing: { after: 800 }
-          }),
+          new Paragraph({ text: "", spacing: { after: 800 } }),
 
           // Párrafo legal 1
           new Paragraph({
@@ -94,7 +82,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
             alignment: AlignmentType.JUSTIFIED,
             children: [
               new TextRun({
-                text: `El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada ${cert.medidaVarilla || 'Ø7/8 x 160MM de longitud'}, con rosca interior ${cert.medidaRosca || 'Ø9/16'} con ${cert.pernosMMBB || '7 pernos de acero SAE 1045 de Ø9/16. De diámetro y largo 60 mm.'}, utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1, así mismo certifica que el cajero automático individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada ${cert.medidaVarilla || 'Ø7/8 x 160MM de longitud'}, con rosca interior ${cert.medidaRosca || 'Ø9/16'} con ${cert.pernosATM || '4 pernos de acero SAE 1045 de Ø9/16. De diámetro y largo 60 mm.'}, utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1.`
+                text: `El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 7 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1, así mismo certifica que el cajero automático individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 4 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1.`
               })
             ],
             spacing: { after: 400, line: 360 }
@@ -135,6 +123,23 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
   });
 
   return await Packer.toBuffer(doc);
+}
+
+function createRow(label: string, value: string) {
+  return new TableRow({
+    children: [
+      new TableCell({
+        width: { size: 40, type: WidthType.PERCENTAGE },
+        children: [new Paragraph({ children: [new TextRun({ text: label })] })],
+        margins: { top: 100, bottom: 100, left: 100, right: 100 }
+      }),
+      new TableCell({
+        width: { size: 60, type: WidthType.PERCENTAGE },
+        children: [new Paragraph({ children: [new TextRun({ text: `: ${value || ''}`, bold: true })] })],
+        margins: { top: 100, bottom: 100, left: 100, right: 100 }
+      })
+    ]
+  });
 }
 
 function formatFechaCompleta(dateString: string): string {

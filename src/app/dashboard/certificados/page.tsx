@@ -17,12 +17,13 @@ export interface CertificadoAnclaje {
   marcaModeloMMBB: string;
   serieMMBB: string;
   marcaModeloATM: string;
+  serieATM: string;
   tipoBoveda: string;
-  // Technical specs with defaults
-  medidaVarilla: string;
-  medidaRosca: string;
-  pernosMMBB: string;
-  pernosATM: string;
+  banco: string;
+  ubicacion: string;
+  direccion: string;
+  comuna: string;
+  region: string;
 }
 
 const defaultCert: Partial<CertificadoAnclaje> = {
@@ -32,11 +33,13 @@ const defaultCert: Partial<CertificadoAnclaje> = {
   marcaModeloMMBB: "",
   serieMMBB: "",
   marcaModeloATM: "",
+  serieATM: "",
   tipoBoveda: "",
-  medidaVarilla: "Ø7/8 x 160MM de longitud",
-  medidaRosca: "Ø9/16",
-  pernosMMBB: "7 pernos de acero SAE 1045 de Ø9/16. De diámetro y largo 60 mm.",
-  pernosATM: "4 pernos de acero SAE 1045 de Ø9/16. De diámetro y largo 60 mm."
+  banco: "",
+  ubicacion: "",
+  direccion: "",
+  comuna: "",
+  region: ""
 };
 
 export default function CertificadosPage() {
@@ -77,11 +80,13 @@ export default function CertificadosPage() {
           marcaModeloMMBB: formData.marcaModeloMMBB,
           serieMMBB: formData.serieMMBB,
           marcaModeloATM: formData.marcaModeloATM,
+          serieATM: formData.serieATM,
           tipoBoveda: formData.tipoBoveda,
-          medidaVarilla: formData.medidaVarilla,
-          medidaRosca: formData.medidaRosca,
-          pernosMMBB: formData.pernosMMBB,
-          pernosATM: formData.pernosATM
+          banco: formData.banco,
+          ubicacion: formData.ubicacion,
+          direccion: formData.direccion,
+          comuna: formData.comuna,
+          region: formData.region
         })
         .eq('id', editingCert.id);
 
@@ -96,11 +101,13 @@ export default function CertificadosPage() {
           marcaModeloMMBB: formData.marcaModeloMMBB,
           serieMMBB: formData.serieMMBB,
           marcaModeloATM: formData.marcaModeloATM,
+          serieATM: formData.serieATM,
           tipoBoveda: formData.tipoBoveda,
-          medidaVarilla: formData.medidaVarilla,
-          medidaRosca: formData.medidaRosca,
-          pernosMMBB: formData.pernosMMBB,
-          pernosATM: formData.pernosATM
+          banco: formData.banco,
+          ubicacion: formData.ubicacion,
+          direccion: formData.direccion,
+          comuna: formData.comuna,
+          region: formData.region
         }]);
       
       if (!error) fetchCertificados();
@@ -325,19 +332,86 @@ export default function CertificadosPage() {
                   type="text"
                   value={formData.marcaModeloATM}
                   onChange={(e) => setFormData({ ...formData, marcaModeloATM: e.target.value })}
-                  className="w-full p-2.5 rounded-lg outline-none text-sm"
+                  className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
                   style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
                 />
               </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1.5 text-slate-400">Serie ATM</label>
+                <input
+                  type="text"
+                  value={formData.serieATM}
+                  onChange={(e) => setFormData({ ...formData, serieATM: e.target.value })}
+                  className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
+                  style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
+                />
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold mb-1.5 text-slate-400">Tipo de Bóveda</label>
                 <input
                   type="text"
                   value={formData.tipoBoveda}
                   onChange={(e) => setFormData({ ...formData, tipoBoveda: e.target.value })}
-                  className="w-full p-2.5 rounded-lg outline-none text-sm"
+                  className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
                   style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1.5 text-slate-400">Banco</label>
+                <input
+                  type="text"
+                  value={formData.banco}
+                  onChange={(e) => setFormData({ ...formData, banco: e.target.value })}
+                  className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
+                  style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
+                />
+              </div>
+
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Ubicación</label>
+                  <input
+                    type="text"
+                    value={formData.ubicacion}
+                    onChange={(e) => setFormData({ ...formData, ubicacion: e.target.value })}
+                    className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
+                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Dirección</label>
+                  <input
+                    type="text"
+                    value={formData.direccion}
+                    onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
+                    className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
+                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
+                  />
+                </div>
+              </div>
+
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Comuna</label>
+                  <input
+                    type="text"
+                    value={formData.comuna}
+                    onChange={(e) => setFormData({ ...formData, comuna: e.target.value })}
+                    className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
+                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Región</label>
+                  <input
+                    type="text"
+                    value={formData.region}
+                    onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                    className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
+                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
+                  />
+                </div>
               </div>
 
               <div>
@@ -349,52 +423,6 @@ export default function CertificadosPage() {
                   className="w-full p-2.5 rounded-lg outline-none text-sm"
                   style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
                 />
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h4 className="text-sm font-bold text-slate-300 mb-3 border-b border-white/10 pb-2">Datos Técnicos del Anclaje</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Varilla Roscada (Medida y longitud)</label>
-                  <input
-                    type="text"
-                    value={formData.medidaVarilla}
-                    onChange={(e) => setFormData({ ...formData, medidaVarilla: e.target.value })}
-                    className="w-full p-2.5 rounded-lg outline-none text-sm"
-                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Rosca Interior</label>
-                  <input
-                    type="text"
-                    value={formData.medidaRosca}
-                    onChange={(e) => setFormData({ ...formData, medidaRosca: e.target.value })}
-                    className="w-full p-2.5 rounded-lg outline-none text-sm"
-                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Detalle de Pernos (Protector MMBB)</label>
-                  <input
-                    type="text"
-                    value={formData.pernosMMBB}
-                    onChange={(e) => setFormData({ ...formData, pernosMMBB: e.target.value })}
-                    className="w-full p-2.5 rounded-lg outline-none text-sm"
-                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold mb-1.5 text-slate-400">Detalle de Pernos (Cajero ATM)</label>
-                  <input
-                    type="text"
-                    value={formData.pernosATM}
-                    onChange={(e) => setFormData({ ...formData, pernosATM: e.target.value })}
-                    className="w-full p-2.5 rounded-lg outline-none text-sm"
-                    style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
-                  />
-                </div>
               </div>
             </div>
 

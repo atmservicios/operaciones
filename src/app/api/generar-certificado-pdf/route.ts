@@ -68,31 +68,31 @@ export async function POST(request: NextRequest): Promise<Response> {
           margin: [0, 0, 0, 40]
         },
         {
-          text: [
-            { text: 'Marca / Modelo MMBB: ', bold: true },
-            cert.marcaModeloMMBB || ""
-          ],
-          margin: [0, 0, 0, 10]
-        },
-        {
-          text: [
-            { text: 'Serie MMBB: ', bold: true },
-            cert.serieMMBB || ""
-          ],
-          margin: [0, 0, 0, 10]
-        },
-        {
-          text: [
-            { text: 'Marca / Modelo ATM: ', bold: true },
-            cert.marcaModeloATM || ""
-          ],
-          margin: [0, 0, 0, 10]
-        },
-        {
-          text: [
-            { text: 'Tipo de Bóveda: ', bold: true },
-            cert.tipoBoveda || ""
-          ],
+          table: {
+            widths: ['40%', '60%'],
+            body: [
+              ['Marca / Modelo MMBB', { text: `: ${cert.marcaModeloMMBB || ''}`, bold: true }],
+              ['Serie MMBB', { text: `: ${cert.serieMMBB || ''}`, bold: true }],
+              ['Marca / Modelo ATM', { text: `: ${cert.marcaModeloATM || ''}`, bold: true }],
+              ['Serie ATM', { text: `: ${cert.serieATM || ''}`, bold: true }],
+              ['Tipo de Bóveda', { text: `: ${cert.tipoBoveda || ''}`, bold: true }],
+              ['Banco', { text: `: ${cert.banco || ''}`, bold: true }],
+              ['Ubicación', { text: `: ${cert.ubicacion || ''}`, bold: true }],
+              ['Dirección', { text: `: ${cert.direccion || ''}`, bold: true }],
+              ['Comuna', { text: `: ${cert.comuna || ''}`, bold: true }],
+              ['Región', { text: `: ${cert.region || ''}`, bold: true }]
+            ]
+          },
+          layout: {
+            hLineWidth: () => 1,
+            vLineWidth: () => 1,
+            hLineColor: () => '#000000',
+            vLineColor: () => '#000000',
+            paddingLeft: () => 5,
+            paddingRight: () => 5,
+            paddingTop: () => 5,
+            paddingBottom: () => 5,
+          },
           margin: [0, 0, 0, 30]
         },
         {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest): Promise<Response> {
           margin: [0, 0, 0, 20]
         },
         {
-          text: `El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada ${cert.medidaVarilla || 'Ø7/8 x 160MM de longitud'}, con rosca interior ${cert.medidaRosca || 'Ø9/16'} con ${cert.pernosMMBB || '7 pernos de acero SAE 1045 de Ø9/16. De diámetro y largo 60 mm.'}, utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1, así mismo certifica que el cajero automático individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada ${cert.medidaVarilla || 'Ø7/8 x 160MM de longitud'}, con rosca interior ${cert.medidaRosca || 'Ø9/16'} con ${cert.pernosATM || '4 pernos de acero SAE 1045 de Ø9/16. De diámetro y largo 60 mm.'}, utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1.`,
+          text: `El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 7 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1, así mismo certifica que el cajero automático individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 4 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1.`,
           alignment: 'justify',
           lineHeight: 1.5,
           margin: [0, 0, 0, 20]
