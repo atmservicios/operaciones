@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { Technician } from "@/types";
+import * as XLSX from "xlsx";
 
 interface ProgramacionRow {
   id: number;
@@ -241,47 +242,34 @@ export default function CoordinacionPage() {
 
   const hasFilters = search || filterBanco !== "all" || filterInforme !== "all" || dateFrom || dateTo;
 
-  const downloadCSV = () => {
+  const downloadExcel = () => {
     if (filtered.length === 0) {
       alert("No hay datos para exportar.");
       return;
     }
-    const headers = [
-      "OT", "Fecha", "Hora Inicio", "Hora Termino", "Tipo de Trabajo", 
-      "Local", "Direccion", "Comuna", "ATM", "Asignado a", 
-      "Solicitante", "Solicitado por", "Banco/Empresa", "Informe"
-    ];
     
-    const rows = filtered.map(r => [
-      r.ot || "",
-      r.fecha || "",
-      r.hora_inicio || "",
-      r.hora_termino || "",
-      r.tipo_trabajo || "",
-      r.local || "",
-      r.direccion || "",
-      r.comuna || "",
-      r.atm || "",
-      r.asignado_a || "",
-      r.nombre_solicitante || "",
-      r.solicitado_por || "",
-      r.banco_empresa || "",
-      r.informe || ""
-    ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(","));
+    const rows = filtered.map(r => ({
+      "OT": r.ot || "",
+      "Fecha": r.fecha || "",
+      "Hora Inicio": r.hora_inicio || "",
+      "Hora Termino": r.hora_termino || "",
+      "Tipo de Trabajo": r.tipo_trabajo || "",
+      "Local": r.local || "",
+      "Direccion": r.direccion || "",
+      "Comuna": r.comuna || "",
+      "ATM": r.atm || "",
+      "Asignado a": r.asignado_a || "",
+      "Solicitante": r.nombre_solicitante || "",
+      "Solicitado por": r.solicitado_por || "",
+      "Banco/Empresa": r.banco_empresa || "",
+      "Informe": r.informe || ""
+    }));
 
-    const csvContent = [headers.join(","), ...rows].join("\n");
-    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `coordinaciones_${new Date().toISOString().split("T")[0]}.csv`;
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      a.remove();
-      URL.revokeObjectURL(url);
-    }, 1000);
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Coordinaciones");
+    
+    XLSX.writeFile(workbook, `coordinaciones_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
 
   const displayDate = (d: string | null) => {
@@ -379,12 +367,12 @@ export default function CoordinacionPage() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={downloadCSV}
+            onClick={downloadExcel}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-            style={{ background: "rgba(59,130,246,0.1)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.2)" }}
+            style={{ background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}
           >
             <Download size={14} />
-            Exportar
+            Exportar Excel
           </button>
           <div className="px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "rgba(114,176,29,0.1)", color: "#72b01d", border: "1px solid rgba(114,176,29,0.2)" }}>
             {data.length} registros totales
