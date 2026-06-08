@@ -18,6 +18,7 @@ export interface CertificadoAnclaje {
   serieMMBB: string;
   marcaModeloATM: string;
   serieATM: string;
+  numeroCajero: string;
   tipoBoveda: string;
   banco: string;
   ubicacion: string;
@@ -34,6 +35,7 @@ const defaultCert: Partial<CertificadoAnclaje> = {
   serieMMBB: "",
   marcaModeloATM: "",
   serieATM: "",
+  numeroCajero: "",
   tipoBoveda: "",
   banco: "",
   ubicacion: "",
@@ -81,6 +83,7 @@ export default function CertificadosPage() {
           serieMMBB: formData.serieMMBB,
           marcaModeloATM: formData.marcaModeloATM,
           serieATM: formData.serieATM,
+          numeroCajero: formData.numeroCajero,
           tipoBoveda: formData.tipoBoveda,
           banco: formData.banco,
           ubicacion: formData.ubicacion,
@@ -102,6 +105,7 @@ export default function CertificadosPage() {
           serieMMBB: formData.serieMMBB,
           marcaModeloATM: formData.marcaModeloATM,
           serieATM: formData.serieATM,
+          numeroCajero: formData.numeroCajero,
           tipoBoveda: formData.tipoBoveda,
           banco: formData.banco,
           ubicacion: formData.ubicacion,
@@ -342,6 +346,16 @@ export default function CertificadosPage() {
                   type="text"
                   value={formData.serieATM}
                   onChange={(e) => setFormData({ ...formData, serieATM: e.target.value })}
+                  className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
+                  style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1.5 text-slate-400">Número de Cajero (ATM)</label>
+                <input
+                  type="text"
+                  value={formData.numeroCajero}
+                  onChange={(e) => setFormData({ ...formData, numeroCajero: e.target.value })}
                   className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
                   style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
                 />

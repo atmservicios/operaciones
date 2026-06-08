@@ -12,6 +12,7 @@ import {
   ImageRun,
 } from 'docx';
 import { firmaB64 } from "./firmaB64";
+import { logoB64 } from "./logoB64";
 
 export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
   const doc = new Document({
@@ -29,28 +30,85 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
         },
         children: [
           // Espacio inicial
-          new Paragraph({ text: "", spacing: { after: 400 } }),
-          
-          // FOLIO N
-          new Paragraph({
-            alignment: AlignmentType.RIGHT,
-            children: [
-              new TextRun({ text: "FOLIO N° ", bold: true }),
-              new TextRun({ text: cert.folio || "_______", underline: {} }),
-            ],
-            spacing: { after: 600 }
+          new Paragraph({ text: "" }),
+
+          // Logo and Folio Header
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            borders: {
+              top: { style: BorderStyle.NONE, size: 0, color: "auto" },
+              bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
+              left: { style: BorderStyle.NONE, size: 0, color: "auto" },
+              right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+              insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
+              insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
+            },
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new ImageRun({
+                            data: Buffer.from(logoB64.split(',')[1], 'base64'),
+                            transformation: {
+                              width: 250,
+                              height: 60
+                            },
+                            type: 'jpg'
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+                  new TableCell({
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.RIGHT,
+                        children: [
+                          new TextRun({ text: "FOLIO N° ", bold: true, font: "Arial", size: 24 }),
+                          new TextRun({ text: cert.folio || "_______", underline: {} })
+                        ]
+                      })
+                    ],
+                    verticalAlign: "bottom"
+                  })
+                ]
+              })
+            ]
           }),
 
           // Título
           new Paragraph({
             alignment: AlignmentType.CENTER,
             children: [
-              new TextRun({ text: "Certificado de Anclaje de Cajero Automático", bold: true, size: 28 }),
+              new TextRun({ 
+                text: "Certificado de Anclaje de Cajero Automático", 
+                bold: true,
+                font: "Arial",
+                size: 36 // 18pt
+              })
             ],
-            spacing: { after: 800 }
+            spacing: { before: 400, after: 100 }
+          }),
+          
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({ 
+                text: `ATM ${cert.numeroCajero || ""}`, 
+                bold: true,
+                font: "Arial",
+                size: 36 // 18pt
+              })
+            ],
+            spacing: { after: 600 }
           }),
 
-          // Datos de los equipos en tabla
+          // Tabla de datos técnicos en tabla
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [

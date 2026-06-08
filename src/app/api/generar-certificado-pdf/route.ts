@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import * as path from 'path';
 import * as fs from 'fs';
 import { firmaB64 } from '@/lib/firmaB64';
+import { logoB64 } from '@/lib/logoB64';
 
 export const runtime = 'nodejs';
 
@@ -53,20 +54,35 @@ export async function POST(request: NextRequest): Promise<Response> {
       pageSize: 'LETTER',
       pageMargins: [60, 60, 60, 60],
       content: [
-        { text: '\n\n', margin: [0, 0, 0, 20] },
-        { 
-          text: [
-            { text: 'FOLIO N° ', bold: true },
-            { text: cert.folio || "_______", decoration: 'underline' }
+        { text: '\n', margin: [0, 0, 0, 10] },
+        {
+          columns: [
+            {
+              image: logoB64,
+              width: 150
+            },
+            {
+              text: [
+                { text: 'FOLIO N° ', bold: true, fontSize: 12 },
+                { text: cert.folio || "_______", decoration: 'underline', fontSize: 12 }
+              ],
+              alignment: 'right',
+              margin: [0, 20, 0, 0]
+            }
           ],
-          alignment: 'right',
           margin: [0, 0, 0, 30]
         },
         { 
           text: 'Certificado de Anclaje de Cajero Automático', 
           style: 'header',
           alignment: 'center',
-          margin: [0, 0, 0, 40]
+          margin: [0, 0, 0, 5]
+        },
+        { 
+          text: `ATM ${cert.numeroCajero || ""}`, 
+          style: 'header',
+          alignment: 'center',
+          margin: [0, 0, 0, 30]
         },
         {
           table: {
