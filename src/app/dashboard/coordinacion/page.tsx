@@ -86,10 +86,13 @@ export default function CoordinacionPage() {
     });
     const nextTechNumber = String(maxNum + 1).padStart(2, '0');
 
+    const newId = `tech-${Date.now()}`;
+
     // Save to Supabase
     const { data: inserted, error } = await supabase
       .from("tecnicos")
       .insert([{
+        id: newId,
         tech_number: nextTechNumber,
         name: newName,
         rut: "—",
@@ -98,6 +101,10 @@ export default function CoordinacionPage() {
         region: "Metropolitana",
         vehicle: "",
         status: "disponible",
+        certifications: [],
+        completed_orders: 0,
+        avg_time: 0,
+        productivity: 0,
       }])
       .select()
       .single();
