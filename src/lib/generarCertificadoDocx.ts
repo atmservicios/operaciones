@@ -105,7 +105,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 36 // 18pt
               })
             ],
-            spacing: { after: 600 }
+            spacing: { after: 200 }
           }),
 
           // Tabla de datos técnicos en tabla
@@ -136,7 +136,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 20
               })
             ],
-            spacing: { after: 400, line: 360 }
+            spacing: { after: 200, line: 276 }
           }),
 
           // Párrafo técnico 2
@@ -149,7 +149,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 20
               })
             ],
-            spacing: { after: 400, line: 360 }
+            spacing: { after: 200, line: 276 }
           }),
 
           // Párrafo final 3
@@ -168,7 +168,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 20
               })
             ],
-            spacing: { after: 1200, line: 360 }
+            spacing: { after: 400, line: 276 }
           }),
 
           // Firma Imagen
@@ -206,12 +206,12 @@ function createRow(label: string, value: string) {
       new TableCell({
         width: { size: 40, type: WidthType.PERCENTAGE },
         children: [new Paragraph({ children: [new TextRun({ text: label, font: "Calibri", size: 24 })] })],
-        margins: { top: 100, bottom: 100, left: 100, right: 100 }
+        margins: { top: 50, bottom: 50, left: 100, right: 100 }
       }),
       new TableCell({
         width: { size: 60, type: WidthType.PERCENTAGE },
         children: [new Paragraph({ children: [new TextRun({ text: `: ${value || ''}`, bold: true, font: "Calibri", size: 24 })] })],
-        margins: { top: 100, bottom: 100, left: 100, right: 100 }
+        margins: { top: 50, bottom: 50, left: 100, right: 100 }
       })
     ]
   });
