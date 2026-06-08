@@ -805,8 +805,8 @@ export default function ReportsPage() {
       <div className="space-y-3">
         {reports.map((r) => (
           <div key={r.id} className="glass-card p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
+            <div className="flex flex-col md:flex-row items-start md:justify-between gap-4">
+              <div className="flex items-start gap-4 w-full">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: "rgba(114,176,29,0.08)", border: "1px solid rgba(114,176,29,0.15)" }}>
                   <FileText size={20} style={{ color: "#72b01d" }} />
@@ -824,7 +824,7 @@ export default function ReportsPage() {
                   <div className="text-xs leading-relaxed" style={{ color: "#94a3b8", maxWidth: 480 }}>
                     {r.diagnosis.slice(0, 130)}…
                   </div>
-                  <div className="flex items-center gap-4 mt-3">
+                  <div className="flex flex-wrap items-center gap-4 mt-3">
                     <span className="text-xs flex items-center gap-1" style={{ color: "#475569" }}>
                       <User size={10} /> {r.technicianName}
                     </span>
@@ -837,20 +837,20 @@ export default function ReportsPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 flex-shrink-0">
-                <button onClick={() => setViewReport(r)} className="btn-secondary text-xs py-1.5 px-3">
+              <div className="flex flex-row flex-wrap md:flex-col gap-2 flex-shrink-0 w-full md:w-auto mt-2 md:mt-0">
+                <button onClick={() => setViewReport(r)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Eye size={12} /> Ver
                 </button>
-                <button onClick={() => { setEditingReport(r); setShowNew(true); }} className="btn-secondary text-xs py-1.5 px-3">
+                <button onClick={() => { setEditingReport(r); setShowNew(true); }} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Edit size={12} /> Editar
                 </button>
-                <button onClick={() => downloadReportAsWord(r)} className="btn-secondary text-xs py-1.5 px-3">
+                <button onClick={() => downloadReportAsWord(r)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Download size={12} /> Word
                 </button>
-                <button onClick={() => downloadReportAsPdf(r)} className="btn-secondary text-xs py-1.5 px-3">
+                <button onClick={() => downloadReportAsPdf(r)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <FileText size={12} /> PDF
                 </button>
-                <button className="btn-secondary text-xs py-1.5 px-3">
+                <button className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Send size={12} /> Enviar
                 </button>
               </div>
