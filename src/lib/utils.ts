@@ -6,11 +6,18 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(date: string | Date): string {
+  if (typeof date === 'string' && date.length === 10 && date.includes('-')) {
+    const parts = date.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+  }
   const d = new Date(date);
   return d.toLocaleDateString("es-CL", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    timeZone: "UTC"
   });
 }
 
