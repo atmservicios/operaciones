@@ -51,7 +51,7 @@ export default function LoginPage() {
             <span className="gradient-text">en tiempo real</span>
           </h1>
           <p style={{ color: "#64748b", fontSize: "15px", lineHeight: "1.7" }}>
-            Control total de cajeros ATM, órdenes de trabajo, técnicos en campo, inventario e informes — todo en una sola plataforma.
+            Control y gestión de operaciones, órdenes de trabajo y equipos en terreno — todo en una sola plataforma.
           </p>
         </div>
 
