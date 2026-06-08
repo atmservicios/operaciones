@@ -6,7 +6,6 @@ import {
   Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { mockTechnicians } from "@/lib/mock-data";
 import type { Technician } from "@/types";
 
 interface ProgramacionRow {
@@ -59,7 +58,7 @@ export default function CoordinacionPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Technician MultiSelect State
-  const [techs, setTechs] = useState<Technician[]>(mockTechnicians);
+  const [techs, setTechs] = useState<Technician[]>([]);
   const [techSearch, setTechSearch] = useState("");
   const [showTechDropdown, setShowTechDropdown] = useState(false);
 
@@ -73,7 +72,7 @@ export default function CoordinacionPage() {
     setFormData({ ...formData, asignado_a: current.join(", ") });
   };
 
-  const createNewTech = () => {
+  const createNewTech = async () => {
     if (!techSearch.trim()) return;
     const newName = techSearch.trim();
 
@@ -82,23 +81,72 @@ export default function CoordinacionPage() {
     techs.forEach(t => {
       if (t.techNumber) {
         const num = parseInt(t.techNumber, 10);
-        if (!isNaN(num) && num > maxNum) {
-          maxNum = num;
-        }
+        if (!isNaN(num) && num > maxNum) maxNum = num;
       }
     });
     const nextTechNumber = String(maxNum + 1).padStart(2, '0');
 
+    // Save to Supabase
+    const { data: inserted, error } = await supabase
+      .from("tecnicos")
+      .insert([{
+        tech_number: nextTechNumber,
+        name: newName,
+        rut: "—",
+        phone: "—",
+        email: "",
+        region: "Metropolitana",
+        vehicle: "",
+        status: "disponible",
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creando técnico:", error.message);
+      return;
+    }
+
     const newTech: Technician = {
-      id: `tech-${Date.now()}`,
-      techNumber: nextTechNumber,
-      name: newName,
-      rut: "—", phone: "—", email: "", region: "Metropolitana", vehicle: "", certifications: [], status: "disponible", completedOrders: 0, avgTime: 0, productivity: 0
+      id: inserted.id,
+      techNumber: inserted.tech_number,
+      name: inserted.name,
+      rut: inserted.rut || "—",
+      phone: inserted.phone || "—",
+      email: inserted.email || "",
+      region: inserted.region || "Metropolitana",
+      vehicle: inserted.vehicle || "",
+      certifications: [],
+      status: inserted.status || "disponible",
+      completedOrders: 0,
+      avgTime: 0,
+      productivity: 0,
     };
-    setTechs([...techs, newTech]);
+    setTechs(prev => [...prev, newTech]);
     toggleTech(newName);
     setTechSearch("");
     setShowTechDropdown(false);
+  };
+
+  const fetchTechs = async () => {
+    const { data: rows, error } = await supabase.from("tecnicos").select("*").order("tech_number");
+    if (!error && rows) {
+      setTechs(rows.map((r) => ({
+        id: r.id,
+        techNumber: r.tech_number,
+        name: r.name,
+        rut: r.rut || "—",
+        phone: r.phone || "—",
+        email: r.email || "",
+        region: r.region || "",
+        vehicle: r.vehicle || "",
+        certifications: [],
+        status: r.status || "disponible",
+        completedOrders: 0,
+        avgTime: 0,
+        productivity: 0,
+      })));
+    }
   };
 
   const fetchServicios = async () => {
@@ -116,7 +164,6 @@ export default function CoordinacionPage() {
           if (!d) return 0;
           const p = d.split('-');
           if (p.length === 3) {
-            // Convierte DD-MM-YYYY a YYYY-MM-DD para obtener getTime() correcto
             let year = p[2];
             if (year.length === 2) year = `20${year}`;
             return new Date(`${year}-${p[1]}-${p[0]}`).getTime();
@@ -126,7 +173,7 @@ export default function CoordinacionPage() {
         const dateA = parseD(a.fecha);
         const dateB = parseD(b.fecha);
         if (dateB !== dateA) return dateB - dateA;
-        return b.id - a.id; // Fallback a ID más reciente si tienen misma fecha
+        return b.id - a.id;
       });
       setData(servicios);
     }
@@ -135,6 +182,7 @@ export default function CoordinacionPage() {
 
   useEffect(() => {
     fetchServicios();
+    fetchTechs();
   }, []);
 
   const bancos = useMemo(() => {
