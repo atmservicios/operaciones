@@ -21,10 +21,10 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
         properties: {
           page: {
             margin: {
-              top: 1440,
-              right: 1440,
-              bottom: 1440,
-              left: 1440,
+              top: 720,
+              right: 720,
+              bottom: 720,
+              left: 720,
             },
           },
         },
@@ -92,7 +92,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 36 // 18pt
               })
             ],
-            spacing: { before: 400, after: 100 }
+            spacing: { before: 100, after: 100 }
           }),
           
           new Paragraph({
@@ -105,7 +105,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 36 // 18pt
               })
             ],
-            spacing: { after: 200 }
+            spacing: { after: 100 }
           }),
 
           // Tabla de datos técnicos en tabla
@@ -124,7 +124,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
               createRow("Región", cert.region),
             ]
           }),
-          new Paragraph({ text: "", spacing: { after: 800 } }),
+          new Paragraph({ text: "", spacing: { after: 100 } }),
 
           // Párrafo legal 1
           new Paragraph({
@@ -136,7 +136,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 20
               })
             ],
-            spacing: { after: 200, line: 276 }
+            spacing: { after: 100, line: 240 }
           }),
 
           // Párrafo técnico 2
@@ -149,7 +149,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 20
               })
             ],
-            spacing: { after: 200, line: 276 }
+            spacing: { after: 100, line: 240 }
           }),
 
           // Párrafo final 3
@@ -168,7 +168,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 size: 20
               })
             ],
-            spacing: { after: 400, line: 276 }
+            spacing: { after: 100, line: 240 }
           }),
 
           // Firma Imagen
@@ -184,7 +184,7 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
                 }
               })
             ],
-            spacing: { after: 100 }
+            spacing: { after: 50 }
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -206,12 +206,12 @@ function createRow(label: string, value: string) {
       new TableCell({
         width: { size: 40, type: WidthType.PERCENTAGE },
         children: [new Paragraph({ children: [new TextRun({ text: label, font: "Calibri", size: 24 })] })],
-        margins: { top: 50, bottom: 50, left: 100, right: 100 }
+        margins: { top: 10, bottom: 10, left: 100, right: 100 }
       }),
       new TableCell({
         width: { size: 60, type: WidthType.PERCENTAGE },
         children: [new Paragraph({ children: [new TextRun({ text: `: ${value || ''}`, bold: true, font: "Calibri", size: 24 })] })],
-        margins: { top: 50, bottom: 50, left: 100, right: 100 }
+        margins: { top: 10, bottom: 10, left: 100, right: 100 }
       })
     ]
   });

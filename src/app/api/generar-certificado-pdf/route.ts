@@ -52,9 +52,9 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const docDefinition = {
       pageSize: 'LETTER',
-      pageMargins: [40, 40, 40, 40],
+      pageMargins: [30, 30, 30, 30],
       content: [
-        { text: '\n', margin: [0, 0, 0, 5] },
+        { text: '\n', margin: [0, 0, 0, 0] },
         {
           columns: [
             {
@@ -110,27 +110,27 @@ export async function POST(request: NextRequest): Promise<Response> {
             paddingTop: () => 2,
             paddingBottom: () => 2,
           },
-          margin: [0, 0, 0, 15]
+          margin: [0, 0, 0, 10]
         },
         {
           text: "De acuerdo a lo establecido en el Decreto Exento No. 222 de fecha 07 de Marzo del 2013, con toma de razón por la Contraloría General de la República con fecha 04 de Julio del 2013 del Ministerio del Interior y Seguridad Pública, Articulo 6 letra (a), respecto a los dispuesto por la Subsecretaría de Prevención del Delito, “ la cual regula  las medidas mínimas aplicables a la instalación y operación  de cajeros automáticos  dispensadores o contenedores de dinero de cualquier especie, instalados al interior o exterior de locales, establecimientos y/o recintos bancarios.",
           alignment: 'justify',
-          lineHeight: 1.3,
-          margin: [0, 0, 0, 10],
+          lineHeight: 1.15,
+          margin: [0, 0, 0, 8],
           fontSize: 10
         },
         {
           text: "El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 7 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizada para anclar este tipo de Protector y que resiste una tracción al arranque de a lo menos o sobre 3000 Kgs., exigidos por el Decreto antes mencionado, el cual no está a la vista desde el exterior, quedando en forma compacta en su base inferior  y oculta sin la posibilidad  de ser intervenida con elementos de corte o tracción por terceros ajenos al mantenimiento del protector  MMBB.",
           alignment: 'justify',
-          lineHeight: 1.3,
-          margin: [0, 0, 0, 10],
+          lineHeight: 1.15,
+          margin: [0, 0, 0, 8],
           fontSize: 10
         },
         {
           text: "Se deja constancia en el presente Certificado que el trabajo realizado por el equipo  técnico en terreno de la Empresa ATM´S SERVICIOS SPA cumple  con los estándares de seguridad vigentes exigidos por la respectiva normativa aplicable.",
           alignment: 'justify',
-          lineHeight: 1.3,
-          margin: [0, 0, 0, 30],
+          lineHeight: 1.15,
+          margin: [0, 0, 0, 20],
           fontSize: 10
         },
         {
@@ -139,8 +139,8 @@ export async function POST(request: NextRequest): Promise<Response> {
             { text: formatFechaCompleta(cert.fechaAnclaje) + ".", bold: true }
           ],
           alignment: 'justify',
-          lineHeight: 1.5,
-          margin: [0, 0, 0, 60],
+          lineHeight: 1.15,
+          margin: [0, 0, 0, 30],
           fontSize: 10
         },
         {
