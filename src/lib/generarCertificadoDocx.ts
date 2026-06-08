@@ -71,7 +71,9 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
             alignment: AlignmentType.JUSTIFIED,
             children: [
               new TextRun({
-                text: "De acuerdo a lo establecido en el Decreto Exento No. 222 de fecha 07 de Marzo del 2013, con toma de razón por la Contraloría General de la República con fecha 04 de Julio del 2013 del Ministerio del Interior y Seguridad Pública, Articulo 6 letra (a), respecto a los dispuesto por la Subsecretaría de Prevención del Delito,  la cual regula  las medidas mínimas aplicables a la instalación y operación  de cajeros automáticos  dispensadores o contenedores de dinero de cualquier especie, instalados al interior o exterior de locales, establecimientos y/o recintos bancarios."
+                text: "De acuerdo a lo establecido en el Decreto Exento No. 222 de fecha 07 de Marzo del 2013, con toma de razón por la Contraloría General de la República con fecha 04 de Julio del 2013 del Ministerio del Interior y Seguridad Pública, Articulo 6 letra (a), respecto a los dispuesto por la Subsecretaría de Prevención del Delito,  la cual regula  las medidas mínimas aplicables a la instalación y operación  de cajeros automáticos  dispensadores o contenedores de dinero de cualquier especie, instalados al interior o exterior de locales, establecimientos y/o recintos bancarios.",
+                font: "Bookman Old Style",
+                size: 20
               })
             ],
             spacing: { after: 400, line: 360 }
@@ -82,7 +84,9 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
             alignment: AlignmentType.JUSTIFIED,
             children: [
               new TextRun({
-                text: `El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 7 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1, así mismo certifica que el cajero automático individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 4 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1.`
+                text: `El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 7 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1, así mismo certifica que el cajero automático individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 4 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1.`,
+                font: "Bookman Old Style",
+                size: 20
               })
             ],
             spacing: { after: 400, line: 360 }
@@ -93,11 +97,15 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
             alignment: AlignmentType.JUSTIFIED,
             children: [
               new TextRun({
-                text: `Los materiales utilizados están en conformidad a la norma chilena Nch 300 y Nch 301 relacionadas con el anclaje de este mueble blindado y cajero automático. Siendo realizado por la Empresa Servicios ATMs Ltda representada por la Señora Gloria Raquel Fuentes Flores RUT 11.788.661-1 con fecha de anclaje `
+                text: `Los materiales utilizados están en conformidad a la norma chilena Nch 300 y Nch 301 relacionadas con el anclaje de este mueble blindado y cajero automático. Siendo realizado por la Empresa Servicios ATMs Ltda representada por la Señora Gloria Raquel Fuentes Flores RUT 11.788.661-1 con fecha de anclaje `,
+                font: "Bookman Old Style",
+                size: 20
               }),
               new TextRun({
                 text: formatFechaCompleta(cert.fechaAnclaje) + ".",
-                bold: true
+                bold: true,
+                font: "Bookman Old Style",
+                size: 20
               })
             ],
             spacing: { after: 1200, line: 360 }
@@ -107,14 +115,14 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             children: [
-              new TextRun({ text: "_______________________________________", bold: true }),
+              new TextRun({ text: "_______________________________________", bold: true, font: "Bookman Old Style", size: 20 }),
             ],
             spacing: { after: 100 }
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             children: [
-              new TextRun({ text: "Firma Ingeniero Certificador", bold: true }),
+              new TextRun({ text: "Jorge Moreno Sepúlveda", bold: true, font: "Bookman Old Style", size: 20 }),
             ]
           }),
         ],
@@ -130,12 +138,12 @@ function createRow(label: string, value: string) {
     children: [
       new TableCell({
         width: { size: 40, type: WidthType.PERCENTAGE },
-        children: [new Paragraph({ children: [new TextRun({ text: label })] })],
+        children: [new Paragraph({ children: [new TextRun({ text: label, font: "Calibri", size: 24 })] })],
         margins: { top: 100, bottom: 100, left: 100, right: 100 }
       }),
       new TableCell({
         width: { size: 60, type: WidthType.PERCENTAGE },
-        children: [new Paragraph({ children: [new TextRun({ text: `: ${value || ''}`, bold: true })] })],
+        children: [new Paragraph({ children: [new TextRun({ text: `: ${value || ''}`, bold: true, font: "Calibri", size: 24 })] })],
         margins: { top: 100, bottom: 100, left: 100, right: 100 }
       })
     ]

@@ -99,13 +99,15 @@ export async function POST(request: NextRequest): Promise<Response> {
           text: "De acuerdo a lo establecido en el Decreto Exento No. 222 de fecha 07 de Marzo del 2013, con toma de razón por la Contraloría General de la República con fecha 04 de Julio del 2013 del Ministerio del Interior y Seguridad Pública, Articulo 6 letra (a), respecto a los dispuesto por la Subsecretaría de Prevención del Delito,  la cual regula  las medidas mínimas aplicables a la instalación y operación  de cajeros automáticos  dispensadores o contenedores de dinero de cualquier especie, instalados al interior o exterior de locales, establecimientos y/o recintos bancarios.",
           alignment: 'justify',
           lineHeight: 1.5,
-          margin: [0, 0, 0, 20]
+          margin: [0, 0, 0, 20],
+          fontSize: 10
         },
         {
           text: `El Ingeniero que suscribe, certifica que el Protector individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 7 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1, así mismo certifica que el cajero automático individualizado precedentemente, ha sido anclado a la base existente mediante el uso de 1 varilla roscada Ø7/8” x 160MM de longitud, con rosca interior Ø9/16” con 4 pernos de acero SAE 1045 de Ø9/16”. De diámetro y largo 60 mm., utilizando para ello resina epóxica dimafi, que le otorga una resistencia mínima de 100 kilonewton a fuerza de tracción o empuje, conforme al grado de seguridad CEN IV o superior indicado en la norma Europea EN-1143-1.`,
           alignment: 'justify',
           lineHeight: 1.5,
-          margin: [0, 0, 0, 20]
+          margin: [0, 0, 0, 20],
+          fontSize: 10
         },
         {
           text: [
@@ -114,18 +116,21 @@ export async function POST(request: NextRequest): Promise<Response> {
           ],
           alignment: 'justify',
           lineHeight: 1.5,
-          margin: [0, 0, 0, 60]
+          margin: [0, 0, 0, 60],
+          fontSize: 10
         },
         {
           text: "_______________________________________",
           alignment: 'center',
           bold: true,
-          margin: [0, 0, 0, 5]
+          margin: [0, 0, 0, 5],
+          fontSize: 10
         },
         {
-          text: "Firma Ingeniero Certificador",
+          text: "Jorge Moreno Sepúlveda",
           alignment: 'center',
-          bold: true
+          bold: true,
+          fontSize: 10
         }
       ],
       styles: {
@@ -135,7 +140,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         }
       },
       defaultStyle: {
-        fontSize: 11,
+        fontSize: 12,
         color: '#000000'
       }
     };
