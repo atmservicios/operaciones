@@ -144,10 +144,13 @@ export default function CertificadosPage() {
       const a = document.createElement('a');
       a.href = url;
       a.download = `Certificado_Anclaje_${cert.folio || cert.otNumber || 'nuevo'}.docx`;
+      a.target = '_blank';
       document.body.appendChild(a);
       a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 1000);
     } catch (error) {
       alert("Error al generar el documento DOCX");
       console.error(error);
@@ -169,10 +172,13 @@ export default function CertificadosPage() {
       const a = document.createElement('a');
       a.href = url;
       a.download = `Certificado_Anclaje_${cert.folio || cert.otNumber || 'nuevo'}.pdf`;
+      a.target = '_blank';
       document.body.appendChild(a);
       a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 1000);
     } catch (error) {
       alert("Error al generar el documento PDF");
       console.error(error);

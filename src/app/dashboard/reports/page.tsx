@@ -69,10 +69,13 @@ const downloadReportAsWord = async (report: any) => {
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
+    a.target = '_blank';
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1000);
   } catch (error) {
     console.error('Error generating document:', error);
     alert('Error al generar el documento Word. Por favor intente de nuevo.');
@@ -147,10 +150,13 @@ const downloadReportAsPdf = async (report: any) => {
     const a = document.createElement('a');
     a.href = url;
     a.download = `Informe_OT_${report.otNumber || "10895"}.pdf`;
+    a.target = '_blank';
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1000);
   } catch (error) {
     console.error('Error generating PDF:', error);
     alert('Error al generar el documento PDF. Por favor intente de nuevo.');
