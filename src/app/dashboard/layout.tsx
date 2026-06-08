@@ -41,6 +41,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [showInactivityWarning, setShowInactivityWarning] = useState(false);
+  const [inactivityCountdown, setInactivityCountdown] = useState(300); // 5 min to respond
   const [notifications, setNotifications] = useState([
     { id: 1, unread: true, color: "#ef4444", title: "SLA Vencido — OT-2025-1840", time: "hace 2h", sub: "Banco de Chile — Antofagasta" },
     { id: 2, unread: true, color: "#f59e0b", title: "Stock bajo: Router Mikrotik", time: "hace 3h", sub: "Solo 2 unidades disponibles" },
@@ -94,6 +96,54 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.push("/login");
   };
 
+  // ── Inactividad: cierre de sesión automático ──────────────────────────────
+  const INACTIVITY_LIMIT = 30 * 60 * 1000; // 30 minutos
+  const WARNING_BEFORE   =  5 * 60 * 1000; // advertencia a los 25 min (5 min antes)
+
+  useEffect(() => {
+    let logoutTimer: ReturnType<typeof setTimeout>;
+    let warningTimer: ReturnType<typeof setTimeout>;
+    let countdownInterval: ReturnType<typeof setInterval>;
+
+    const resetTimers = () => {
+      clearTimeout(logoutTimer);
+      clearTimeout(warningTimer);
+      clearInterval(countdownInterval);
+      setShowInactivityWarning(false);
+      setInactivityCountdown(300);
+
+      // Avisa a los 25 minutos
+      warningTimer = setTimeout(() => {
+        setShowInactivityWarning(true);
+        let secs = 300;
+        setInactivityCountdown(secs);
+        countdownInterval = setInterval(() => {
+          secs -= 1;
+          setInactivityCountdown(secs);
+          if (secs <= 0) clearInterval(countdownInterval);
+        }, 1000);
+      }, INACTIVITY_LIMIT - WARNING_BEFORE);
+
+      // Cierra sesión a los 30 minutos
+      logoutTimer = setTimeout(async () => {
+        await supabase.auth.signOut();
+        router.push("/login");
+      }, INACTIVITY_LIMIT);
+    };
+
+    const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll"];
+    events.forEach(e => window.addEventListener(e, resetTimers));
+    resetTimers(); // Iniciar al montar
+
+    return () => {
+      clearTimeout(logoutTimer);
+      clearTimeout(warningTimer);
+      clearInterval(countdownInterval);
+      events.forEach(e => window.removeEventListener(e, resetTimers));
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
+
   // Filtrar menú según el rol del usuario
   const visibleNav = profile
     ? navItems.filter(item => item.roles.includes(profile.rol))
@@ -112,6 +162,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "#121418" }}>
+
+      {/* ── Modal de inactividad ───────────────────────────────────────────── */}
+      {showInactivityWarning && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}>
+          <div className="flex flex-col items-center gap-5 p-8 rounded-2xl text-center" style={{ background: "#1b1e24", border: "1px solid rgba(245,158,11,0.3)", maxWidth: 380, boxShadow: "0 24px 60px rgba(0,0,0,0.7)" }}>
+            <div className="text-4xl">⚠️</div>
+            <div>
+              <div className="font-bold text-lg mb-1" style={{ color: "#f1f5f9" }}>Sesión por vencer</div>
+              <div className="text-sm" style={{ color: "#94a3b8" }}>
+                Tu sesión se cerrará automáticamente por inactividad en:
+              </div>
+            </div>
+            <div className="text-5xl font-bold tabular-nums" style={{ color: "#f59e0b" }}>
+              {String(Math.floor(inactivityCountdown / 60)).padStart(2, "0")}:{String(inactivityCountdown % 60).padStart(2, "0")}
+            </div>
+            <div className="flex gap-3 w-full">
+              <button
+                onClick={handleLogout}
+                className="flex-1 py-2 rounded-lg text-sm font-semibold"
+                style={{ background: "rgba(239,68,68,0.12)", color: "#f87171", border: "1px solid rgba(239,68,68,0.2)" }}
+              >
+                Cerrar sesión
+              </button>
+              <button
+                onClick={() => { setShowInactivityWarning(false); }}
+                className="flex-1 py-2 rounded-lg text-sm font-semibold"
+                style={{ background: "#72b01d", color: "#fff" }}
+              >
+                Seguir conectado
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
