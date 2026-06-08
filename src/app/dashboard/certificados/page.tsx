@@ -299,12 +299,12 @@ export default function CertificadosPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1.5 text-slate-400">Número de OT (Opcional)</label>
+                <label className="block text-xs font-semibold mb-1.5 text-slate-400">Número de Cajero (ATM)</label>
                 <input
                   type="text"
-                  value={formData.otNumber}
-                  onChange={(e) => setFormData({ ...formData, otNumber: e.target.value })}
-                  className="w-full p-2.5 rounded-lg outline-none text-sm"
+                  value={formData.numeroCajero}
+                  onChange={(e) => setFormData({ ...formData, numeroCajero: e.target.value })}
+                  className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
                   style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
                 />
               </div>
@@ -350,16 +350,7 @@ export default function CertificadosPage() {
                   style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
                 />
               </div>
-              <div>
-                <label className="block text-xs font-semibold mb-1.5 text-slate-400">Número de Cajero (ATM)</label>
-                <input
-                  type="text"
-                  value={formData.numeroCajero}
-                  onChange={(e) => setFormData({ ...formData, numeroCajero: e.target.value })}
-                  className="w-full p-2.5 rounded-lg outline-none text-sm uppercase"
-                  style={{ background: "#121418", border: "1px solid rgba(255,255,255,0.1)", color: "#f1f5f9" }}
-                />
-              </div>
+
 
               <div>
                 <label className="block text-xs font-semibold mb-1.5 text-slate-400">Tipo de Bóveda</label>
