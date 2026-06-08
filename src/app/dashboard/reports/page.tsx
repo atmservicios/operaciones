@@ -799,27 +799,7 @@ export default function ReportsPage() {
         ))}
       </div>
 
-      {/* Pending alerts */}
-      {pendingOrders.length > 0 && (
-        <div className="p-4 rounded-xl flex items-start gap-3" style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.18)" }}>
-          <Clock size={17} style={{ color: "#f59e0b", flexShrink: 0, marginTop: 1 }} />
-          <div className="flex-1">
-            <div className="text-sm font-semibold mb-1" style={{ color: "#fbbf24" }}>
-              {pendingOrders.length} orden{pendingOrders.length > 1 ? "es" : ""} finalizada{pendingOrders.length > 1 ? "s" : ""} sin informe
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {pendingOrders.map((o) => (
-                <span key={o.id} className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
-                  {o.otNumber} — {o.clientName}
-                </span>
-              ))}
-            </div>
-          </div>
-          <button onClick={() => setShowNew(true)} className="btn-secondary text-xs py-1.5 px-3 flex-shrink-0">
-            <Plus size={12} /> Crear informe
-          </button>
-        </div>
-      )}
+
 
       {/* Reports list */}
       <div className="space-y-3">
@@ -878,40 +858,7 @@ export default function ReportsPage() {
           </div>
         ))}
 
-        {/* Pending orders without report */}
-        {pendingOrders.map((o) => (
-          <div key={o.id} className="glass-card p-5 flex items-center justify-between"
-            style={{ border: "1px solid rgba(245,158,11,0.12)" }}>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)" }}>
-                <FileText size={20} style={{ color: "#f59e0b" }} />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="font-bold text-sm" style={{ color: "#f1f5f9" }}>{o.otNumber}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
-                    Pendiente de informe
-                  </span>
-                </div>
-                <div className="text-xs" style={{ color: "#64748b" }}>
-                  {o.clientName} · {o.city} · Finalizada {formatDate(o.scheduledDate)}
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowNew(true)}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                padding: "8px 16px", background: "rgba(114,176,29,0.1)",
-                color: "#72b01d", borderRadius: 8, fontSize: 12, fontWeight: 600,
-                border: "1px solid rgba(114,176,29,0.2)", cursor: "pointer", fontFamily: "inherit",
-              }}
-            >
-              <Plus size={13} /> Crear informe
-            </button>
-          </div>
-        ))}
+
       </div>
 
       {showNew && (
