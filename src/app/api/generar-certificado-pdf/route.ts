@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import * as path from 'path';
 import * as fs from 'fs';
+import { firmaB64 } from '@/lib/firmaB64';
 
 export const runtime = 'nodejs';
 
@@ -120,11 +121,10 @@ export async function POST(request: NextRequest): Promise<Response> {
           fontSize: 10
         },
         {
-          text: "_______________________________________",
+          image: firmaB64,
+          width: 150,
           alignment: 'center',
-          bold: true,
-          margin: [0, 0, 0, 5],
-          fontSize: 10
+          margin: [0, 0, 0, 5]
         },
         {
           text: "Jorge Moreno Sepúlveda",

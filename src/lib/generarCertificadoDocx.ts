@@ -9,7 +9,9 @@ import {
   WidthType,
   AlignmentType,
   BorderStyle,
+  ImageRun,
 } from 'docx';
+import { firmaB64 } from "./firmaB64";
 
 export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
   const doc = new Document({
@@ -111,11 +113,18 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
             spacing: { after: 1200, line: 360 }
           }),
 
-          // Firma
+          // Firma Imagen
           new Paragraph({
             alignment: AlignmentType.CENTER,
             children: [
-              new TextRun({ text: "_______________________________________", bold: true, font: "Bookman Old Style", size: 20 }),
+              new ImageRun({
+                type: 'jpg',
+                data: Buffer.from(firmaB64.split(',')[1], 'base64'),
+                transformation: {
+                  width: 150,
+                  height: 100
+                }
+              })
             ],
             spacing: { after: 100 }
           }),
