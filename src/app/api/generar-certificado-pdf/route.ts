@@ -101,10 +101,8 @@ export async function POST(request: NextRequest): Promise<Response> {
             ]
           },
           layout: {
-            hLineWidth: () => 1,
-            vLineWidth: () => 1,
-            hLineColor: () => '#000000',
-            vLineColor: () => '#000000',
+            hLineWidth: () => 0,
+            vLineWidth: () => 0,
             paddingLeft: () => 5,
             paddingRight: () => 5,
             paddingTop: () => 5,
