@@ -3,8 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "OpsATM — Sistema de Gestión de Operaciones",
-    template: "%s | OpsATM",
+    default: "inetmatica — Sistema de Gestión de Operaciones",
+    template: "%s | inetmatica",
   },
   description:
     "Plataforma corporativa para gestión de operaciones técnicas en cajeros automáticos. Control de órdenes, técnicos, ATMs, inventario, mapas e informes en tiempo real.",

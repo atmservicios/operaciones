@@ -5,7 +5,7 @@ import { Search, Upload, Download, FolderOpen, FileText, Shield, BookOpen, FileC
 
 const documents = [
   { id: "doc-001", name: "Protocolo de Mantención Diebold Nixdorf DN5500", category: "Protocolos", type: "PDF", size: "2.4 MB", date: "2025-03-15", icon: BookOpen, color: "#93c947" },
-  { id: "doc-002", name: "Certificación ISO 27001 — OpsATM", category: "Certificaciones", type: "PDF", size: "450 KB", date: "2024-12-01", icon: Shield, color: "#72b01d" },
+  { id: "doc-002", name: "Certificación ISO 27001 — inetmatica", category: "Certificaciones", type: "PDF", size: "450 KB", date: "2024-12-01", icon: Shield, color: "#72b01d" },
   { id: "doc-003", name: "Contrato Marco BancoEstado 2025", category: "Contratos", type: "PDF", size: "1.8 MB", date: "2025-01-10", icon: FileCheck, color: "#f59e0b" },
   { id: "doc-004", name: "Manual Técnico NCR SelfServ 84", category: "Manuales", type: "PDF", size: "8.2 MB", date: "2024-11-20", icon: BookOpen, color: "#93c947" },
   { id: "doc-005", name: "Formulario Solicitud Visita Inspectiva v3", category: "Formularios", type: "DOCX", size: "125 KB", date: "2025-02-01", icon: FileText, color: "#72b01d" },

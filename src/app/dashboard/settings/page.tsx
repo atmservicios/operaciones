@@ -27,8 +27,8 @@ export default function SettingsPage() {
   const [pwError, setPwError] = useState("");
 
   const [formData, setFormData] = useState({
-    nombre: "OpsATM",
-    empresa: "OpsATM Chile SpA",
+    nombre: "inetmatica",
+    empresa: "inetmatica Chile SpA",
     correo: "contacto@opsatm.cl",
     zona: "America/Santiago (CLT)",
     formato: "DD/MM/YYYY",

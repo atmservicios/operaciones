@@ -215,9 +215,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Logo */}
         <div className="flex items-center justify-between p-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
           <Link href="/dashboard" className="flex items-center gap-3">
-            <img src="/Imagen1.jpg" alt="OpsATM Logo" style={{ height: "36px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
+            <img src="/Imagen1.jpg" alt="inetmatica Logo" style={{ height: "36px", width: "auto", objectFit: "contain", borderRadius: "4px" }} />
             <div>
-              <div className="font-bold text-sm" style={{ color: "#f1f5f9" }}>OpsATM</div>
+              <div className="font-bold text-sm" style={{ color: "#f1f5f9" }}>inetmatica</div>
               <div className="text-[10px] font-semibold" style={{ color: "#72b01d" }}>v2025.1</div>
             </div>
           </Link>

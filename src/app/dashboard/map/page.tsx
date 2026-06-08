@@ -242,7 +242,7 @@ export default function MapPage() {
 
             {/* Map label */}
             <div className="absolute bottom-4 left-4 text-xs font-semibold" style={{ color: "#475569" }}>
-              OpsATM — Mapa Operacional • Chile
+              inetmatica — Mapa Operacional • Chile
             </div>
             <div className="absolute bottom-4 right-4 flex items-center gap-1 text-xs" style={{ color: "#475569" }}>
               <Navigation size={11} />
