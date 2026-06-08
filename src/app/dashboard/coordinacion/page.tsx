@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   Search, Calendar, Clock, MapPin, User, Building2, FileText,
-  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2
+  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2, Download
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { Technician } from "@/types";
@@ -49,6 +49,8 @@ export default function CoordinacionPage() {
   const [search, setSearch] = useState("");
   const [filterBanco, setFilterBanco] = useState("all");
   const [filterInforme, setFilterInforme] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [page, setPage] = useState(1);
   
   // Modal State
@@ -207,9 +209,23 @@ export default function CoordinacionPage() {
           .some((f) => (f || "").toLowerCase().includes(q));
       const matchBanco = filterBanco === "all" || row.banco_empresa === filterBanco;
       const matchInf = filterInforme === "all" || row.informe === filterInforme;
-      return matchSearch && matchBanco && matchInf;
+      
+      let matchDate = true;
+      if (dateFrom || dateTo) {
+        if (!row.fecha) {
+          matchDate = false;
+        } else {
+          const parts = row.fecha.split("-");
+          if (parts.length === 3) {
+            const rowDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            if (dateFrom && rowDateStr < dateFrom) matchDate = false;
+            if (dateTo && rowDateStr > dateTo) matchDate = false;
+          }
+        }
+      }
+      return matchSearch && matchBanco && matchInf && matchDate;
     });
-  }, [data, search, filterBanco, filterInforme]);
+  }, [data, search, filterBanco, filterInforme, dateFrom, dateTo]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ROWS_PER_PAGE, page * ROWS_PER_PAGE);
@@ -218,10 +234,55 @@ export default function CoordinacionPage() {
     setSearch("");
     setFilterBanco("all");
     setFilterInforme("all");
+    setDateFrom("");
+    setDateTo("");
     setPage(1);
   };
 
-  const hasFilters = search || filterBanco !== "all" || filterInforme !== "all";
+  const hasFilters = search || filterBanco !== "all" || filterInforme !== "all" || dateFrom || dateTo;
+
+  const downloadCSV = () => {
+    if (filtered.length === 0) {
+      alert("No hay datos para exportar.");
+      return;
+    }
+    const headers = [
+      "OT", "Fecha", "Hora Inicio", "Hora Termino", "Tipo de Trabajo", 
+      "Local", "Direccion", "Comuna", "ATM", "Asignado a", 
+      "Solicitante", "Solicitado por", "Banco/Empresa", "Informe"
+    ];
+    
+    const rows = filtered.map(r => [
+      r.ot || "",
+      r.fecha || "",
+      r.hora_inicio || "",
+      r.hora_termino || "",
+      r.tipo_trabajo || "",
+      r.local || "",
+      r.direccion || "",
+      r.comuna || "",
+      r.atm || "",
+      r.asignado_a || "",
+      r.nombre_solicitante || "",
+      r.solicitado_por || "",
+      r.banco_empresa || "",
+      r.informe || ""
+    ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(","));
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `coordinaciones_${new Date().toISOString().split("T")[0]}.csv`;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      a.remove();
+      URL.revokeObjectURL(url);
+    }, 1000);
+  };
 
   const displayDate = (d: string | null) => {
     if (!d) return "—";
@@ -317,6 +378,14 @@ export default function CoordinacionPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={downloadCSV}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            style={{ background: "rgba(59,130,246,0.1)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.2)" }}
+          >
+            <Download size={14} />
+            Exportar
+          </button>
           <div className="px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "rgba(114,176,29,0.1)", color: "#72b01d", border: "1px solid rgba(114,176,29,0.2)" }}>
             {data.length} registros totales
           </div>
@@ -364,6 +433,25 @@ export default function CoordinacionPage() {
           <option value="SI">Con informe</option>
           <option value="NO">Sin informe</option>
         </select>
+
+        {/* Date filters */}
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            className="ops-input text-sm"
+            value={dateFrom}
+            onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
+            title="Fecha Desde"
+          />
+          <span className="text-slate-400">-</span>
+          <input
+            type="date"
+            className="ops-input text-sm"
+            value={dateTo}
+            onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
+            title="Fecha Hasta"
+          />
+        </div>
 
         {/* Clear filters */}
         {hasFilters && (
