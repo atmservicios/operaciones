@@ -6,6 +6,7 @@ import {
   Monitor, Box, Save, X, Edit, Trash2, Search
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 // Interface for the certificate data
 export interface CertificadoAnclaje {
@@ -46,40 +47,75 @@ export default function CertificadosPage() {
   const [search, setSearch] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Load from local storage for now
-  useEffect(() => {
-    const saved = localStorage.getItem("opsatm_certificados");
-    if (saved) {
-      try {
-        setCertificados(JSON.parse(saved));
-      } catch (e) {}
+  const fetchCertificados = async () => {
+    const { data, error } = await supabase
+      .from('certificados_anclaje')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (data) {
+      setCertificados(data as CertificadoAnclaje[]);
+    } else if (error) {
+      console.error("Error fetching certificados:", error);
     }
-  }, []);
-
-  const saveToStorage = (data: CertificadoAnclaje[]) => {
-    setCertificados(data);
-    localStorage.setItem("opsatm_certificados", JSON.stringify(data));
   };
 
-  const handleSave = () => {
+  useEffect(() => {
+    fetchCertificados();
+  }, []);
+
+  const handleSave = async () => {
     if (!formData.marcaModeloMMBB || !formData.fechaAnclaje) return;
 
     if (editingCert?.id) {
-      const updated = certificados.map(c => 
-        c.id === editingCert.id ? { ...formData, id: editingCert.id } as CertificadoAnclaje : c
-      );
-      saveToStorage(updated);
+      const { error } = await supabase
+        .from('certificados_anclaje')
+        .update({
+          folio: formData.folio,
+          otNumber: formData.otNumber,
+          fechaAnclaje: formData.fechaAnclaje,
+          marcaModeloMMBB: formData.marcaModeloMMBB,
+          serieMMBB: formData.serieMMBB,
+          marcaModeloATM: formData.marcaModeloATM,
+          tipoBoveda: formData.tipoBoveda,
+          medidaVarilla: formData.medidaVarilla,
+          medidaRosca: formData.medidaRosca,
+          pernosMMBB: formData.pernosMMBB,
+          pernosATM: formData.pernosATM
+        })
+        .eq('id', editingCert.id);
+
+      if (!error) fetchCertificados();
     } else {
-      const newCert = { ...formData, id: Date.now().toString() } as CertificadoAnclaje;
-      saveToStorage([newCert, ...certificados]);
+      const { error } = await supabase
+        .from('certificados_anclaje')
+        .insert([{
+          folio: formData.folio,
+          otNumber: formData.otNumber,
+          fechaAnclaje: formData.fechaAnclaje,
+          marcaModeloMMBB: formData.marcaModeloMMBB,
+          serieMMBB: formData.serieMMBB,
+          marcaModeloATM: formData.marcaModeloATM,
+          tipoBoveda: formData.tipoBoveda,
+          medidaVarilla: formData.medidaVarilla,
+          medidaRosca: formData.medidaRosca,
+          pernosMMBB: formData.pernosMMBB,
+          pernosATM: formData.pernosATM
+        }]);
+      
+      if (!error) fetchCertificados();
     }
     setShowForm(false);
     setEditingCert(null);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("¿Seguro que deseas eliminar este certificado?")) {
-      saveToStorage(certificados.filter(c => c.id !== id));
+      const { error } = await supabase
+        .from('certificados_anclaje')
+        .delete()
+        .eq('id', id);
+      if (!error) fetchCertificados();
     }
   };
 
