@@ -74,7 +74,7 @@ export default function LoginPage() {
           ))}
         </div>
 
-        <div style={{ color: "#64748b", fontSize: "12px" }}>© 2025 OpsATM. Todos los derechos reservados.</div>
+        <div style={{ color: "#64748b", fontSize: "12px" }}>© 2026 inetmatica. Todos los derechos reservados.</div>
       </div>
 
       {/* Right Panel — Login Form */}
