@@ -111,14 +111,6 @@ export async function generarCertificadoDocx(cert: any): Promise<Buffer> {
           // Tabla de datos técnicos en tabla
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
-            borders: {
-              top: { style: BorderStyle.NONE, size: 0, color: "auto" },
-              bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
-              left: { style: BorderStyle.NONE, size: 0, color: "auto" },
-              right: { style: BorderStyle.NONE, size: 0, color: "auto" },
-              insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
-              insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" }
-            },
             rows: [
               createRow("Marca / Modelo MMBB", cert.marcaModeloMMBB),
               createRow("Serie MMBB", cert.serieMMBB),
