@@ -60,7 +60,7 @@ export default function MapPage() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="section-title">Mapa Operacional</h2>
           <p className="section-subtitle">Visión en tiempo real de ATMs y técnicos en campo</p>

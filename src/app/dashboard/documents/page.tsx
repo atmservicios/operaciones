@@ -35,7 +35,8 @@ export default function DocumentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="section-title">Repositorio de Documentos</h2>
           <p className="section-subtitle">Certificaciones, protocolos, contratos y manuales</p>

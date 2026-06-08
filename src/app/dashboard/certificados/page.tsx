@@ -222,8 +222,8 @@ export default function CertificadosPage() {
           <div className="text-center py-10 text-slate-500">No hay certificados registrados.</div>
         ) : (
           filteredCerts.map(cert => (
-            <div key={cert.id} className="glass-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-start gap-4">
+            <div key={cert.id} className="glass-card p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-start gap-4 w-full">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)" }}>
                   <ShieldCheck size={24} style={{ color: "#60a5fa" }} />
@@ -242,7 +242,7 @@ export default function CertificadosPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto mt-2 md:mt-0 flex-shrink-0">
                 <button
                   onClick={() => downloadDocx(cert)}
                   disabled={isGenerating}

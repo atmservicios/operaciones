@@ -127,7 +127,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="section-title">Dashboard General</h2>
           <p className="section-subtitle">Métricas en tiempo real desde Supabase</p>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
       ) : (
         <>
           {/* Top KPIs */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatWidget 
               title="Total Coordinaciones" 
               value={totalServicios} 
