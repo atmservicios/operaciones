@@ -36,29 +36,51 @@ export default function ExecutivePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: serviciosData } = await supabase.from('servicios').select('*');
-      const { data: tecnicosData } = await supabase.from('tecnicos').select('*');
-      
-      const servicios = serviciosData || [];
-      const tecnicos = tecnicosData || [];
+      const { data: serviciosData } = await supabase.from('servicios').select('atm, asignado_a, banco_empresa');
 
-      const techCounts = tecnicos.map(t => {
-         const count = servicios.filter(s => s.asignado_a && s.asignado_a.toLowerCase().includes(t.nombre.toLowerCase())).length;
-         return {
-            name: t.nombre.split(" ").slice(0, 2).join(" "),
-            ordenes: count,
-         };
-      }).filter(t => t.ordenes > 0).sort((a, b) => b.ordenes - a.ordenes);
+      const servicios = serviciosData || [];
+
+      // ── Gráfico 1: Técnicos más activos ─────────────────────────────────
+      // Extraer todos los nombres únicos de asignado_a (separados por coma)
+      const normalize = (s: string) =>
+        s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toUpperCase();
+
+      const techMap: Record<string, { displayName: string; ordenes: number }> = {};
+      servicios.forEach(s => {
+        if (!s.asignado_a) return;
+        const names = String(s.asignado_a)
+          .split(/,/)
+          .map(n => n.trim())
+          .filter(Boolean);
+        names.forEach(raw => {
+          const key = normalize(raw);
+          if (!techMap[key]) {
+            // Tomar solo las primeras dos palabras para el eje Y
+            const parts = raw.trim().split(/\s+/);
+            techMap[key] = {
+              displayName: parts.slice(0, 2).join(" "),
+              ordenes: 0,
+            };
+          }
+          techMap[key].ordenes += 1;
+        });
+      });
+
+      const techCounts = Object.values(techMap)
+        .map(t => ({ name: t.displayName, ordenes: t.ordenes }))
+        .filter(t => t.ordenes > 0)
+        .sort((a, b) => b.ordenes - a.ordenes);
       setTechProductivity(techCounts);
 
-      const atmGroups: Record<string, { code: string, fallas: number, cliente: string }> = {};
+      // ── Gráfico 2: ATMs con más intervenciones ───────────────────────────
+      const atmGroups: Record<string, { code: string; fallas: number; cliente: string }> = {};
       servicios.forEach(s => {
-         if (!s.atm || s.atm.trim() === "") return;
-         const code = s.atm.trim();
-         if (!atmGroups[code]) {
-            atmGroups[code] = { code, fallas: 0, cliente: s.banco_empresa || "Desconocido" };
-         }
-         atmGroups[code].fallas += 1;
+        if (!s.atm || s.atm.trim() === "") return;
+        const code = s.atm.trim();
+        if (!atmGroups[code]) {
+          atmGroups[code] = { code, fallas: 0, cliente: s.banco_empresa || "Desconocido" };
+        }
+        atmGroups[code].fallas += 1;
       });
       const atmCounts = Object.values(atmGroups).sort((a, b) => b.fallas - a.fallas);
       setAtmFaults(atmCounts);
