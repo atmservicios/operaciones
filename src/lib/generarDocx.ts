@@ -16,6 +16,7 @@ import {
   ShadingType,
 } from 'docx';
 import { Informe } from '@/types/informe';
+import { logoB64 } from '@/lib/logoB64';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -83,15 +84,11 @@ async function fetchImageBuffer(url: string): Promise<ImageBufferInfo | null> {
 
 export async function generarDocx(informe: Informe): Promise<Buffer> {
   // ── Logo ─────────────────────────────────────────
-  const logoPath =
-    fs.existsSync(path.join(process.cwd(), 'public', 'Imagen1.jpg'))
-      ? path.join(process.cwd(), 'public', 'Imagen1.jpg')
-      : path.join(process.cwd(), 'public', 'imagen1.jpg');
   let logoRun: ImageRun | null = null;
-  if (fs.existsSync(logoPath)) {
-    const logoBuffer = fs.readFileSync(logoPath);
+  const logoBufferInfo = await fetchImageBuffer(logoB64);
+  if (logoBufferInfo) {
     logoRun = new ImageRun({
-      data: logoBuffer,
+      data: logoBufferInfo.buffer,
       transformation: { width: 220, height: 55 },
       type: 'jpg',
     });
