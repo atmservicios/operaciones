@@ -57,7 +57,7 @@ const downloadReportAsWord = async (report: any) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ informe: mappedInforme }),
+      body: JSON.stringify({ informe: { ...mappedInforme, imagenes: [] }, reportId: report.id }),
     });
 
     if (!response.ok) {
@@ -137,7 +137,7 @@ const downloadReportAsPdf = async (report: any) => {
     const response = await fetch('/api/generar-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ informe: mappedInforme }),
+      body: JSON.stringify({ informe: { ...mappedInforme, imagenes: [] }, reportId: report.id }),
     });
 
     if (!response.ok) {

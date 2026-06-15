@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { generarDocx } from '@/lib/generarDocx';
 import { Informe } from '@/types/informe';
+import { supabaseInforme } from '@/lib/supabaseInforme';
 
 export const runtime = 'nodejs';
 
@@ -14,6 +15,18 @@ export async function POST(request: NextRequest) {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
+    }
+
+    if (body.reportId) {
+      const { data, error } = await supabaseInforme
+        .from('informes')
+        .select('data')
+        .eq('id', body.reportId)
+        .single();
+      
+      if (data && data.data && data.data.images) {
+        informe.imagenes = data.data.images;
+      }
     }
 
     const buffer = await generarDocx(informe);
