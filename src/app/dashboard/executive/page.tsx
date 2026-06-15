@@ -1,11 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, Legend,
 } from "recharts";
 import { TrendingUp, Clock, Target, AlertTriangle, Download, FileSpreadsheet } from "lucide-react";
 import { mockATMs, mockTechnicians, mockWorkOrders, monthlyData } from "@/lib/mock-data";
+import { supabase } from "@/lib/supabase";
 
 const slaByBank = [
   { bank: "BancoEstado", sla: 94, ordenes: 87 },
@@ -16,18 +18,7 @@ const slaByBank = [
   { bank: "Scotiabank", sla: 92, ordenes: 41 },
 ];
 
-const techProductivity = mockTechnicians.map((t) => ({
-  name: t.name.split(" ").slice(0, 2).join(" "),
-  ordenes: t.completedOrders,
-  productividad: t.productivity,
-  avgTime: t.avgTime,
-})).sort((a, b) => b.ordenes - a.ordenes);
 
-const atmFaults = mockATMs.filter(a => a.status === "falla" || a.technicalHistory?.length).map(a => ({
-  code: a.code,
-  fallas: a.technicalHistory?.length ?? 1,
-  cliente: a.clientName,
-})).sort((a, b) => b.fallas - a.fallas);
 
 const costData = [
   { month: "Ene", preventivo: 2800000, correctivo: 1200000, total: 4000000 },
@@ -40,6 +31,42 @@ const costData = [
 const fmtCLP = (v: number) => `$${(v / 1000000).toFixed(1)}M`;
 
 export default function ExecutivePage() {
+  const [techProductivity, setTechProductivity] = useState<any[]>([]);
+  const [atmFaults, setAtmFaults] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data: serviciosData } = await supabase.from('servicios').select('*');
+      const { data: tecnicosData } = await supabase.from('tecnicos').select('*');
+      
+      const servicios = serviciosData || [];
+      const tecnicos = tecnicosData || [];
+
+      const techCounts = tecnicos.map(t => {
+         const count = servicios.filter(s => s.asignado_a && s.asignado_a.toLowerCase().includes(t.nombre.toLowerCase())).length;
+         return {
+            name: t.nombre.split(" ").slice(0, 2).join(" "),
+            ordenes: count,
+         };
+      }).filter(t => t.ordenes > 0).sort((a, b) => b.ordenes - a.ordenes);
+      setTechProductivity(techCounts);
+
+      const atmGroups: Record<string, { code: string, fallas: number, cliente: string }> = {};
+      servicios.forEach(s => {
+         if (!s.atm || s.atm.trim() === "") return;
+         const code = s.atm.trim();
+         if (!atmGroups[code]) {
+            atmGroups[code] = { code, fallas: 0, cliente: s.banco_empresa || "Desconocido" };
+         }
+         atmGroups[code].fallas += 1;
+      });
+      const atmCounts = Object.values(atmGroups).sort((a, b) => b.fallas - a.fallas);
+      setAtmFaults(atmCounts);
+    };
+
+    fetchData();
+  }, []);
+
   const avgSLA = Math.round(slaByBank.reduce((s, b) => s + b.sla, 0) / slaByBank.length);
   const avgResponse = 2.4;
   const totalOrders = mockWorkOrders.length;
@@ -166,19 +193,19 @@ export default function ExecutivePage() {
           <div className="font-semibold text-sm mb-1" style={{ color: "#f1f5f9" }}>ATMs con más Intervenciones</div>
           <div className="text-xs mb-4" style={{ color: "#475569" }}>Historial técnico acumulado</div>
           <div className="space-y-3">
-            {mockATMs.filter(a => a.technicalHistory && a.technicalHistory.length > 0).map((a) => (
-              <div key={a.id}>
+            {atmFaults.slice(0, 5).map((a, idx) => (
+              <div key={idx}>
                 <div className="flex justify-between text-xs mb-1">
                   <div>
                     <span className="font-mono font-semibold" style={{ color: "#93c947" }}>{a.code}</span>
-                    <span style={{ color: "#475569" }}> — {a.clientName}</span>
+                    <span style={{ color: "#475569" }}> — {a.cliente}</span>
                   </div>
-                  <span style={{ color: "#94a3b8" }}>{a.technicalHistory!.length} intervenciones</span>
+                  <span style={{ color: "#94a3b8" }}>{a.fallas} intervenciones</span>
                 </div>
                 <div className="h-2 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
                   <div className="h-2 rounded-full" style={{
-                    width: `${(a.technicalHistory!.length / 5) * 100}%`,
-                    background: a.status === "falla" ? "#ef4444" : "#72b01d"
+                    width: `${Math.min((a.fallas / 5) * 100, 100)}%`,
+                    background: "#72b01d"
                   }} />
                 </div>
               </div>
