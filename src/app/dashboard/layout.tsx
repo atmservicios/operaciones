@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import {
   Cpu, LayoutDashboard, ClipboardList, Monitor, Users, MapPin,
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
-  Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck,
+  Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -23,6 +23,7 @@ const navItems = [
   { href: "/dashboard",              icon: LayoutDashboard, label: "Dashboard",           badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/technicians",  icon: Users,           label: "Técnicos",            badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/revisiones",   icon: Truck,           label: "Revisiones Técnicas", badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/atms",         icon: Monitor,         label: "Cajeros ATM",         badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/reports",      icon: FileText,        label: "Informes Técnicos",   badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/certificados", icon: ShieldCheck,     label: "Certificados de Anclaje", badge: null,  roles: ['administrador','supervisor','operaria'] },
