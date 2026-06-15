@@ -184,6 +184,14 @@ export default function RevisionesPage() {
     });
   }, [data, search, filter]);
 
+  const formatDate = (dateStr: string) => {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+  };
+
   const StatusBadge = ({ date, label }: { date: string | null, label: string }) => {
     const st = getDocStatus(date);
     return (
@@ -191,7 +199,7 @@ export default function RevisionesPage() {
         <span className="text-[10px] text-slate-400 uppercase tracking-wider">{label}</span>
         {date ? (
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">{date}</span>
+            <span className="text-sm font-medium">{formatDate(date)}</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-bold" style={{ color: st.color, backgroundColor: st.bg }}>
               {st.text}
             </span>
