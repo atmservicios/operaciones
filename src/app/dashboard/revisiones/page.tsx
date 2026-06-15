@@ -3,9 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   Search, Plus, X, Pencil, Trash2, Truck, AlertTriangle, ShieldAlert,
-  CalendarCheck, CalendarClock, CarFront
+  CalendarCheck, CalendarClock, CarFront, Download
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import * as XLSX from "xlsx";
 
 interface Revision {
   id: number;
@@ -192,6 +193,35 @@ export default function RevisionesPage() {
     return dateStr;
   };
 
+  const downloadExcel = () => {
+    if (filteredData.length === 0) {
+      alert("No hay datos para exportar.");
+      return;
+    }
+    
+    const rows = filteredData.map(r => ({
+      "PATENTE": r.patente || "",
+      "SEGURO": r.vencimiento_seguro ? formatDate(r.vencimiento_seguro) : "",
+      "CIRCULACION": r.vencimiento_circulacion ? formatDate(r.vencimiento_circulacion) : "",
+      "GASES": r.vencimiento_gases ? formatDate(r.vencimiento_gases) : "",
+      "REVIS TECN": r.vencimiento_revision_tecnica ? formatDate(r.vencimiento_revision_tecnica) : "",
+      "MARCA": r.marca || "",
+      "MODELO": r.modelo || "",
+      "CHASIS": r.chasis || "",
+      "MOTOR": r.motor || "",
+      "COLOR": r.color || "",
+      "KILOMETRAJE": r.kilometraje ? String(r.kilometraje) : "",
+      "AÑO": r.anio ? String(r.anio) : "",
+      "SELLO": r.sello || ""
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Vehiculos");
+    
+    XLSX.writeFile(workbook, `revisiones_tecnicas_${new Date().toISOString().split("T")[0]}.xlsx`);
+  };
+
   const StatusBadge = ({ date, label }: { date: string | null, label: string }) => {
     const st = getDocStatus(date);
     return (
@@ -242,10 +272,20 @@ export default function RevisionesPage() {
             {data.length} vehículos registrados en la flota
           </p>
         </div>
-        <button onClick={handleOpenCreate} className="btn-primary flex items-center gap-2">
-          <Plus size={16} />
-          Nuevo Vehículo
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={downloadExcel}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            style={{ background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}
+          >
+            <Download size={14} />
+            Exportar Excel
+          </button>
+          <button onClick={handleOpenCreate} className="btn-primary flex items-center gap-2">
+            <Plus size={16} />
+            Nuevo Vehículo
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
