@@ -108,28 +108,48 @@ export default function RevisionesPage() {
     }
     setIsSaving(true);
     
-    // Normalize empty strings to null for dates
-    const payload = { ...currentRecord };
-    ['vencimiento_seguro', 'vencimiento_circulacion', 'vencimiento_gases', 'vencimiento_revision_tecnica'].forEach(key => {
-      if (!(payload as any)[key]) (payload as any)[key] = null;
+    // Build a clean payload with only the Revision fields (no timestamps)
+    const dateFields = ['vencimiento_seguro', 'vencimiento_circulacion', 'vencimiento_gases', 'vencimiento_revision_tecnica'] as const;
+    const payload: any = {
+      patente:    (currentRecord.patente  || '').toUpperCase().trim(),
+      marca:      (currentRecord.marca    || '').toUpperCase().trim(),
+      modelo:     (currentRecord.modelo   || '').toUpperCase().trim() || null,
+      chasis:     currentRecord.chasis    || null,
+      motor:      currentRecord.motor     || null,
+      color:      currentRecord.color     || null,
+      anio:       currentRecord.anio      || null,
+      kilometraje: currentRecord.kilometraje || null,
+      sello:      currentRecord.sello     || null,
+    };
+    dateFields.forEach(key => {
+      payload[key] = currentRecord[key] || null;
     });
 
-    if (payload.id) {
-      const { error } = await supabase
+    let error: any = null;
+    if (currentRecord.id) {
+      const res = await supabase
         .from("revisiones_tecnicas")
         .update(payload)
-        .eq("id", payload.id);
-      if (error) alert("Error: " + error.message);
+        .eq("id", currentRecord.id);
+      error = res.error;
     } else {
-      const { error } = await supabase
+      const res = await supabase
         .from("revisiones_tecnicas")
         .insert([payload]);
-      if (error) alert("Error: " + error.message);
+      error = res.error;
+    }
+
+    if (error) {
+      alert("Error al guardar: " + error.message);
+      console.error("Supabase error:", error);
+    } else {
+      await fetchData();
     }
     
     setIsSaving(false);
-    setIsModalOpen(false);
+    if (!error) setIsModalOpen(false);
   };
+
 
   // Stats & Alerts
   const allAlerts: { patente: string, docName: string, days: number }[] = [];
