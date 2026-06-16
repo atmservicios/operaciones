@@ -565,14 +565,33 @@ function NewReportForm({
                     onChange={(e) => {
                       const files = Array.from(e.target.files ?? []);
                       files.forEach((file) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
+                        const objectUrl = URL.createObjectURL(file);
+                        const img = new window.Image();
+                        img.onload = () => {
+                          // Compress: max 1400px wide/tall, JPEG quality 0.72
+                          const MAX = 1400;
+                          let { width, height } = img;
+                          if (width > MAX || height > MAX) {
+                            if (width > height) {
+                              height = Math.round(height * MAX / width);
+                              width = MAX;
+                            } else {
+                              width = Math.round(width * MAX / height);
+                              height = MAX;
+                            }
+                          }
+                          const canvas = document.createElement('canvas');
+                          canvas.width = width;
+                          canvas.height = height;
+                          const ctx = canvas.getContext('2d')!;
+                          ctx.drawImage(img, 0, 0, width, height);
+                          const compressed = canvas.toDataURL('image/jpeg', 0.72);
                           setImages((prev) => [
                             ...prev,
-                            { url: URL.createObjectURL(file), base64: reader.result as string }
+                            { url: objectUrl, base64: compressed }
                           ]);
                         };
-                        reader.readAsDataURL(file);
+                        img.src = objectUrl;
                       });
                     }}
                   />
