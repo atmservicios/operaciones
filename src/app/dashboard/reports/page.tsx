@@ -6,7 +6,7 @@ import {
   Monitor, Cpu, User, Calendar, ImageIcon, Save, FileOutput,
   CheckCircle2, Trash2, Clock, Edit,
 } from "lucide-react";
-import { mockReports, mockWorkOrders } from "@/lib/mock-data";
+import { mockWorkOrders } from "@/lib/mock-data";
 import { formatDateTime, formatDate } from "@/lib/utils";
 import type { TechnicalReport } from "@/types";
 import { getReportsDB, saveReportDB } from "@/lib/reportsDb";
@@ -728,18 +728,10 @@ export default function ReportsPage() {
     const loadReports = async () => {
       try {
         const saved = await getReportsDB();
-        if (saved && saved.length > 0) {
-          setReports(saved);
-        } else {
-          // Initialize DB with mock data to keep the initial list populated
-          for (const report of mockReports) {
-            await saveReportDB(report);
-          }
-          setReports(mockReports);
-        }
+        setReports(saved);
       } catch (e) {
-        console.error("Error loading reports from IndexedDB:", e);
-        setReports(mockReports);
+        console.error("Error loading reports from Supabase:", e);
+        setReports([]);
       }
     };
     loadReports();
