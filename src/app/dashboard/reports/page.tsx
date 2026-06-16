@@ -268,7 +268,8 @@ function NewReportForm({
   editingReport?: TechnicalReport | null;
 }) {
   const [form, setForm] = useState<ReportForm>(EMPTY_FORM);
-  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [images, setImages] = useState<{ url: string; base64: string }[]>([]);
 
   useEffect(() => {
@@ -304,7 +305,11 @@ function NewReportForm({
 
   const set = (field: keyof ReportForm) => (v: string) => setForm((f) => ({ ...f, [field]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (saving) return;
+    setSaveError('');
+    setSaving(true);
+
     const matchedOrder = mockWorkOrders.find(o => o.otNumber === form.otNumber);
     const clientName = matchedOrder ? matchedOrder.clientName : (form.solicitante || "Cliente General");
     const workOrderId = editingReport ? editingReport.workOrderId : (matchedOrder ? matchedOrder.id : `wo-${Date.now()}`);
@@ -339,11 +344,12 @@ function NewReportForm({
       images: images.map(img => img.base64),
     };
 
-    setSaved(true);
-    setTimeout(() => {
-      setSaved(false);
-      onSave(newReport);
-    }, 1200);
+    try {
+      await onSave(newReport);
+    } catch (e: any) {
+      setSaveError('Error al guardar: ' + (e?.message || 'Intenta nuevamente'));
+      setSaving(false);
+    }
   };
 
   const handleGenerateWord = () => {
@@ -626,48 +632,65 @@ function NewReportForm({
             </FormSection>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-2">
-              <button onClick={onClose} className="btn-secondary text-sm">Cancelar</button>
-              <div className="flex items-center gap-3 font-semibold">
-                <button
-                  onClick={handleSave}
-                  style={{
-                    display: "inline-flex", alignItems: "center", gap: 8,
-                    padding: "10px 22px", background: saved ? "#578814" : "linear-gradient(135deg, #72b01d, #578814)",
-                    color: "white", borderRadius: 9, fontSize: 14, fontWeight: 700,
-                    border: "none", cursor: "pointer", transition: "all 0.2s ease",
-                    boxShadow: "0 4px 16px rgba(114,176,29,0.35)", fontFamily: "inherit",
-                  }}
-                >
-                  {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
-                  {saved ? "¡Guardado!" : (editingReport ? "Guardar Cambios" : "Guardar Informe")}
-                </button>
-                <button
-                  onClick={handleGeneratePdf}
-                  style={{
-                    display: "inline-flex", alignItems: "center", gap: 8,
-                    padding: "10px 22px", background: "linear-gradient(135deg, #0284c7, #0369a1)",
-                    color: "white", borderRadius: 9, fontSize: 14, fontWeight: 700,
-                    border: "none", cursor: "pointer", transition: "all 0.2s ease",
-                    boxShadow: "0 4px 16px rgba(2,132,199,0.3)", fontFamily: "inherit",
-                  }}
-                >
-                  <FileText size={16} />
-                  Generar PDF
-                </button>
-                <button
-                  onClick={handleGenerateWord}
-                  style={{
-                    display: "inline-flex", alignItems: "center", gap: 8,
-                    padding: "10px 22px", background: "linear-gradient(135deg, #578814, #3d600d)",
-                    color: "white", borderRadius: 9, fontSize: 14, fontWeight: 700,
-                    border: "none", cursor: "pointer", transition: "all 0.2s ease",
-                    boxShadow: "0 4px 16px rgba(87,136,20,0.3)", fontFamily: "inherit",
-                  }}
-                >
-                  <FileOutput size={16} />
-                  Generar Word
-                </button>
+            <div className="flex flex-col gap-3 pt-2">
+              {saveError && (
+                <div style={{ background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: "10px 14px", color: "#f87171", fontSize: 13 }}>
+                  ⚠️ {saveError}
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <button onClick={onClose} className="btn-secondary text-sm" disabled={saving}>Cancelar</button>
+                <div className="flex items-center gap-3 font-semibold">
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      padding: "10px 22px", background: saving ? "#578814" : "linear-gradient(135deg, #72b01d, #578814)",
+                      color: "white", borderRadius: 9, fontSize: 14, fontWeight: 700,
+                      border: "none", cursor: saving ? "not-allowed" : "pointer", transition: "all 0.2s ease",
+                      boxShadow: "0 4px 16px rgba(114,176,29,0.35)", fontFamily: "inherit",
+                      opacity: saving ? 0.8 : 1,
+                    }}
+                  >
+                    {saving ? (
+                      <>
+                        <span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                        Guardando...
+                      </>
+                    ) : (
+                      <><Save size={16} />{editingReport ? "Guardar Cambios" : "Guardar Informe"}</>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleGeneratePdf}
+                    disabled={saving}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      padding: "10px 22px", background: "linear-gradient(135deg, #0284c7, #0369a1)",
+                      color: "white", borderRadius: 9, fontSize: 14, fontWeight: 700,
+                      border: "none", cursor: "pointer", transition: "all 0.2s ease",
+                      boxShadow: "0 4px 16px rgba(2,132,199,0.3)", fontFamily: "inherit",
+                    }}
+                  >
+                    <FileText size={16} />
+                    Generar PDF
+                  </button>
+                  <button
+                    onClick={handleGenerateWord}
+                    disabled={saving}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      padding: "10px 22px", background: "linear-gradient(135deg, #578814, #3d600d)",
+                      color: "white", borderRadius: 9, fontSize: 14, fontWeight: 700,
+                      border: "none", cursor: "pointer", transition: "all 0.2s ease",
+                      boxShadow: "0 4px 16px rgba(87,136,20,0.3)", fontFamily: "inherit",
+                    }}
+                  >
+                    <FileOutput size={16} />
+                    Generar Word
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -757,20 +780,15 @@ export default function ReportsPage() {
   }, []);
 
   const handleSave = async (newReport: TechnicalReport) => {
-    try {
-      await saveReportDB(newReport);
-      setReports((prev) => {
-        const exists = prev.some((r) => r.id === newReport.id);
-        if (exists) {
-          return prev.map((r) => r.id === newReport.id ? newReport : r);
-        } else {
-          return [newReport, ...prev];
-        }
-      });
-    } catch (e) {
-      console.error("Error saving report to IndexedDB:", e);
-      alert("Error al guardar el informe localmente en la base de datos.");
-    }
+    await saveReportDB(newReport);
+    setReports((prev) => {
+      const exists = prev.some((r) => r.id === newReport.id);
+      if (exists) {
+        return prev.map((r) => r.id === newReport.id ? newReport : r);
+      } else {
+        return [newReport, ...prev];
+      }
+    });
     setShowNew(false);
     setEditingReport(null);
   };
