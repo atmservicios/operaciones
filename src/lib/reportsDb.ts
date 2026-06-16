@@ -1,10 +1,10 @@
 import type { TechnicalReport } from '@/types';
-import { supabase } from './supabase';
+import { supabaseInforme } from './supabaseInforme';
 
 const TABLE_NAME = 'informes';
 
 export async function saveReportDB(report: TechnicalReport): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseInforme
     .from(TABLE_NAME)
     .upsert({ id: report.id, data: report });
   
@@ -15,9 +15,8 @@ export async function saveReportDB(report: TechnicalReport): Promise<void> {
 }
 
 export async function getReportsDB(): Promise<TechnicalReport[]> {
-  // Select lightweight fields from the data JSONB — skips heavy base64 images
-  // Supabase returns data->otNumber as simply "otNumber" in the response
-  const { data, error } = await supabase
+  // Select lightweight fields from the data JSONB — skips heavy base64 images to avoid timeout
+  const { data, error } = await supabaseInforme
     .from(TABLE_NAME)
     .select([
       'id',
@@ -91,7 +90,7 @@ export async function getReportsDB(): Promise<TechnicalReport[]> {
 }
 
 export async function deleteReportDB(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseInforme
     .from(TABLE_NAME)
     .delete()
     .eq('id', id);
