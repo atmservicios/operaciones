@@ -15,7 +15,8 @@ export async function saveReportDB(report: TechnicalReport): Promise<void> {
 }
 
 export async function getReportsDB(): Promise<TechnicalReport[]> {
-  // Select only lightweight fields from the data JSONB — exclude heavy base64 images
+  // Select lightweight fields from the data JSONB — skips heavy base64 images
+  // Supabase returns data->otNumber as simply "otNumber" in the response
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .select([
@@ -53,33 +54,33 @@ export async function getReportsDB(): Promise<TechnicalReport[]> {
 
   if (!data) return [];
 
-  // Map the jsonb-extracted fields into TechnicalReport shape
+  // Supabase returns data->otNumber as "otNumber" (key without prefix)
   const results: TechnicalReport[] = (data as any[]).map(r => ({
     id: r.id,
-    otNumber: r['otNumber'] ?? '',
-    clientName: r['clientName'] ?? '',
-    technicianName: r['technicianName'] ?? '',
-    technicianId: r['technicianId'] ?? '',
-    diagnosis: r['diagnosis'] ?? '',
-    solution: r['solution'] ?? '',
-    createdAt: r['createdAt'] ?? r['created_at'] ?? '',
-    fechaInicio: r['fechaInicio'] ?? '',
-    fechaFin: r['fechaFin'] ?? '',
-    destinatario: r['destinatario'] ?? '',
-    direccion: r['direccion'] ?? '',
-    ubicacionRef: r['ubicacionRef'] ?? '',
-    comuna: r['comuna'] ?? '',
-    numeroATM: r['numeroATM'] ?? '',
-    serieATM: r['serieATM'] ?? '',
-    modeloMMBB: r['modeloMMBB'] ?? '',
-    serieMMBB: r['serieMMBB'] ?? '',
-    solicitante: r['solicitante'] ?? '',
-    valorServicio: r['valorServicio'] ?? '',
-    workOrderId: r['workOrderId'] ?? '',
-    materialsUsed: r['materialsUsed'] ?? [],
+    otNumber: r.otNumber ?? '',
+    clientName: r.clientName ?? '',
+    technicianName: r.technicianName ?? '',
+    technicianId: r.technicianId ?? '',
+    diagnosis: r.diagnosis ?? '',
+    solution: r.solution ?? '',
+    createdAt: r.createdAt ?? r.created_at ?? '',
+    fechaInicio: r.fechaInicio ?? '',
+    fechaFin: r.fechaFin ?? '',
+    destinatario: r.destinatario ?? '',
+    direccion: r.direccion ?? '',
+    ubicacionRef: r.ubicacionRef ?? '',
+    comuna: r.comuna ?? '',
+    numeroATM: r.numeroATM ?? '',
+    serieATM: r.serieATM ?? '',
+    modeloMMBB: r.modeloMMBB ?? '',
+    serieMMBB: r.serieMMBB ?? '',
+    solicitante: r.solicitante ?? '',
+    valorServicio: r.valorServicio ?? '',
+    workOrderId: r.workOrderId ?? '',
+    materialsUsed: r.materialsUsed ?? [],
     images: [],
   }));
-  
+
   results.sort((a, b) => {
     const dateA = new Date(a.createdAt || 0).getTime();
     const dateB = new Date(b.createdAt || 0).getTime();
