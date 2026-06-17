@@ -9,7 +9,7 @@ import {
 import { mockWorkOrders } from "@/lib/mock-data";
 import { formatDateTime, formatDate } from "@/lib/utils";
 import type { TechnicalReport } from "@/types";
-import { getReportsDB, saveReportDB } from "@/lib/reportsDb";
+import { getReportsDB, saveReportDB, deleteReportDB } from "@/lib/reportsDb";
 
 // ─── Word Document Generation Utility ─────────────────────────────────────────
 const formatDateForWord = (dateString?: string) => {
@@ -765,6 +765,8 @@ export default function ReportsPage() {
   const [viewReport, setViewReport] = useState<TechnicalReport | null>(null);
   const [reports, setReports] = useState<TechnicalReport[]>([]);
   const [editingReport, setEditingReport] = useState<TechnicalReport | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<TechnicalReport | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const loadReports = async () => {
@@ -791,6 +793,21 @@ export default function ReportsPage() {
     });
     setShowNew(false);
     setEditingReport(null);
+  };
+
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    try {
+      await deleteReportDB(confirmDelete.id);
+      setReports((prev) => prev.filter((r) => r.id !== confirmDelete.id));
+      setConfirmDelete(null);
+    } catch (e) {
+      console.error('Error al eliminar informe:', e);
+      alert('Error al eliminar el informe. Intenta nuevamente.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const pendingOrders = mockWorkOrders.filter(
@@ -888,6 +905,20 @@ export default function ReportsPage() {
                 <button className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Send size={12} /> Enviar
                 </button>
+                <button
+                  onClick={() => setConfirmDelete(r)}
+                  className="text-xs py-1.5 px-3 flex-1 md:flex-none justify-center"
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)",
+                    color: "#f87171", borderRadius: 8, cursor: "pointer", fontFamily: "inherit",
+                    fontWeight: 600, transition: "all 0.15s ease",
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.18)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(239,68,68,0.5)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(239,68,68,0.25)"; }}
+                >
+                  <Trash2 size={12} /> Borrar
+                </button>
               </div>
             </div>
           </div>
@@ -895,6 +926,77 @@ export default function ReportsPage() {
 
 
       </div>
+
+      {/* ── Modal Confirmar Borrar ── */}
+      {confirmDelete && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 9999,
+          background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+        }}>
+          <div style={{
+            background: "#1b1e24", border: "1px solid rgba(239,68,68,0.3)",
+            borderRadius: 16, padding: 32, maxWidth: 420, width: "100%",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 12, background: "rgba(239,68,68,0.12)",
+                border: "1px solid rgba(239,68,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}>
+                <Trash2 size={20} style={{ color: "#f87171" }} />
+              </div>
+              <div>
+                <div style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 16 }}>¿Eliminar informe?</div>
+                <div style={{ color: "#64748b", fontSize: 13 }}>Esta acción no se puede deshacer</div>
+              </div>
+            </div>
+            <div style={{
+              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 10, padding: "12px 16px", marginBottom: 24,
+            }}>
+              <div style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 14 }}>OT {confirmDelete.otNumber}</div>
+              <div style={{ color: "#64748b", fontSize: 12, marginTop: 2 }}>
+                {confirmDelete.clientName} · {confirmDelete.technicianName}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setConfirmDelete(null)}
+                disabled={deleting}
+                style={{
+                  padding: "9px 20px", background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.1)", color: "#94a3b8",
+                  borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                style={{
+                  padding: "9px 20px",
+                  background: deleting ? "#7f1d1d" : "linear-gradient(135deg, #dc2626, #b91c1c)",
+                  border: "none", color: "white", borderRadius: 9,
+                  fontSize: 13, fontWeight: 700, cursor: deleting ? "not-allowed" : "pointer",
+                  fontFamily: "inherit", display: "inline-flex", alignItems: "center", gap: 8,
+                  opacity: deleting ? 0.8 : 1,
+                }}
+              >
+                {deleting ? (
+                  <>
+                    <span style={{ display: "inline-block", width: 13, height: 13, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                    Eliminando...
+                  </>
+                ) : (
+                  <><Trash2 size={14} /> Sí, eliminar</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showNew && (
         <NewReportForm
