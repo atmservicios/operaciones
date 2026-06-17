@@ -56,7 +56,7 @@ function MiniCard({ label, value, color, icon: Icon }: {
 
 const COMPANY_COLORS: Record<string, string> = {
   "NCR":             "#009999",
-  "SANTANDER":       "#FF3300",
+  "SANTANDER":       "#FF0101",
   "IBM":             "#B2B2B2",
   "FALABELLA":       "#008000",
   "ITAU":            "#EC7000",  // mantiene color naranja original
