@@ -54,7 +54,31 @@ function MiniCard({ label, value, color, icon: Icon }: {
   );
 }
 
-const COLORS = ["#72b01d", "#3b82f6", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#ef4444", "#64748b"];
+const COMPANY_COLORS: Record<string, string> = {
+  "NCR":             "#009999",
+  "SANTANDER":       "#FF3300",
+  "IBM":             "#B2B2B2",
+  "FALABELLA":       "#008000",
+  "ITAU":            "#EC7000",  // mantiene color naranja original
+  "ITAÚ":            "#EC7000",
+  "BCI":             "#00FFFF",
+  "SIN ESPECIFICAR": "#DB25C1",
+  "SETRAC":          "#CCEB15",
+};
+
+const FALLBACK_COLORS = ["#72b01d", "#3b82f6", "#f59e0b", "#8b5cf6", "#14b8a6", "#64748b"];
+
+function getCompanyColor(name: string, index: number): string {
+  const key = name.trim().toUpperCase();
+  for (const [k, v] of Object.entries(COMPANY_COLORS)) {
+    if (key.includes(k) || k.includes(key)) return v;
+  }
+  return FALLBACK_COLORS[index % FALLBACK_COLORS.length];
+}
+
+// Keep COLORS alias for backward compat
+const COLORS = FALLBACK_COLORS;
+
 
 export default function DashboardPage() {
   const [data, setData] = useState<any[]>([]);
@@ -207,7 +231,7 @@ export default function DashboardPage() {
                   />
                   <Bar dataKey="value" name="Servicios" radius={[4, 4, 0, 0]}>
                     {bancoCounts.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={getCompanyColor(entry.name, index)} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -234,7 +258,7 @@ export default function DashboardPage() {
                     dataKey="value"
                   >
                     {bancoCounts.slice(0, 5).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={getCompanyColor(entry.name, index)} />
                     ))}
                   </Pie>
                   <Tooltip 
@@ -247,7 +271,7 @@ export default function DashboardPage() {
                 {topBancos.map((b, i) => (
                   <div key={b.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ background: COLORS[i % COLORS.length] }}></div>
+                      <div className="w-3 h-3 rounded-full" style={{ background: getCompanyColor(b.name, i) }}></div>
                       <span className="text-xs text-slate-300 font-medium truncate max-w-[120px]">{b.name}</span>
                     </div>
                     <span className="text-xs font-bold text-slate-400">{b.value}</span>
