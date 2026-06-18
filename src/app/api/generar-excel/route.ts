@@ -25,9 +25,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Load template
-    const templatePath = path.join(process.cwd(), 'COTIZACION.xls');
+    let templatePath = path.join(process.cwd(), 'public', 'COTIZACION.xls');
     if (!fs.existsSync(templatePath)) {
-      return new Response(JSON.stringify({ error: 'Plantilla COTIZACION.xls no encontrada' }), {
+      templatePath = path.join(process.cwd(), 'COTIZACION.xls');
+    }
+    
+    if (!fs.existsSync(templatePath)) {
+      return new Response(JSON.stringify({ error: `Plantilla COTIZACION.xls no encontrada (rutas buscadas: ${path.join(process.cwd(), 'public', 'COTIZACION.xls')} y ${path.join(process.cwd(), 'COTIZACION.xls')})` }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
