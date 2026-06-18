@@ -1,0 +1,694 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import {
+  Plus, Trash2, Save, FileText, Printer, Eye, X,
+  Building2, User, Mail, Hash, Calendar, Package,
+  CheckCircle2, ChevronDown, Search, Filter, Download, FileSpreadsheet
+} from "lucide-react";
+import * as XLSX from "xlsx";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface LineItem {
+  id: string;
+  descripcion: string;
+  cantidad: number;
+  valorUnit: number;
+}
+
+interface Cotizacion {
+  id: string;
+  numero: string;
+  fecha: string;
+  cliente: string;
+  rut: string;
+  atencion: string;
+  emailContacto: string;
+  descripcionServicio: string;
+  direccion: string;
+  items: LineItem[];
+  validacion: string;
+  plazoEntrega: string;
+  estado: 'borrador' | 'enviada' | 'aprobada' | 'rechazada';
+  createdAt: string;
+}
+
+const EMPTY_ITEM = (): LineItem => ({
+  id: `item-${Date.now()}-${Math.random()}`,
+  descripcion: "",
+  cantidad: 1,
+  valorUnit: 0,
+});
+
+const EMPTY_COT = (): Omit<Cotizacion, 'id' | 'createdAt'> => ({
+  numero: "",
+  fecha: new Date().toLocaleDateString('es-CL'),
+  cliente: "",
+  rut: "",
+  atencion: "",
+  emailContacto: "",
+  descripcionServicio: "",
+  direccion: "",
+  items: [EMPTY_ITEM()],
+  validacion: "5 días",
+  plazoEntrega: "3 días",
+  estado: 'borrador',
+});
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const IVA_RATE = 0.19;
+
+function calcTotals(items: LineItem[]) {
+  const neto = items.reduce((s, i) => s + i.cantidad * i.valorUnit, 0);
+  const iva = Math.round(neto * IVA_RATE);
+  return { neto, iva, bruto: neto + iva };
+}
+
+function fmtCLP(n: number) {
+  return "$ " + n.toLocaleString("es-CL");
+}
+
+const downloadExcel = async (cot: Cotizacion) => {
+  try {
+    const response = await fetch('/api/generar-excel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cotizacion: cot }),
+    });
+    if (!response.ok) {
+      throw new Error('Error al generar Excel');
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Cotizacion_${cot.numero || cot.id}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    alert('Hubo un error al generar el archivo Excel');
+  }
+};
+
+const ESTADO_STYLE: Record<string, { bg: string; color: string; label: string }> = {
+  borrador:  { bg: "rgba(100,116,139,0.15)", color: "#94a3b8", label: "Borrador" },
+  enviada:   { bg: "rgba(245,158,11,0.15)",  color: "#f59e0b", label: "Enviada" },
+  aprobada:  { bg: "rgba(114,176,29,0.15)",  color: "#72b01d", label: "Aprobada" },
+  rechazada: { bg: "rgba(239,68,68,0.15)",   color: "#ef4444", label: "Rechazada" },
+};
+
+// ─── Print Modal ──────────────────────────────────────────────────────────────
+function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
+  const { neto, iva, bruto } = calcTotals(cot.items);
+
+  const handleDownloadExcel = () => {
+    downloadExcel(cot);
+  };
+
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById("print-area");
+    if (!element) return;
+    const html2pdf = (await import("html2pdf.js")).default;
+    const opt = {
+      margin:       10,
+      filename:     `Cotizacion_${cot.numero || cot.id}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
+  };
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)",
+      display: "flex", alignItems: "flex-start", justifyContent: "center",
+      padding: "24px 16px", overflowY: "auto",
+    }}>
+      <div style={{ width: "100%", maxWidth: 800 }}>
+        {/* Toolbar */}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 12 }}>
+          <button
+            onClick={handleDownloadExcel}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "#107c41", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+          >
+            <FileSpreadsheet size={14} /> Excel
+          </button>
+          <button
+            onClick={handleDownloadPDF}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "#ef4444", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+          >
+            <Download size={14} /> PDF
+          </button>
+          <button
+            onClick={() => window.print()}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "linear-gradient(135deg,#72b01d,#578814)", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+          >
+            <Printer size={14} /> Imprimir
+          </button>
+          <button
+            onClick={onClose}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "rgba(255,255,255,0.08)", color: "#94a3b8", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+          >
+            <X size={14} /> Cerrar
+          </button>
+        </div>
+
+        {/* Document */}
+        <div id="print-area" style={{ background: "white", color: "#1e293b", borderRadius: 12, padding: "40px 48px", fontFamily: "Arial, sans-serif", fontSize: 12 }}>
+          {/* Header empresa */}
+          <div style={{ textAlign: "center", marginBottom: 24, borderBottom: "2px solid #1e3a5f", paddingBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#1e3a5f", lineHeight: 1.5 }}>
+              SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA.
+            </div>
+            <div style={{ fontSize: 11, marginTop: 4, color: "#475569" }}>
+              Reparación de maquinarias &nbsp;|&nbsp; RUT: 76.049.304-K
+            </div>
+            <div style={{ fontSize: 11, color: "#475569" }}>
+              Catedral #5880, Lo Prado - Santiago &nbsp;|&nbsp; Fono: 7744476 &nbsp;|&nbsp; Celular: 9 44771425
+            </div>
+          </div>
+
+          {/* Título */}
+          <div style={{ textAlign: "center", fontSize: 16, fontWeight: 800, letterSpacing: 3, color: "#1e3a5f", marginBottom: 20 }}>
+            C O T I Z A C I Ó N
+          </div>
+
+          {/* Meta */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
+            <div><strong>Fecha</strong> {cot.fecha}</div>
+            <div><strong>N°</strong> {cot.numero}</div>
+            <div><strong>Señor (es)</strong> {cot.cliente}</div>
+            <div><strong>RUT</strong> {cot.rut}</div>
+            <div><strong>Atencion</strong> {cot.atencion}</div>
+            <div><strong>Email contacto</strong> {cot.emailContacto}</div>
+          </div>
+
+          {/* Descripción del servicio */}
+          {cot.descripcionServicio && (
+            <div style={{ marginBottom: 16, padding: "10px 14px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+              <strong>Descripción del servicio:</strong><br />
+              <span style={{ whiteSpace: "pre-wrap" }}>{cot.descripcionServicio}</span>
+            </div>
+          )}
+
+          {/* Items table */}
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
+            <thead>
+              <tr style={{ background: "#1e3a5f", color: "white" }}>
+                <th style={{ padding: "8px 10px", textAlign: "left", width: 40 }}>N°</th>
+                <th style={{ padding: "8px 10px", textAlign: "left" }}>DESCRIPCION</th>
+                <th style={{ padding: "8px 10px", textAlign: "center", width: 70 }}>CANT.</th>
+                <th style={{ padding: "8px 10px", textAlign: "right", width: 120 }}>VALOR UNIT</th>
+                <th style={{ padding: "8px 10px", textAlign: "right", width: 120 }}>VALOR TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cot.items.map((item, i) => (
+                <tr key={item.id} style={{ background: i % 2 === 0 ? "#f8fafc" : "white" }}>
+                  <td style={{ padding: "8px 10px", borderBottom: "1px solid #e2e8f0" }}>{i + 1}</td>
+                  <td style={{ padding: "8px 10px", borderBottom: "1px solid #e2e8f0" }}>{item.descripcion}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "center", borderBottom: "1px solid #e2e8f0" }}>{item.cantidad}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", borderBottom: "1px solid #e2e8f0" }}>{fmtCLP(item.valorUnit)}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", borderBottom: "1px solid #e2e8f0", fontWeight: 600 }}>{fmtCLP(item.cantidad * item.valorUnit)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Dirección */}
+          {cot.direccion && (
+            <div style={{ marginBottom: 12 }}><strong>DIRECCIÓN:</strong> {cot.direccion}</div>
+          )}
+
+          {/* Totales + Notas */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20, marginBottom: 24 }}>
+            <div style={{ fontSize: 11, color: "#475569" }}>
+              <div><strong>NOTA:</strong></div>
+              <div>Validacion de cotizacion : {cot.validacion}</div>
+              <div>Plazo de entrega    : {cot.plazoEntrega}</div>
+            </div>
+            <table style={{ borderCollapse: "collapse" }}>
+              <tbody>
+                <tr>
+                  <td style={{ padding: "4px 16px 4px 0", fontWeight: 600 }}>NETO</td>
+                  <td style={{ padding: "4px 0", textAlign: "right", minWidth: 130 }}>{fmtCLP(neto)}</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: "4px 16px 4px 0", fontWeight: 600 }}>IVA</td>
+                  <td style={{ padding: "4px 0", textAlign: "right" }}>{fmtCLP(iva)}</td>
+                </tr>
+                <tr style={{ background: "#1e3a5f", color: "white" }}>
+                  <td style={{ padding: "6px 16px 6px 8px", fontWeight: 700 }}>BRUTO</td>
+                  <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 700 }}>{fmtCLP(bruto)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Firma */}
+          <div style={{ textAlign: "center", marginTop: 32, paddingTop: 16, borderTop: "1px solid #e2e8f0" }}>
+            <div style={{ marginBottom: 24, fontStyle: "italic", color: "#475569" }}>Atentamente, Jorge Urra U.</div>
+            <div style={{ fontSize: 11, color: "#64748b" }}>
+              Catedral #5880, Lo Prado Santiago &nbsp;|&nbsp; Fono 944771425
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Form Modal ───────────────────────────────────────────────────────────────
+function CotizacionForm({
+  initial,
+  onClose,
+  onSave,
+}: {
+  initial?: Cotizacion | null;
+  onClose: () => void;
+  onSave: (c: Cotizacion) => Promise<void>;
+}) {
+  const [form, setForm] = useState(initial ?? { ...EMPTY_COT(), id: `cot-${Date.now()}`, createdAt: new Date().toISOString() } as Cotizacion);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const set = (field: keyof Cotizacion) => (val: any) => setForm(f => ({ ...f, [field]: val }));
+
+  const setItem = (id: string, field: keyof LineItem, val: any) =>
+    setForm(f => ({ ...f, items: f.items.map(i => i.id === id ? { ...i, [field]: val } : i) }));
+
+  const addItem = () => setForm(f => ({ ...f, items: [...f.items, EMPTY_ITEM()] }));
+  const removeItem = (id: string) => setForm(f => ({ ...f, items: f.items.filter(i => i.id !== id) }));
+
+  const { neto, iva, bruto } = calcTotals(form.items);
+
+  const handleSave = async () => {
+    if (!form.cliente) { setError("El campo Cliente es obligatorio."); return; }
+    setSaving(true); setError("");
+    try { await onSave(form); } catch (e: any) { setError(e?.message || "Error al guardar"); setSaving(false); }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "8px 12px",
+    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)",
+    borderRadius: 8, color: "#f1f5f9", fontSize: 13, fontFamily: "inherit",
+    outline: "none", boxSizing: "border-box",
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)", overflowY: "auto", padding: "24px 16px" }}>
+      <div style={{ maxWidth: 780, margin: "0 auto", background: "#1b1e24", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
+        {/* Header */}
+        <div style={{ padding: "20px 28px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 16 }}>
+              {initial ? "Editar Cotización" : "Nueva Cotización"}
+            </div>
+            <div style={{ color: "#64748b", fontSize: 12, marginTop: 2 }}>ATM's Servicios — RUT: 76.049.304-K</div>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer" }}><X size={20} /></button>
+        </div>
+
+        <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* Meta row */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+            <div>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>FECHA</label>
+              <input style={inputStyle} value={form.fecha} onChange={e => set("fecha")(e.target.value)} placeholder="DD/MM/AAAA" />
+            </div>
+            <div>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>N° COTIZACIÓN</label>
+              <input style={inputStyle} value={form.numero} onChange={e => set("numero")(e.target.value)} placeholder="Ej: 024-2026" />
+            </div>
+            <div>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>ESTADO</label>
+              <select style={{ ...inputStyle, cursor: "pointer" }} value={form.estado} onChange={e => set("estado")(e.target.value)}>
+                <option value="borrador" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Borrador</option>
+                <option value="enviada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Enviada</option>
+                <option value="aprobada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Aprobada</option>
+                <option value="rechazada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Rechazada</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Cliente */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>SEÑOR(ES) / CLIENTE *</label>
+              <input style={inputStyle} value={form.cliente} onChange={e => set("cliente")(e.target.value)} placeholder="Nombre empresa o persona" />
+            </div>
+            <div>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>RUT</label>
+              <input style={inputStyle} value={form.rut} onChange={e => set("rut")(e.target.value)} placeholder="XX.XXX.XXX-X" />
+            </div>
+            <div>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>ATENCIÓN</label>
+              <input style={inputStyle} value={form.atencion} onChange={e => set("atencion")(e.target.value)} placeholder="Nombre contacto" />
+            </div>
+            <div>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>EMAIL CONTACTO</label>
+              <input style={inputStyle} value={form.emailContacto} onChange={e => set("emailContacto")(e.target.value)} placeholder="email@empresa.cl" />
+            </div>
+          </div>
+
+          {/* Descripción servicio */}
+          <div>
+            <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>DESCRIPCIÓN DEL SERVICIO</label>
+            <textarea
+              style={{ ...inputStyle, minHeight: 72, resize: "vertical" }}
+              value={form.descripcionServicio}
+              onChange={e => set("descripcionServicio")(e.target.value)}
+              placeholder="Ej: VISITA ELÉCTRICA ATM 6423 — TIENDA PRONTO COPEC..."
+            />
+          </div>
+
+          {/* Items */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600 }}>ÍTEMS</label>
+              <button onClick={addItem} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px", background: "rgba(114,176,29,0.12)", border: "1px solid rgba(114,176,29,0.25)", color: "#72b01d", borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                <Plus size={12} /> Agregar ítem
+              </button>
+            </div>
+
+            {/* Header */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 70px 130px 130px 32px", gap: 6, marginBottom: 6 }}>
+              {["DESCRIPCIÓN", "CANT.", "VALOR UNIT.", "TOTAL", ""].map(h => (
+                <div key={h} style={{ color: "#475569", fontSize: 10, fontWeight: 700 }}>{h}</div>
+              ))}
+            </div>
+
+            {form.items.map(item => {
+              const total = item.cantidad * item.valorUnit;
+              return (
+                <div key={item.id} style={{ display: "grid", gridTemplateColumns: "1fr 70px 130px 130px 32px", gap: 6, marginBottom: 6, alignItems: "center" }}>
+                  <input style={inputStyle} value={item.descripcion} onChange={e => setItem(item.id, "descripcion", e.target.value)} placeholder="Descripción del ítem" />
+                  <input style={{ ...inputStyle, textAlign: "center" }} type="number" min={1} value={item.cantidad} onChange={e => setItem(item.id, "cantidad", Number(e.target.value))} />
+                  <input style={{ ...inputStyle, textAlign: "right" }} type="number" min={0} value={item.valorUnit} onChange={e => setItem(item.id, "valorUnit", Number(e.target.value))} placeholder="0" />
+                  <div style={{ ...inputStyle, textAlign: "right", color: "#72b01d", fontWeight: 700, pointerEvents: "none" }}>{fmtCLP(total)}</div>
+                  <button onClick={() => removeItem(item.id)} style={{ background: "none", border: "none", color: "#475569", cursor: "pointer", padding: 4 }}>
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Dirección */}
+          <div>
+            <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>DIRECCIÓN</label>
+            <input style={inputStyle} value={form.direccion} onChange={e => set("direccion")(e.target.value)} placeholder="Dirección del servicio" />
+          </div>
+
+          {/* Notas + Totales */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div>
+                <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>VALIDACIÓN COTIZACIÓN</label>
+                <input style={inputStyle} value={form.validacion} onChange={e => set("validacion")(e.target.value)} placeholder="5 días" />
+              </div>
+              <div>
+                <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>PLAZO DE ENTREGA</label>
+                <input style={inputStyle} value={form.plazoEntrega} onChange={e => set("plazoEntrega")(e.target.value)} placeholder="3 días" />
+              </div>
+            </div>
+
+            {/* Totals */}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "14px 18px", minWidth: 200 }}>
+              {[
+                { label: "NETO", value: fmtCLP(neto) },
+                { label: "IVA (19%)", value: fmtCLP(iva) },
+              ].map(r => (
+                <div key={r.label} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 13, color: "#94a3b8" }}>
+                  <span>{r.label}</span><span style={{ fontWeight: 600 }}>{r.value}</span>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 800, color: "#72b01d", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 10, marginTop: 4 }}>
+                <span>BRUTO</span><span>{fmtCLP(bruto)}</span>
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: "10px 14px", color: "#f87171", fontSize: 13 }}>
+              ⚠️ {error}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 4 }}>
+            <button onClick={onClose} disabled={saving} style={{ padding: "9px 20px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#94a3b8", borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+              Cancelar
+            </button>
+            <button onClick={handleSave} disabled={saving} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 22px", background: saving ? "#578814" : "linear-gradient(135deg,#72b01d,#578814)", border: "none", color: "white", borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: saving ? 0.8 : 1 }}>
+              {saving ? (
+                <><span style={{ display: "inline-block", width: 13, height: 13, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Guardando...</>
+              ) : (
+                <><Save size={14} />Guardar Cotización</>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ─────────────────────────────────────────────────────────────────
+export default function CotizacionesPage() {
+  const [cotizaciones, setCotizaciones] = useState<Cotizacion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Cotizacion | null>(null);
+  const [previewing, setPreviewing] = useState<Cotizacion | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Cotizacion | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filterEstado, setFilterEstado] = useState("todos");
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("cotizaciones_santander")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (data) setCotizaciones(data.map(r => ({ ...r.data, id: r.id, createdAt: r.created_at })));
+    setLoading(false);
+  }
+
+  const handleDownloadExcel = (cot: Cotizacion) => {
+    downloadExcel(cot);
+  };
+
+  async function handleSave(cot: Cotizacion) {
+    const exists = cotizaciones.some(c => c.id === cot.id);
+    const { error } = await supabase
+      .from("cotizaciones_santander")
+      .upsert({ id: cot.id, data: cot });
+    if (error) throw new Error(error.message);
+    setCotizaciones(prev =>
+      exists ? prev.map(c => c.id === cot.id ? cot : c) : [cot, ...prev]
+    );
+    setShowForm(false);
+    setEditing(null);
+  }
+
+  async function handleDelete() {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    const { error } = await supabase.from("cotizaciones_santander").delete().eq("id", confirmDelete.id);
+    if (!error) {
+      setCotizaciones(prev => prev.filter(c => c.id !== confirmDelete.id));
+      setConfirmDelete(null);
+    }
+    setDeleting(false);
+  }
+
+  const filtered = cotizaciones.filter(c => {
+    const q = search.toLowerCase();
+    const matchSearch = !q || c.numero.toLowerCase().includes(q) || c.cliente.toLowerCase().includes(q) || c.descripcionServicio.toLowerCase().includes(q);
+    const matchEstado = filterEstado === "todos" || c.estado === filterEstado;
+    return matchSearch && matchEstado;
+  });
+
+  // Stats
+  const stats = {
+    total: cotizaciones.length,
+    aprobadas: cotizaciones.filter(c => c.estado === 'aprobada').length,
+    enviadas: cotizaciones.filter(c => c.estado === 'enviada').length,
+    monto: cotizaciones.filter(c => c.estado === 'aprobada').reduce((s, c) => s + calcTotals(c.items).bruto, 0),
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="section-title">Cotizaciones Santander</h2>
+          <p className="section-subtitle">Gestión de presupuestos y propuestas comerciales Santander</p>
+        </div>
+        <button
+          onClick={() => { setEditing(null); setShowForm(true); }}
+          style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 20px", background: "linear-gradient(135deg,#72b01d,#578814)", border: "none", color: "white", borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 4px 16px rgba(114,176,29,0.35)" }}
+        >
+          <Plus size={16} /> Nueva Cotización
+        </button>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total cotizaciones", value: stats.total, color: "#72b01d", icon: FileText },
+          { label: "Enviadas", value: stats.enviadas, color: "#f59e0b", icon: Mail },
+          { label: "Aprobadas", value: stats.aprobadas, color: "#10b981", icon: CheckCircle2 },
+          { label: "Monto aprobado", value: fmtCLP(stats.monto), color: "#3b82f6", icon: Package },
+        ].map(k => {
+          const Icon = k.icon;
+          return (
+            <div key={k.label} className="stat-card">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${k.color}18` }}>
+                  <Icon size={20} style={{ color: k.color }} />
+                </div>
+              </div>
+              <div className="text-2xl font-bold mb-1" style={{ color: "#f1f5f9" }}>{k.value}</div>
+              <div className="text-sm" style={{ color: "#64748b" }}>{k.label}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Filters */}
+      <div className="glass-card p-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#475569" }} />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar por N°, cliente, descripción..."
+            style={{ width: "100%", padding: "8px 12px 8px 34px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 8, color: "#f1f5f9", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+          />
+        </div>
+        <select
+          value={filterEstado}
+          onChange={e => setFilterEstado(e.target.value)}
+          style={{ padding: "8px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 8, color: "#f1f5f9", fontSize: 13, fontFamily: "inherit", cursor: "pointer", minWidth: 150 }}
+        >
+          <option value="todos" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Todos los estados</option>
+          <option value="borrador" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Borrador</option>
+          <option value="enviada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Enviada</option>
+          <option value="aprobada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Aprobada</option>
+          <option value="rechazada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Rechazada</option>
+        </select>
+      </div>
+
+      {/* List */}
+      {loading ? (
+        <div className="glass-card p-12 text-center" style={{ color: "#64748b" }}>Cargando cotizaciones...</div>
+      ) : filtered.length === 0 ? (
+        <div className="glass-card p-12 text-center">
+          <FileText size={40} style={{ color: "#334155", margin: "0 auto 12px" }} />
+          <div style={{ color: "#94a3b8", fontWeight: 600 }}>No hay cotizaciones</div>
+          <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>Crea tu primera cotización con el botón de arriba</div>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(c => {
+            const { bruto } = calcTotals(c.items);
+            const est = ESTADO_STYLE[c.estado];
+            return (
+              <div key={c.id} className="glass-card p-5">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1">
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(114,176,29,0.08)", border: "1px solid rgba(114,176,29,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <FileText size={20} style={{ color: "#72b01d" }} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <span style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 14 }}>N° {c.numero || "Sin número"}</span>
+                        <span style={{ fontSize: 11, padding: "2px 9px", borderRadius: 20, background: est.bg, color: est.color, fontWeight: 700 }}>{est.label}</span>
+                      </div>
+                      <div style={{ color: "#64748b", fontSize: 12, marginBottom: 4 }}>
+                        <Building2 size={11} style={{ display: "inline", marginRight: 4 }} />{c.cliente || "Sin cliente"}
+                        {c.atencion && <> · <User size={11} style={{ display: "inline", marginRight: 4 }} />{c.atencion}</>}
+                      </div>
+                      {c.descripcionServicio && (
+                        <div style={{ color: "#94a3b8", fontSize: 12, maxWidth: 500 }}>{c.descripcionServicio.slice(0, 120)}{c.descripcionServicio.length > 120 ? "…" : ""}</div>
+                      )}
+                      <div className="flex flex-wrap gap-4 mt-2">
+                        <span style={{ color: "#475569", fontSize: 11 }}><Calendar size={10} style={{ display: "inline", marginRight: 3 }} />{c.fecha}</span>
+                        <span style={{ color: "#72b01d", fontSize: 12, fontWeight: 700 }}>{fmtCLP(bruto)}</span>
+                        <span style={{ color: "#475569", fontSize: 11 }}>{c.items.length} ítem{c.items.length !== 1 ? "s" : ""}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-row md:flex-col gap-2 flex-shrink-0">
+                    <button onClick={() => setPreviewing(c)} className="btn-secondary text-xs py-1.5 px-3"><Eye size={12} /> Ver / Imprimir</button>
+                    <button onClick={() => { setEditing(c); setShowForm(true); }} className="btn-secondary text-xs py-1.5 px-3"><FileText size={12} /> Editar</button>
+                    <button onClick={() => handleDownloadExcel(c)} className="btn-secondary text-xs py-1.5 px-3" style={{ color: "#93c947" }}><FileSpreadsheet size={12} /> Excel</button>
+                    <button
+                      onClick={() => setConfirmDelete(c)}
+                      className="text-xs py-1.5 px-3"
+                      style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", color: "#f87171", borderRadius: 8, cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}
+                    >
+                      <Trash2 size={12} /> Borrar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Modals */}
+      {showForm && (
+        <CotizacionForm
+          initial={editing}
+          onClose={() => { setShowForm(false); setEditing(null); }}
+          onSave={handleSave}
+        />
+      )}
+
+      {previewing && <PrintView cot={previewing} onClose={() => setPreviewing(null)} />}
+
+      {confirmDelete && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ background: "#1b1e24", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 16, padding: 32, maxWidth: 400, width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Trash2 size={20} style={{ color: "#f87171" }} />
+              </div>
+              <div>
+                <div style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 16 }}>¿Eliminar cotización?</div>
+                <div style={{ color: "#64748b", fontSize: 13 }}>Esta acción no se puede deshacer</div>
+              </div>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 16px", marginBottom: 24 }}>
+              <div style={{ color: "#f1f5f9", fontWeight: 700, fontSize: 14 }}>N° {confirmDelete.numero}</div>
+              <div style={{ color: "#64748b", fontSize: 12, marginTop: 2 }}>{confirmDelete.cliente}</div>
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button onClick={() => setConfirmDelete(null)} disabled={deleting} style={{ padding: "9px 20px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#94a3b8", borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+              <button onClick={handleDelete} disabled={deleting} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 20px", background: deleting ? "#7f1d1d" : "linear-gradient(135deg,#dc2626,#b91c1c)", border: "none", color: "white", borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: deleting ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: deleting ? 0.8 : 1 }}>
+                {deleting ? "Eliminando..." : <><Trash2 size={14} /> Sí, eliminar</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

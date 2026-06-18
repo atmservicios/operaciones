@@ -31,6 +31,7 @@ const navItems = [
   { href: "/dashboard/map",          icon: MapPin,          label: "Mapa Operacional",    badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/cotizaciones",   icon: FileSpreadsheet,   label: "Cotizaciones",           badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/cotizaciones-santander", icon: FileSpreadsheet, label: "Cotizaciones Santander", badge: null, roles: ['administrador'] },
   { href: "/dashboard/executive",      icon: BarChart3,         label: "Reportes Ejecutivos",    badge: null,  roles: ['administrador'] },
   { href: "/dashboard/audit",          icon: ScrollText,        label: "Auditoría",              badge: null,  roles: ['administrador'] },
   { href: "/dashboard/settings",       icon: Settings,          label: "Configuración",          badge: null,  roles: ['administrador'] },
