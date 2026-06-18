@@ -50,12 +50,12 @@ export async function POST(request: NextRequest) {
       ws[cellRef].v = val;
       if (typeof val === 'number') {
         ws[cellRef].t = 'n';
-        // Clear formulas if any to ensure value is displayed
         delete ws[cellRef].f;
       } else {
         ws[cellRef].t = 's';
         delete ws[cellRef].f;
       }
+      delete ws[cellRef].w; // Force recalculation/rendering of value
     };
 
     const { neto, iva, bruto } = calcTotals(cot.items);
