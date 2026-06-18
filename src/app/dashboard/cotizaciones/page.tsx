@@ -69,6 +69,31 @@ function fmtCLP(n: number) {
   return "$ " + n.toLocaleString("es-CL");
 }
 
+const downloadExcel = async (cot: Cotizacion) => {
+  try {
+    const response = await fetch('/api/generar-excel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cotizacion: cot }),
+    });
+    if (!response.ok) {
+      throw new Error('Error al generar Excel');
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Cotizacion_${cot.numero || cot.id}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    alert('Hubo un error al generar el archivo Excel');
+  }
+};
+
 const ESTADO_STYLE: Record<string, { bg: string; color: string; label: string }> = {
   borrador:  { bg: "rgba(100,116,139,0.15)", color: "#94a3b8", label: "Borrador" },
   enviada:   { bg: "rgba(245,158,11,0.15)",  color: "#f59e0b", label: "Enviada" },
@@ -77,80 +102,11 @@ const ESTADO_STYLE: Record<string, { bg: string; color: string; label: string }>
 };
 
 // ─── Print Modal ──────────────────────────────────────────────────────────────
-// ─── Print Modal ──────────────────────────────────────────────────────────────
 function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
   const { neto, iva, bruto } = calcTotals(cot.items);
 
   const handleDownloadExcel = () => {
-    const data = [
-      [], // Fila 1 vacía
-      ["", "", "", "", "", "                   SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA."], // Fila 2
-      [], // Fila 3
-      [], // Fila 4
-      ["", "", "", "", "", "", "                                       Reparación de maquinarias        RUT: 76.049.304-K      "], // Fila 5
-      ["", "", "", "", "", "", "Catedral #5880      ", "", "", "Lo Prado - Santiago "], // Fila 6
-      ["", "", "", "", "", "", "Fono: 7744476      ", "", "", "Celular: 9 44771425"], // Fila 7
-      ["", "", "", "", "", "", "     C O T I Z A C I O N"], // Fila 8
-      [], // Fila 9
-      [], // Fila 10
-      ["", "Fecha", cot.fecha, "", "", "", "N°", "", cot.numero], // Fila 11
-      [], // Fila 12
-      ["", "Señor (es)", cot.cliente, "", "", "", "    RUT", "", cot.rut || ""], // Fila 13
-      [], // Fila 14
-      ["", "Atencion", cot.atencion, "", "", "", "    Email contacto", "", cot.emailContacto || ""], // Fila 15
-      [], // Fila 16
-      [], // Fila 17
-      [], // Fila 18
-      [], // Fila 19
-      ["", "N°", "DESCRIPCION", "", "", "", "", "CANT.", "VALOR UNIT", "VALOR TOTAL"], // Fila 20
-      ...(cot.descripcionServicio ? [
-        ["", "", cot.descripcionServicio],
-        []
-      ] : []),
-      ...cot.items.map((item, i) => [
-        "",
-        String(i + 1),
-        item.descripcion,
-        "", "", "", "",
-        String(item.cantidad),
-        String(item.valorUnit),
-        String(item.cantidad * item.valorUnit)
-      ]),
-      [], // Fila vacía
-      ["", "DIRECCIÓN: ", cot.direccion || ""],
-      [],
-      ["", "NOTA:", "", "Validacion de cotizacion :", "", cot.validacion, "", "", "NETO", String(neto)],
-      ["", "", "", "Plazo de entrega    :", "", cot.plazoEntrega, "", "", "IVA", String(iva)],
-      ["", "", "", "", "", "", "", "", "BRUTO", String(bruto)],
-      [],
-      [],
-      [],
-      [],
-      [],
-      ["", "", "", "", "", "Atentamente", "Jorge Urra U."],
-      [],
-      [],
-      [],
-      ["", "Catedral #5880, Lo Prado Santiago"],
-      ["", "Fono   944771425"]
-    ];
-
-    const worksheet = XLSX.utils.aoa_to_sheet(data);
-    worksheet["!cols"] = [
-      { wch: 3 },  // A
-      { wch: 15 }, // B
-      { wch: 40 }, // C
-      { wch: 5 },  // D
-      { wch: 5 },  // E
-      { wch: 5 },  // F
-      { wch: 10 }, // G
-      { wch: 8 },  // H
-      { wch: 12 }, // I
-      { wch: 14 }  // J
-    ];
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Cotización");
-    XLSX.writeFile(workbook, `Cotizacion_${cot.numero || cot.id}.xlsx`);
+    downloadExcel(cot);
   };
 
   const handleDownloadPDF = async () => {
@@ -531,50 +487,7 @@ export default function CotizacionesPage() {
   }
 
   const handleDownloadExcel = (cot: Cotizacion) => {
-    const { neto, iva, bruto } = calcTotals(cot.items);
-    const data = [
-      ["SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA."],
-      ["Reparación de maquinarias | RUT: 76.049.304-K"],
-      ["Catedral #5880, Lo Prado - Santiago | Fono: 7744476 | Celular: 9 44771425"],
-      [],
-      ["C O T I Z A C I Ó N"],
-      [],
-      ["Fecha:", cot.fecha, "", "Número:", cot.numero],
-      ["Cliente / Señor(es):", cot.cliente, "", "RUT:", cot.rut],
-      ["Atención:", cot.atencion, "", "Email:", cot.emailContacto],
-      ["Dirección:", cot.direccion],
-      [],
-      ["N°", "DESCRIPCIÓN", "CANTIDAD", "VALOR UNIT.", "VALOR TOTAL"],
-      ...cot.items.map((item, i) => [
-        i + 1,
-        item.descripcion,
-        item.cantidad,
-        item.valorUnit,
-        item.cantidad * item.valorUnit
-      ]),
-      [],
-      ["", "", "", "NETO", neto],
-      ["", "", "", "IVA (19%)", iva],
-      ["", "", "", "BRUTO", bruto],
-      [],
-      ["NOTA:"],
-      [`Validación de cotización: ${cot.validacion}`],
-      [`Plazo de entrega: ${cot.plazoEntrega}`],
-      [],
-      ["Atentamente, Jorge Urra U."]
-    ];
-
-    const worksheet = XLSX.utils.aoa_to_sheet(data);
-    worksheet["!cols"] = [
-      { wch: 10 },
-      { wch: 45 },
-      { wch: 10 },
-      { wch: 15 },
-      { wch: 15 }
-    ];
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, `Cotización ${cot.numero}`);
-    XLSX.writeFile(workbook, `Cotizacion_${cot.numero || cot.id}.xlsx`);
+    downloadExcel(cot);
   };
 
   async function handleSave(cot: Cotizacion) {
