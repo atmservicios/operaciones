@@ -83,7 +83,7 @@ const downloadExcel = async (cot: Cotizacion) => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Cotizacion_${cot.numero || cot.id}.xls`;
+    a.download = `Cotizacion_${cot.numero || cot.id}.xlsx`;
     document.body.appendChild(a);
     a.click();
     a.remove();

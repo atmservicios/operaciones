@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as XLSX from 'xlsx';
+import XlsxPopulate from 'xlsx-populate';
 
 export const runtime = 'nodejs';
 
@@ -25,100 +25,83 @@ export async function POST(request: NextRequest) {
     }
 
     // Load template
-    let templatePath = path.join(process.cwd(), 'public', 'COTIZACION.xls');
+    let templatePath = path.join(process.cwd(), 'public', 'COTIZACION.xlsx');
     if (!fs.existsSync(templatePath)) {
-      templatePath = path.join(process.cwd(), 'COTIZACION.xls');
+      templatePath = path.join(process.cwd(), 'COTIZACION.xlsx');
     }
-    
+
     if (!fs.existsSync(templatePath)) {
-      return new Response(JSON.stringify({ error: `Plantilla COTIZACION.xls no encontrada (rutas buscadas: ${path.join(process.cwd(), 'public', 'COTIZACION.xls')} y ${path.join(process.cwd(), 'COTIZACION.xls')})` }), {
+      return new Response(JSON.stringify({ error: `Plantilla COTIZACION.xlsx no encontrada` }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const fileBuffer = fs.readFileSync(templatePath);
-    const workbook = XLSX.read(fileBuffer, { type: 'buffer', cellStyles: true, cellFormulas: true, cellNF: true });
-    const sheetName = workbook.SheetNames[0];
-    const ws = workbook.Sheets[sheetName];
-
-    // Helper to modify cell value while keeping styles
-    const updateCellValue = (cellRef: string, val: any) => {
-      if (!ws[cellRef]) {
-        ws[cellRef] = {};
-      }
-      ws[cellRef].v = val;
-      if (typeof val === 'number') {
-        ws[cellRef].t = 'n';
-        delete ws[cellRef].f;
-      } else {
-        ws[cellRef].t = 's';
-        delete ws[cellRef].f;
-      }
-      delete ws[cellRef].w; // Force recalculation/rendering of value
-    };
+    // Load workbook using xlsx-populate to preserve styles and images
+    const workbook = await XlsxPopulate.fromFileAsync(templatePath);
+    const sheet = workbook.sheet(0);
 
     const { neto, iva, bruto } = calcTotals(cot.items);
 
     // Fill metadata
-    updateCellValue('C11', cot.fecha || '');
-    updateCellValue('I11', cot.numero || '');
-    updateCellValue('C13', cot.cliente || '');
-    updateCellValue('I13', cot.rut || '');
-    updateCellValue('C15', cot.atencion || '');
-    updateCellValue('I15', cot.emailContacto || '');
+    sheet.cell('C11').value(cot.fecha || '');
+    sheet.cell('I11').value(cot.numero || '');
+    sheet.cell('C13').value(cot.cliente || '');
+    sheet.cell('I13').value(cot.rut || '');
+    sheet.cell('C15').value(cot.atencion || '');
+    sheet.cell('I15').value(cot.emailContacto || '');
 
     // Fill description of service (D21)
     if (cot.descripcionServicio) {
-      // Split description if it contains newlines or write as is
-      updateCellValue('D21', cot.descripcionServicio);
+      sheet.cell('D21').value(cot.descripcionServicio);
     } else {
-      updateCellValue('D21', '');
+      sheet.cell('D21').value('');
     }
-    updateCellValue('D22', '');
-    updateCellValue('D23', '');
+    sheet.cell('D22').value('');
+    sheet.cell('D23').value('');
 
-    // Clear item cells in template from row 25 to 33 (default rows)
+    // Clear item cells in template from row 25 to 33 (default 5 rows)
     for (let i = 0; i < 5; i++) {
       const row = 25 + i * 2;
-      updateCellValue(`B${row}`, '');
-      updateCellValue(`C${row}`, '');
-      updateCellValue(`H${row}`, '');
-      updateCellValue(`I${row}`, '');
-      updateCellValue(`K${row}`, '');
+      sheet.cell(`B${row}`).value('');
+      sheet.cell(`C${row}`).value('');
+      sheet.cell(`H${row}`).value('');
+      sheet.cell(`I${row}`).value('');
+      sheet.cell(`K${row}`).value('');
     }
 
-    // Fill items (odd rows starting from 25)
-    cot.items.forEach((item: any, idx: number) => {
+    // Fill items (odd rows starting from 25, max 5 items to avoid overlapping notes)
+    const itemsToRender = cot.items.slice(0, 5);
+    itemsToRender.forEach((item: any, idx: number) => {
       const row = 25 + idx * 2;
-      updateCellValue(`B${row}`, idx + 1);
-      updateCellValue(`C${row}`, item.descripcion || '');
-      updateCellValue(`H${row}`, Number(item.cantidad || 0));
-      updateCellValue(`I${row}`, Number(item.valorUnit || 0));
-      updateCellValue(`K${row}`, Number(item.cantidad || 0) * Number(item.valorUnit || 0));
+      sheet.cell(`B${row}`).value(idx + 1);
+      sheet.cell(`C${row}`).value(item.descripcion || '');
+      sheet.cell(`H${row}`).value(Number(item.cantidad || 0));
+      sheet.cell(`I${row}`).value(Number(item.valorUnit || 0));
+      sheet.cell(`K${row}`).value(Number(item.cantidad || 0) * Number(item.valorUnit || 0));
     });
 
     // Fill address
-    updateCellValue('C35', `DIRECCIÓN: ${cot.direccion || ''}`);
+    sheet.cell('C35').value(`DIRECCIÓN: ${cot.direccion || ''}`);
 
     // Fill note data
-    updateCellValue('F38', cot.validacion || '5 dias');
-    updateCellValue('F39', cot.plazoEntrega || '3 dias');
+    sheet.cell('F38').value(cot.validacion || '5 dias');
+    sheet.cell('F39').value(cot.plazoEntrega || '3 dias');
 
     // Fill totals
-    updateCellValue('J38', neto);
-    updateCellValue('J39', iva);
-    updateCellValue('J40', bruto);
+    sheet.cell('J38').value(neto);
+    sheet.cell('J39').value(iva);
+    sheet.cell('J40').value(bruto);
 
     // Generate output file buffer
-    const wbuf = XLSX.write(workbook, { bookType: 'xls', type: 'buffer' });
+    const wbuf = await workbook.outputAsync();
 
-    const fileName = `Cotizacion_${cot.numero || cot.id}.xls`;
+    const fileName = `Cotizacion_${cot.numero || cot.id}.xlsx`;
 
     return new Response(new Uint8Array(wbuf), {
       status: 200,
       headers: {
-        'Content-Type': 'application/vnd.ms-excel',
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': `attachment; filename="${fileName}"`,
         'Content-Length': wbuf.byteLength.toString(),
       },
