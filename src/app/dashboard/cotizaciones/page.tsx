@@ -5,8 +5,9 @@ import { supabase } from "@/lib/supabase";
 import {
   Plus, Trash2, Save, FileText, Printer, Eye, X,
   Building2, User, Mail, Hash, Calendar, Package,
-  CheckCircle2, ChevronDown, Search, Filter
+  CheckCircle2, ChevronDown, Search, Filter, Download, FileSpreadsheet
 } from "lucide-react";
+import * as XLSX from "xlsx";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface LineItem {
@@ -79,6 +80,66 @@ const ESTADO_STYLE: Record<string, { bg: string; color: string; label: string }>
 function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
   const { neto, iva, bruto } = calcTotals(cot.items);
 
+  const handleDownloadExcel = () => {
+    const data = [
+      ["SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA."],
+      ["Reparación de maquinarias | RUT: 76.049.304-K"],
+      ["Catedral #5880, Lo Prado - Santiago | Fono: 7744476 | Celular: 9 44771425"],
+      [],
+      ["C O T I Z A C I Ó N"],
+      [],
+      ["Fecha:", cot.fecha, "", "Número:", cot.numero],
+      ["Cliente / Señor(es):", cot.cliente, "", "RUT:", cot.rut],
+      ["Atención:", cot.atencion, "", "Email:", cot.emailContacto],
+      ["Dirección:", cot.direccion],
+      [],
+      ["N°", "DESCRIPCIÓN", "CANTIDAD", "VALOR UNIT.", "VALOR TOTAL"],
+      ...cot.items.map((item, i) => [
+        i + 1,
+        item.descripcion,
+        item.cantidad,
+        item.valorUnit,
+        item.cantidad * item.valorUnit
+      ]),
+      [],
+      ["", "", "", "NETO", neto],
+      ["", "", "", "IVA (19%)", iva],
+      ["", "", "", "BRUTO", bruto],
+      [],
+      ["NOTA:"],
+      [`Validación de cotización: ${cot.validacion}`],
+      [`Plazo de entrega: ${cot.plazoEntrega}`],
+      [],
+      ["Atentamente, Jorge Urra U."]
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    worksheet["!cols"] = [
+      { wch: 10 }, // A
+      { wch: 45 }, // B
+      { wch: 10 }, // C
+      { wch: 15 }, // D
+      { wch: 15 }  // E
+    ];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, `Cotización ${cot.numero}`);
+    XLSX.writeFile(workbook, `Cotizacion_${cot.numero || cot.id}.xlsx`);
+  };
+
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById("print-area");
+    if (!element) return;
+    const html2pdf = (await import("html2pdf.js")).default;
+    const opt = {
+      margin:       10,
+      filename:     `Cotizacion_${cot.numero || cot.id}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
+  };
+
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 9999,
@@ -89,6 +150,18 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
       <div style={{ width: "100%", maxWidth: 800 }}>
         {/* Toolbar */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 12 }}>
+          <button
+            onClick={handleDownloadExcel}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "#107c41", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+          >
+            <FileSpreadsheet size={14} /> Excel
+          </button>
+          <button
+            onClick={handleDownloadPDF}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "#ef4444", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+          >
+            <Download size={14} /> PDF
+          </button>
           <button
             onClick={() => window.print()}
             style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "linear-gradient(135deg,#72b01d,#578814)", color: "white", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
@@ -430,6 +503,53 @@ export default function CotizacionesPage() {
     setLoading(false);
   }
 
+  const handleDownloadExcel = (cot: Cotizacion) => {
+    const { neto, iva, bruto } = calcTotals(cot.items);
+    const data = [
+      ["SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA."],
+      ["Reparación de maquinarias | RUT: 76.049.304-K"],
+      ["Catedral #5880, Lo Prado - Santiago | Fono: 7744476 | Celular: 9 44771425"],
+      [],
+      ["C O T I Z A C I Ó N"],
+      [],
+      ["Fecha:", cot.fecha, "", "Número:", cot.numero],
+      ["Cliente / Señor(es):", cot.cliente, "", "RUT:", cot.rut],
+      ["Atención:", cot.atencion, "", "Email:", cot.emailContacto],
+      ["Dirección:", cot.direccion],
+      [],
+      ["N°", "DESCRIPCIÓN", "CANTIDAD", "VALOR UNIT.", "VALOR TOTAL"],
+      ...cot.items.map((item, i) => [
+        i + 1,
+        item.descripcion,
+        item.cantidad,
+        item.valorUnit,
+        item.cantidad * item.valorUnit
+      ]),
+      [],
+      ["", "", "", "NETO", neto],
+      ["", "", "", "IVA (19%)", iva],
+      ["", "", "", "BRUTO", bruto],
+      [],
+      ["NOTA:"],
+      [`Validación de cotización: ${cot.validacion}`],
+      [`Plazo de entrega: ${cot.plazoEntrega}`],
+      [],
+      ["Atentamente, Jorge Urra U."]
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    worksheet["!cols"] = [
+      { wch: 10 },
+      { wch: 45 },
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 15 }
+    ];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, `Cotización ${cot.numero}`);
+    XLSX.writeFile(workbook, `Cotizacion_${cot.numero || cot.id}.xlsx`);
+  };
+
   async function handleSave(cot: Cotizacion) {
     const exists = cotizaciones.some(c => c.id === cot.id);
     const { error } = await supabase
@@ -575,9 +695,9 @@ export default function CotizacionesPage() {
 
                   {/* Actions */}
                   <div className="flex flex-row md:flex-col gap-2 flex-shrink-0">
-                    <button onClick={() => setPreviewing(c)} className="btn-secondary text-xs py-1.5 px-3"><Eye size={12} /> Ver</button>
+                    <button onClick={() => setPreviewing(c)} className="btn-secondary text-xs py-1.5 px-3"><Eye size={12} /> Ver / Imprimir</button>
                     <button onClick={() => { setEditing(c); setShowForm(true); }} className="btn-secondary text-xs py-1.5 px-3"><FileText size={12} /> Editar</button>
-                    <button onClick={() => setPreviewing(c)} className="btn-secondary text-xs py-1.5 px-3"><Printer size={12} /> Imprimir</button>
+                    <button onClick={() => handleDownloadExcel(c)} className="btn-secondary text-xs py-1.5 px-3" style={{ color: "#93c947" }}><FileSpreadsheet size={12} /> Excel</button>
                     <button
                       onClick={() => setConfirmDelete(c)}
                       className="text-xs py-1.5 px-3"
