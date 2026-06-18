@@ -77,52 +77,79 @@ const ESTADO_STYLE: Record<string, { bg: string; color: string; label: string }>
 };
 
 // ─── Print Modal ──────────────────────────────────────────────────────────────
+// ─── Print Modal ──────────────────────────────────────────────────────────────
 function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
   const { neto, iva, bruto } = calcTotals(cot.items);
 
   const handleDownloadExcel = () => {
     const data = [
-      ["SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA."],
-      ["Reparación de maquinarias | RUT: 76.049.304-K"],
-      ["Catedral #5880, Lo Prado - Santiago | Fono: 7744476 | Celular: 9 44771425"],
-      [],
-      ["C O T I Z A C I Ó N"],
-      [],
-      ["Fecha:", cot.fecha, "", "Número:", cot.numero],
-      ["Cliente / Señor(es):", cot.cliente, "", "RUT:", cot.rut],
-      ["Atención:", cot.atencion, "", "Email:", cot.emailContacto],
-      ["Dirección:", cot.direccion],
-      [],
-      ["N°", "DESCRIPCIÓN", "CANTIDAD", "VALOR UNIT.", "VALOR TOTAL"],
+      [], // Fila 1 vacía
+      ["", "", "", "", "", "                   SOCIEDAD DE MANTENCION INTEGRAL DE ATM´S Y SERVICIOS DE AUTOMATIZACION BANCARIA LTDA."], // Fila 2
+      [], // Fila 3
+      [], // Fila 4
+      ["", "", "", "", "", "", "                                       Reparación de maquinarias        RUT: 76.049.304-K      "], // Fila 5
+      ["", "", "", "", "", "", "Catedral #5880      ", "", "", "Lo Prado - Santiago "], // Fila 6
+      ["", "", "", "", "", "", "Fono: 7744476      ", "", "", "Celular: 9 44771425"], // Fila 7
+      ["", "", "", "", "", "", "     C O T I Z A C I O N"], // Fila 8
+      [], // Fila 9
+      [], // Fila 10
+      ["", "Fecha", cot.fecha, "", "", "", "N°", "", cot.numero], // Fila 11
+      [], // Fila 12
+      ["", "Señor (es)", cot.cliente, "", "", "", "    RUT", "", cot.rut || ""], // Fila 13
+      [], // Fila 14
+      ["", "Atencion", cot.atencion, "", "", "", "    Email contacto", "", cot.emailContacto || ""], // Fila 15
+      [], // Fila 16
+      [], // Fila 17
+      [], // Fila 18
+      [], // Fila 19
+      ["", "N°", "DESCRIPCION", "", "", "", "", "CANT.", "VALOR UNIT", "VALOR TOTAL"], // Fila 20
+      ...(cot.descripcionServicio ? [
+        ["", "", cot.descripcionServicio],
+        []
+      ] : []),
       ...cot.items.map((item, i) => [
-        i + 1,
+        "",
+        String(i + 1),
         item.descripcion,
-        item.cantidad,
-        item.valorUnit,
-        item.cantidad * item.valorUnit
+        "", "", "", "",
+        String(item.cantidad),
+        String(item.valorUnit),
+        String(item.cantidad * item.valorUnit)
       ]),
+      [], // Fila vacía
+      ["", "DIRECCIÓN: ", cot.direccion || ""],
       [],
-      ["", "", "", "NETO", neto],
-      ["", "", "", "IVA (19%)", iva],
-      ["", "", "", "BRUTO", bruto],
+      ["", "NOTA:", "", "Validacion de cotizacion :", "", cot.validacion, "", "", "NETO", String(neto)],
+      ["", "", "", "Plazo de entrega    :", "", cot.plazoEntrega, "", "", "IVA", String(iva)],
+      ["", "", "", "", "", "", "", "", "BRUTO", String(bruto)],
       [],
-      ["NOTA:"],
-      [`Validación de cotización: ${cot.validacion}`],
-      [`Plazo de entrega: ${cot.plazoEntrega}`],
       [],
-      ["Atentamente, Jorge Urra U."]
+      [],
+      [],
+      [],
+      ["", "", "", "", "", "Atentamente", "Jorge Urra U."],
+      [],
+      [],
+      [],
+      ["", "Catedral #5880, Lo Prado Santiago"],
+      ["", "Fono   944771425"]
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(data);
     worksheet["!cols"] = [
-      { wch: 10 }, // A
-      { wch: 45 }, // B
-      { wch: 10 }, // C
-      { wch: 15 }, // D
-      { wch: 15 }  // E
+      { wch: 3 },  // A
+      { wch: 15 }, // B
+      { wch: 40 }, // C
+      { wch: 5 },  // D
+      { wch: 5 },  // E
+      { wch: 5 },  // F
+      { wch: 10 }, // G
+      { wch: 8 },  // H
+      { wch: 12 }, // I
+      { wch: 14 }  // J
     ];
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, `Cotización ${cot.numero}`);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Cotización");
     XLSX.writeFile(workbook, `Cotizacion_${cot.numero || cot.id}.xlsx`);
   };
 
@@ -198,12 +225,12 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
 
           {/* Meta */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
-            <div><strong>Fecha:</strong> {cot.fecha}</div>
-            <div><strong>N°:</strong> {cot.numero}</div>
-            <div><strong>Señor (es):</strong> {cot.cliente}</div>
-            <div><strong>RUT:</strong> {cot.rut}</div>
-            <div><strong>Atención:</strong> {cot.atencion}</div>
-            <div><strong>Email contacto:</strong> {cot.emailContacto}</div>
+            <div><strong>Fecha</strong> {cot.fecha}</div>
+            <div><strong>N°</strong> {cot.numero}</div>
+            <div><strong>Señor (es)</strong> {cot.cliente}</div>
+            <div><strong>RUT</strong> {cot.rut}</div>
+            <div><strong>Atencion</strong> {cot.atencion}</div>
+            <div><strong>Email contacto</strong> {cot.emailContacto}</div>
           </div>
 
           {/* Descripción del servicio */}
@@ -219,9 +246,9 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
             <thead>
               <tr style={{ background: "#1e3a5f", color: "white" }}>
                 <th style={{ padding: "8px 10px", textAlign: "left", width: 40 }}>N°</th>
-                <th style={{ padding: "8px 10px", textAlign: "left" }}>DESCRIPCIÓN</th>
+                <th style={{ padding: "8px 10px", textAlign: "left" }}>DESCRIPCION</th>
                 <th style={{ padding: "8px 10px", textAlign: "center", width: 70 }}>CANT.</th>
-                <th style={{ padding: "8px 10px", textAlign: "right", width: 120 }}>VALOR UNIT.</th>
+                <th style={{ padding: "8px 10px", textAlign: "right", width: 120 }}>VALOR UNIT</th>
                 <th style={{ padding: "8px 10px", textAlign: "right", width: 120 }}>VALOR TOTAL</th>
               </tr>
             </thead>
@@ -247,8 +274,8 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20, marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "#475569" }}>
               <div><strong>NOTA:</strong></div>
-              <div>Validación de cotización: {cot.validacion}</div>
-              <div>Plazo de entrega: {cot.plazoEntrega}</div>
+              <div>Validacion de cotizacion : {cot.validacion}</div>
+              <div>Plazo de entrega    : {cot.plazoEntrega}</div>
             </div>
             <table style={{ borderCollapse: "collapse" }}>
               <tbody>
@@ -257,7 +284,7 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
                   <td style={{ padding: "4px 0", textAlign: "right", minWidth: 130 }}>{fmtCLP(neto)}</td>
                 </tr>
                 <tr>
-                  <td style={{ padding: "4px 16px 4px 0", fontWeight: 600 }}>IVA (19%)</td>
+                  <td style={{ padding: "4px 16px 4px 0", fontWeight: 600 }}>IVA</td>
                   <td style={{ padding: "4px 0", textAlign: "right" }}>{fmtCLP(iva)}</td>
                 </tr>
                 <tr style={{ background: "#1e3a5f", color: "white" }}>
