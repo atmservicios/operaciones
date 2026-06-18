@@ -30,9 +30,8 @@ const navItems = [
   { href: "/dashboard/orders",       icon: ClipboardList,   label: "Órdenes de Trabajo",  badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/map",          icon: MapPin,          label: "Mapa Operacional",    badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor'] },
-  { href: "/dashboard/documents",    icon: FolderOpen,      label: "Documentos",          badge: null,  roles: ['administrador','supervisor'] },
-  { href: "/dashboard/executive",      icon: BarChart3,         label: "Reportes Ejecutivos",    badge: null,  roles: ['administrador'] },
   { href: "/dashboard/cotizaciones",   icon: FileSpreadsheet,   label: "Cotizaciones",           badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/executive",      icon: BarChart3,         label: "Reportes Ejecutivos",    badge: null,  roles: ['administrador'] },
   { href: "/dashboard/audit",          icon: ScrollText,        label: "Auditoría",              badge: null,  roles: ['administrador'] },
   { href: "/dashboard/settings",       icon: Settings,          label: "Configuración",          badge: null,  roles: ['administrador'] },
 ];
