@@ -264,6 +264,181 @@ function PrintView({ cot, onClose }: { cot: Cotizacion; onClose: () => void }) {
   );
 }
 
+// ─── Tariffs and ServiceSelector ───────────────────────────────────────────────
+const SANTANDER_TARIFFS = [
+  { "descripcion": "ITEMS TABLA DE ADHESIÓN", "valorUnit": 2026 },
+  { "descripcion": "Visita de eléctrico (Inspectiva u otros tipos)", "valorUnit": 66775 },
+  { "descripcion": "Visita Fallida de eléctrico", "valorUnit": 33822 },
+  { "descripcion": "Tendido cable electrico libre de alógeno( desde el punto electrico del local al mueble de comunicación)", "valorUnit": 27729 },
+  { "descripcion": "Zapatilla electrica magic y/o normal con caja chuqui", "valorUnit": 37924 },
+  { "descripcion": "Tuberia pvc", "valorUnit": 12851 },
+  { "descripcion": "Cableado para la tuberia , cable libre de halógeno", "valorUnit": 20209 },
+  { "descripcion": "Automáticos 16 amperes", "valorUnit": 18095 },
+  { "descripcion": "Cambio de rieles de módulo Bticino", "valorUnit": 15318 },
+  { "descripcion": "Enchufes magic macho 16 amperes", "valorUnit": 46483 },
+  { "descripcion": "Tendido cables de comunicaciones", "valorUnit": 42282 },
+  { "descripcion": "Cable UTP ( conectores RJ 45)", "valorUnit": 27499 },
+  { "descripcion": "Reposición de cableado interno cobre con roseta modular", "valorUnit": 30310 },
+  { "descripcion": "Reposición cable de enlace", "valorUnit": 37405 },
+  { "descripcion": "Conector RJ45 de cable utp", "valorUnit": 18074 },
+  { "descripcion": "Cable power", "valorUnit": 20112 },
+  { "descripcion": "Tubería Corrugada Antivandálica", "valorUnit": 19558 },
+  { "descripcion": "Barra cooper weld (problema de tierra)", "valorUnit": 256837 },
+  { "descripcion": "Cerradura para mueble de equipo de comunicación", "valorUnit": 52704 },
+  { "descripcion": "Deserraje de Funda ATM", "valorUnit": 537147 },
+  { "descripcion": "Desanclaje de ATM (dispensador y/o depositario)", "valorUnit": 85950 },
+  { "descripcion": "Desanclaje de Funda ATM (dispensador y/o depositario)", "valorUnit": 95077 },
+  { "descripcion": "Anclaje de ATM (dispensador y/o depositario)", "valorUnit": 163825 },
+  { "descripcion": "Anclaje de Funda ATM (dispensador y/o depositario) Desconexion de Alarmas", "valorUnit": 154992 },
+  { "descripcion": "Desconexion de Alarmas", "valorUnit": 82153 },
+  { "descripcion": "Embalaje y desconexión Embozadora", "valorUnit": 84599 },
+  { "descripcion": "Desanclaje Totem (administrador de números)", "valorUnit": 57359 },
+  { "descripcion": "Desanclaje de Teleconsulta", "valorUnit": 72323 },
+  { "descripcion": "Micas ATM", "valorUnit": 15331 },
+  { "descripcion": "Señalética Banco Santander Mica", "valorUnit": 8434 },
+  { "descripcion": "Carteles fuera de Servicio Instalación de Cartel Fuera de Servicio", "valorUnit": 17576 },
+  { "descripcion": "Señalética Presione Boton Aquí (salida /Ingreso Puerta SIte)", "valorUnit": 10047 },
+  { "descripcion": "Paleta Muro", "valorUnit": 49909 },
+  { "descripcion": "Instalación de Paleta Muro Señalética Salida de comprobante (ATM dispensador)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Ingreso de tarjeta ATM (ATM dispensador)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Salida de Dinero ATM (ATM dispensador)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Gráficas decreto 222 ATM (ATM dispensador)", "valorUnit": 8675 },
+  { "descripcion": "Señalética Boveda Reforzada (ATM Depositario)", "valorUnit": 9182 },
+  { "descripcion": "Señalética Ingreso Cheque (15 cheques) (ATM Depositario)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Ingreso de Billetes (ATM Depositario)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Número de ATM (ATM Depositario)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Salida de comprobante (ATM Depositario)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Cheque debidamente endozado (ATM Depositario)", "valorUnit": 7663 },
+  { "descripcion": "Señalética Aquí sólo depósitos de cheque y efectivo/En este cajero no puedes sacar dinero (ATM Depositario)", "valorUnit": 7663 },
+  { "descripcion": "UPS", "valorUnit": 359476 },
+  { "descripcion": "Estabilizador de Voltaje", "valorUnit": 236757 },
+  { "descripcion": "Acondicionador de línea", "valorUnit": 350141 },
+  { "descripcion": "Extractores de Aire", "valorUnit": 73585 },
+  { "descripcion": "Reemplazo de transformador de equipo de comunicación de 24 Volt o 12 volt", "valorUnit": 56985 },
+  { "descripcion": "Servicio de limpieza por activación de gavetas entintadas", "valorUnit": 172453 },
+  { "descripcion": "Servicio de pulido de piso por activación de gavetas entintadas", "valorUnit": 110232 },
+  { "descripcion": "Supervisión de Actividades", "valorUnit": 67502 },
+  { "descripcion": "Servicio de recepción o entrega de llaves del ATM", "valorUnit": 59838 },
+  { "descripcion": "Pintura parcial de funda blindada", "valorUnit": 93748 },
+  { "descripcion": "Pintura total de funda blindada", "valorUnit": 169230 },
+  { "descripcion": "Papeleros", "valorUnit": 45436 },
+  { "descripcion": "Custodia de Router", "valorUnit": 58978 },
+  { "descripcion": "Desrratización", "valorUnit": 198309 },
+  { "descripcion": "Funda para tapar cajero fuera de servicio e instalacion de la misma", "valorUnit": 59770 },
+  { "descripcion": "Pintura muros (m2)", "valorUnit": 7096 },
+  { "descripcion": "Pavimentos (m2)", "valorUnit": 58727 },
+  { "descripcion": "Ceramica (m2)", "valorUnit": 50113 },
+  { "descripcion": "Cielos americano (ML)", "valorUnit": 47587 },
+  { "descripcion": "15 Arica y Parinacota", "valorUnit": 184301 },
+  { "descripcion": "1 Tarapacá", "valorUnit": 184301 },
+  { "descripcion": "2 Antofagasta", "valorUnit": 184301 },
+  { "descripcion": "3 Atacama", "valorUnit": 176037 },
+  { "descripcion": "4 Coquimbo", "valorUnit": 128542 },
+  { "descripcion": "5 Valparaíso", "valorUnit": 40560 },
+  { "descripcion": "6 Rancagua", "valorUnit": 40560 },
+  { "descripcion": "7 Maule", "valorUnit": 88310 },
+  { "descripcion": "16 Ñuble 8 Biobío", "valorUnit": 133500 },
+  { "descripcion": "9 Araucanía", "valorUnit": 133500 },
+  { "descripcion": "10 Los Lagos", "valorUnit": 176037 },
+  { "descripcion": "11 Aysén", "valorUnit": 184301 },
+  { "descripcion": "12 Magallanes", "valorUnit": 184301 },
+  { "descripcion": "14 Los Ríos", "valorUnit": 151145 }
+];
+
+function ServiceSelector({
+  value,
+  onChange,
+  onSelectService,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  onSelectService: (service: { descripcion: string; valorUnit: number }) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState(value);
+
+  useEffect(() => {
+    setSearch(value);
+  }, [value]);
+
+  const filtered = SANTANDER_TARIFFS.filter(s =>
+    s.descripcion.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div style={{ position: "relative", width: "100%" }}>
+      <input
+        style={{
+          width: "100%", padding: "8px 12px",
+          background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)",
+          borderRadius: 8, color: "#f1f5f9", fontSize: 13, fontFamily: "inherit",
+          outline: "none", boxSizing: "border-box",
+        }}
+        value={search}
+        onChange={(e) => {
+          const val = e.target.value;
+          setSearch(val);
+          onChange(val);
+          setIsOpen(true);
+        }}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => {
+          setTimeout(() => setIsOpen(false), 200);
+        }}
+        placeholder="Escriba o seleccione un servicio"
+      />
+      {isOpen && filtered.length > 0 && (
+        <div style={{
+          position: "absolute",
+          top: "100%",
+          left: 0,
+          right: 0,
+          maxHeight: "200px",
+          overflowY: "auto",
+          background: "#1b1e24",
+          border: "1px solid rgba(255,255,255,0.15)",
+          borderRadius: 8,
+          zIndex: 10,
+          marginTop: 4,
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.5)"
+        }}>
+          {filtered.map((opt, i) => (
+            <div
+              key={i}
+              onMouseDown={() => {
+                onSelectService(opt);
+                setSearch(opt.descripcion);
+                setIsOpen(false);
+              }}
+              style={{
+                padding: "8px 12px",
+                cursor: "pointer",
+                borderBottom: "1px solid rgba(255,255,255,0.04)",
+                color: "#cbd5e1",
+                fontSize: 12,
+                textAlign: "left"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(114,176,29,0.15)";
+                e.currentTarget.style.color = "#ffffff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "#cbd5e1";
+              }}
+            >
+              <div style={{ fontWeight: 600 }}>{opt.descripcion}</div>
+              <div style={{ fontSize: 11, color: "#72b01d", marginTop: 2 }}>
+                {"$ " + opt.valorUnit.toLocaleString("es-CL")}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Form Modal ───────────────────────────────────────────────────────────────
 function CotizacionForm({
   initial,
@@ -388,7 +563,14 @@ function CotizacionForm({
               const total = item.cantidad * item.valorUnit;
               return (
                 <div key={item.id} style={{ display: "grid", gridTemplateColumns: "1fr 70px 130px 130px 32px", gap: 6, marginBottom: 6, alignItems: "center" }}>
-                  <input style={inputStyle} value={item.descripcion} onChange={e => setItem(item.id, "descripcion", e.target.value)} placeholder="Descripción del ítem" />
+                  <ServiceSelector
+                    value={item.descripcion}
+                    onChange={(val) => setItem(item.id, "descripcion", val)}
+                    onSelectService={(opt) => {
+                      setItem(item.id, "descripcion", opt.descripcion);
+                      setItem(item.id, "valorUnit", opt.valorUnit);
+                    }}
+                  />
                   <input style={{ ...inputStyle, textAlign: "center" }} type="number" min={1} value={item.cantidad} onChange={e => setItem(item.id, "cantidad", Number(e.target.value))} />
                   <input style={{ ...inputStyle, textAlign: "right" }} type="number" min={0} value={item.valorUnit} onChange={e => setItem(item.id, "valorUnit", Number(e.target.value))} placeholder="0" />
                   <div style={{ ...inputStyle, textAlign: "right", color: "#72b01d", fontWeight: 700, pointerEvents: "none" }}>{fmtCLP(total)}</div>
