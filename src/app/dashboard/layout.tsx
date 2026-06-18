@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import {
   Cpu, LayoutDashboard, ClipboardList, Monitor, Users, MapPin,
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
-  Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck,
+  Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck, FileSpreadsheet,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -31,9 +31,10 @@ const navItems = [
   { href: "/dashboard/map",          icon: MapPin,          label: "Mapa Operacional",    badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/documents",    icon: FolderOpen,      label: "Documentos",          badge: null,  roles: ['administrador','supervisor'] },
-  { href: "/dashboard/executive",    icon: BarChart3,       label: "Reportes Ejecutivos", badge: null,  roles: ['administrador'] },
-  { href: "/dashboard/audit",        icon: ScrollText,      label: "Auditoría",           badge: null,  roles: ['administrador'] },
-  { href: "/dashboard/settings",     icon: Settings,        label: "Configuración",       badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/executive",      icon: BarChart3,         label: "Reportes Ejecutivos",    badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/cotizaciones",   icon: FileSpreadsheet,   label: "Cotizaciones",           badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/audit",          icon: ScrollText,        label: "Auditoría",              badge: null,  roles: ['administrador'] },
+  { href: "/dashboard/settings",       icon: Settings,          label: "Configuración",          badge: null,  roles: ['administrador'] },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
