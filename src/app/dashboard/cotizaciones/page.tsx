@@ -273,10 +273,10 @@ function CotizacionForm({
             <div>
               <label style={{ color: "#64748b", fontSize: 11, fontWeight: 600, display: "block", marginBottom: 4 }}>ESTADO</label>
               <select style={{ ...inputStyle, cursor: "pointer" }} value={form.estado} onChange={e => set("estado")(e.target.value)}>
-                <option value="borrador">Borrador</option>
-                <option value="enviada">Enviada</option>
-                <option value="aprobada">Aprobada</option>
-                <option value="rechazada">Rechazada</option>
+                <option value="borrador" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Borrador</option>
+                <option value="enviada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Enviada</option>
+                <option value="aprobada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Aprobada</option>
+                <option value="rechazada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Rechazada</option>
               </select>
             </div>
           </div>
@@ -524,11 +524,11 @@ export default function CotizacionesPage() {
           onChange={e => setFilterEstado(e.target.value)}
           style={{ padding: "8px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", borderRadius: 8, color: "#f1f5f9", fontSize: 13, fontFamily: "inherit", cursor: "pointer", minWidth: 150 }}
         >
-          <option value="todos">Todos los estados</option>
-          <option value="borrador">Borrador</option>
-          <option value="enviada">Enviada</option>
-          <option value="aprobada">Aprobada</option>
-          <option value="rechazada">Rechazada</option>
+          <option value="todos" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Todos los estados</option>
+          <option value="borrador" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Borrador</option>
+          <option value="enviada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Enviada</option>
+          <option value="aprobada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Aprobada</option>
+          <option value="rechazada" style={{ color: "#000000", backgroundColor: "#ffffff" }}>Rechazada</option>
         </select>
       </div>
 
