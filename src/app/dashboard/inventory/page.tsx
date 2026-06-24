@@ -471,6 +471,17 @@ export default function InventoryPage() {
                   <p className="text-[10px] mt-0.5" style={{ color: log.status === 'success' ? '#93c947' : '#f87171' }}>
                     {log.details}
                   </p>
+                  {log.name === "Desconocido" && (
+                    <button
+                      onClick={() => {
+                        setNewItem(prev => ({ ...prev, serial: log.serial, stock: log.mode === 'entrada' ? 1 : 0 }));
+                        setShowAddModal(true);
+                      }}
+                      className="mt-1 w-full text-center py-1 rounded bg-[#72b01d]/20 hover:bg-[#72b01d]/35 text-[#93c947] border border-[#72b01d]/40 font-bold text-[10px] cursor-pointer transition-all"
+                    >
+                      🆕 Registrar producto nuevo
+                    </button>
+                  )}
                 </div>
               ))
             )}
