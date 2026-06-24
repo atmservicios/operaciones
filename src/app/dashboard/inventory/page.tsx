@@ -698,12 +698,22 @@ export default function InventoryPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Categoría</label>
-                  <select className="ops-select w-full" value={newItem.category} onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}>
-                    <option value="Piezas ATM">Piezas ATM</option>
-                    <option value="Routers">Routers</option>
-                    <option value="Cerraduras">Cerraduras</option>
-                    <option value="Fundas">Fundas</option>
-                  </select>
+                  <input
+                    list="categories-list"
+                    className="ops-input"
+                    placeholder="Escribe o selecciona..."
+                    value={newItem.category}
+                    onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+                  />
+                  <datalist id="categories-list">
+                    {categories.map(cat => (
+                      <option key={cat} value={cat} />
+                    ))}
+                    {!categories.includes("Piezas ATM") && <option value="Piezas ATM" />}
+                    {!categories.includes("Routers") && <option value="Routers" />}
+                    {!categories.includes("Cerraduras") && <option value="Cerraduras" />}
+                    {!categories.includes("Fundas") && <option value="Fundas" />}
+                  </datalist>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>N° Serie / Código *</label>
