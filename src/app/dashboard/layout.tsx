@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-type Rol = 'administrador' | 'supervisor' | 'operaria';
+type Rol = 'administrador' | 'supervisor' | 'operaria' | 'bodega';
 
 interface UserProfile {
   nombre: string;
@@ -29,7 +29,7 @@ const navItems = [
   { href: "/dashboard/certificados", icon: ShieldCheck,     label: "Certificados de Anclaje", badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/orders",       icon: ClipboardList,   label: "Órdenes de Trabajo",  badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/map",          icon: MapPin,          label: "Mapa Operacional",    badge: null,  roles: ['administrador','supervisor'] },
-  { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor'] },
+  { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor','bodega'] },
   { href: "/dashboard/cotizaciones",   icon: FileSpreadsheet,   label: "Cotizaciones",           badge: null,  roles: ['administrador'] },
   { href: "/dashboard/cotizaciones-santander", icon: FileSpreadsheet, label: "Cotizaciones Santander", badge: null, roles: ['administrador'] },
   { href: "/dashboard/executive",      icon: BarChart3,         label: "Reportes Ejecutivos",    badge: null,  roles: ['administrador'] },
@@ -93,6 +93,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
     loadProfile();
   }, [router]);
+
+  useEffect(() => {
+    if (profile) {
+      const matchedItem = navItems.find(item => 
+        pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))
+      );
+      
+      if (matchedItem) {
+        if (!matchedItem.roles.includes(profile.rol)) {
+          if (profile.rol === 'bodega') {
+            router.push("/dashboard/inventory");
+          } else {
+            router.push("/dashboard");
+          }
+        }
+      } else if (pathname === "/dashboard" && profile.rol === 'bodega') {
+        router.push("/dashboard/inventory");
+      }
+    }
+  }, [profile, pathname, router]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -161,6 +181,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const rolLabel = profile?.rol === 'administrador' ? 'Administrador'
     : profile?.rol === 'supervisor' ? 'Supervisor'
+    : profile?.rol === 'bodega' ? 'Bodega'
     : 'Operaria';
 
   return (

@@ -49,6 +49,7 @@ interface ScanHistoryEntry {
 export default function InventoryPage() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string>("");
   
   // Search & Filters
   const [search, setSearch] = useState("");
@@ -80,6 +81,15 @@ export default function InventoryPage() {
 
   useEffect(() => {
     loadInventory();
+    
+    const loadUserRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase.from('profiles').select('rol').eq('id', user.id).single();
+        if (data) setUserRole(data.rol);
+      }
+    };
+    loadUserRole();
   }, []);
 
   async function loadInventory() {
@@ -329,165 +339,169 @@ export default function InventoryPage() {
           <h2 className="section-title">Inventario</h2>
           <p className="section-subtitle">Control de equipos, piezas y repuestos con soporte para pistola escáner</p>
         </div>
-        <button onClick={() => setShowAddModal(true)} className="btn-primary">
-          <Plus size={16} /> Agregar ítem manual
-        </button>
+        {userRole !== "bodega" && (
+          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+            <Plus size={16} /> Agregar ítem manual
+          </button>
+        )}
       </div>
 
       {/* Barcode Scanner Module Card */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 glass-card p-6 border-l-4 border-l-[#72b01d] flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Barcode size={20} style={{ color: "#72b01d" }} />
-              <h3 className="text-md font-bold text-[#f1f5f9]">Módulo Lector de Códigos (Pistoleo)</h3>
-            </div>
-            <p className="text-xs text-[#64748b] mb-4">
-              Asegúrate de que el cursor esté dentro del campo y escanea la serie del producto. La pistola Honeywell enviará el código y confirmará la acción automáticamente.
-            </p>
-
-            {/* Mode selection & barcode scanning form */}
-            <form onSubmit={handleScanSubmit} className="space-y-4">
-              <div className="flex items-center gap-4 bg-black/20 p-1.5 rounded-lg border border-white/5 w-fit">
-                <button
-                  type="button"
-                  onClick={() => setScanMode('salida')}
-                  style={{
-                    padding: "6px 16px",
-                    borderRadius: "6px",
-                    fontSize: "12px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    background: scanMode === 'salida' ? "#ef4444" : "transparent",
-                    color: scanMode === 'salida' ? "white" : "#64748b",
-                    border: "none"
-                  }}
-                >
-                  🔴 Salida / Retiro (-1)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setScanMode('entrada')}
-                  style={{
-                    padding: "6px 16px",
-                    borderRadius: "6px",
-                    fontSize: "12px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    background: scanMode === 'entrada' ? "#72b01d" : "transparent",
-                    color: scanMode === 'entrada' ? "white" : "#64748b",
-                    border: "none"
-                  }}
-                >
-                  🟢 Entrada / Devolución (+1)
-                </button>
+      {userRole !== "bodega" && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 glass-card p-6 border-l-4 border-l-[#72b01d] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Barcode size={20} style={{ color: "#72b01d" }} />
+                <h3 className="text-md font-bold text-[#f1f5f9]">Módulo Lector de Códigos (Pistoleo)</h3>
               </div>
+              <p className="text-xs text-[#64748b] mb-4">
+                Asegúrate de que el cursor esté dentro del campo y escanea la serie del producto. La pistola Honeywell enviará el código y confirmará la acción automáticamente.
+              </p>
 
-              <div className="relative">
-                <input
-                  ref={scannerInputRef}
-                  value={barcode}
-                  onChange={(e) => setBarcode(e.target.value)}
-                  className="ops-input py-3 pl-10 pr-24 font-mono text-sm tracking-wider"
-                  placeholder="Escanea el código de barra o serie..."
-                  style={{ borderColor: scanMode === 'salida' ? 'rgba(239,68,68,0.25)' : 'rgba(114,176,29,0.25)' }}
-                />
-                <Barcode size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#475569]" />
-                <button
-                  type="submit"
-                  className="absolute right-2 top-1.5 bottom-1.5 px-4 rounded-md text-xs font-bold text-white transition-all border-none cursor-pointer"
-                  style={{
-                    background: scanMode === 'salida' ? "linear-gradient(135deg,#ef4444,#b91c1c)" : "linear-gradient(135deg,#72b01d,#578814)"
-                  }}
-                >
-                  Procesar
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <div className="mt-4 pt-3 flex items-center justify-between border-t border-white/5">
-            <span className="text-xs text-[#475569]">Foco automático activo</span>
-            <button
-              onClick={() => scannerInputRef.current?.focus()}
-              className="text-xs text-[#72b01d] bg-none border-none font-semibold cursor-pointer hover:underline"
-            >
-              [ Re-enfocar Escáner ]
-            </button>
-          </div>
-        </div>
-
-        {/* Scan history logs */}
-        <div className="glass-card p-5 flex flex-col justify-between max-h-[260px] overflow-hidden">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-xs font-bold text-[#f1f5f9] tracking-wider uppercase">Historial de escaneo</h4>
-            {scanHistory.length > 0 && (
-              <button
-                onClick={() => setScanHistory([])}
-                className="text-[10px] text-[#64748b] bg-transparent border-none cursor-pointer hover:text-white"
-              >
-                Limpiar
-              </button>
-            )}
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
-            {scanHistory.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center text-[#475569] text-xs py-8">
-                <Barcode size={24} className="mb-2 opacity-30" />
-                Ningún elemento escaneado en esta sesión.
-              </div>
-            ) : (
-              scanHistory.map((log) => (
-                <div
-                  key={log.id}
-                  className="p-2.5 rounded-lg text-xs flex flex-col gap-1"
-                  style={{
-                    background: log.status === 'success' ? 'rgba(114,176,29,0.06)' : 'rgba(239,68,68,0.06)',
-                    border: `1px solid ${log.status === 'success' ? 'rgba(114,176,29,0.15)' : 'rgba(239,68,68,0.15)'}`
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-white truncate max-w-[150px]">{log.name}</span>
-                    <span className="text-[10px] text-[#475569]">{log.timestamp}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[11px] text-[#64748b]">{log.serial}</span>
-                    <span
-                      style={{
-                        padding: "1px 6px",
-                        borderRadius: "4px",
-                        fontSize: "9px",
-                        fontWeight: 800,
-                        color: "white",
-                        background: log.mode === 'salida' ? '#ef4444' : '#72b01d'
-                      }}
-                    >
-                      {log.mode === 'salida' ? 'RETIRADO' : 'INGRESADO'}
-                    </span>
-                  </div>
-                  <p className="text-[10px] mt-0.5" style={{ color: log.status === 'success' ? '#93c947' : '#f87171' }}>
-                    {log.details}
-                  </p>
-                  {log.name === "Desconocido" && (
-                    <button
-                      onClick={() => {
-                        setNewItem(prev => ({ ...prev, serial: log.serial, stock: log.mode === 'entrada' ? 1 : 0 }));
-                        setShowAddModal(true);
-                      }}
-                      className="mt-1 w-full text-center py-1 rounded bg-[#72b01d]/20 hover:bg-[#72b01d]/35 text-[#93c947] border border-[#72b01d]/40 font-bold text-[10px] cursor-pointer transition-all"
-                    >
-                      🆕 Registrar producto nuevo
-                    </button>
-                  )}
+              {/* Mode selection & barcode scanning form */}
+              <form onSubmit={handleScanSubmit} className="space-y-4">
+                <div className="flex items-center gap-4 bg-black/20 p-1.5 rounded-lg border border-white/5 w-fit">
+                  <button
+                    type="button"
+                    onClick={() => setScanMode('salida')}
+                    style={{
+                      padding: "6px 16px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      background: scanMode === 'salida' ? "#ef4444" : "transparent",
+                      color: scanMode === 'salida' ? "white" : "#64748b",
+                      border: "none"
+                    }}
+                  >
+                    🔴 Salida / Retiro (-1)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setScanMode('entrada')}
+                    style={{
+                      padding: "6px 16px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      background: scanMode === 'entrada' ? "#72b01d" : "transparent",
+                      color: scanMode === 'entrada' ? "white" : "#64748b",
+                      border: "none"
+                    }}
+                  >
+                    🟢 Entrada / Devolución (+1)
+                  </button>
                 </div>
-              ))
-            )}
+
+                <div className="relative">
+                  <input
+                    ref={scannerInputRef}
+                    value={barcode}
+                    onChange={(e) => setBarcode(e.target.value)}
+                    className="ops-input py-3 pl-10 pr-24 font-mono text-sm tracking-wider"
+                    placeholder="Escanea el código de barra o serie..."
+                    style={{ borderColor: scanMode === 'salida' ? 'rgba(239,68,68,0.25)' : 'rgba(114,176,29,0.25)' }}
+                  />
+                  <Barcode size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#475569]" />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1.5 bottom-1.5 px-4 rounded-md text-xs font-bold text-white transition-all border-none cursor-pointer"
+                    style={{
+                      background: scanMode === 'salida' ? "linear-gradient(135deg,#ef4444,#b91c1c)" : "linear-gradient(135deg,#72b01d,#578814)"
+                    }}
+                  >
+                    Procesar
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div className="mt-4 pt-3 flex items-center justify-between border-t border-white/5">
+              <span className="text-xs text-[#475569]">Foco automático activo</span>
+              <button
+                onClick={() => scannerInputRef.current?.focus()}
+                className="text-xs text-[#72b01d] bg-none border-none font-semibold cursor-pointer hover:underline"
+              >
+                [ Re-enfocar Escáner ]
+              </button>
+            </div>
+          </div>
+
+          {/* Scan history logs */}
+          <div className="glass-card p-5 flex flex-col justify-between max-h-[260px] overflow-hidden">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-xs font-bold text-[#f1f5f9] tracking-wider uppercase">Historial de escaneo</h4>
+              {scanHistory.length > 0 && (
+                <button
+                  onClick={() => setScanHistory([])}
+                  className="text-[10px] text-[#64748b] bg-transparent border-none cursor-pointer hover:text-white"
+                >
+                  Limpiar
+                </button>
+              )}
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+              {scanHistory.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center text-[#475569] text-xs py-8">
+                  <Barcode size={24} className="mb-2 opacity-30" />
+                  Ningún elemento escaneado en esta sesión.
+                </div>
+              ) : (
+                scanHistory.map((log) => (
+                  <div
+                    key={log.id}
+                    className="p-2.5 rounded-lg text-xs flex flex-col gap-1"
+                    style={{
+                      background: log.status === 'success' ? 'rgba(114,176,29,0.06)' : 'rgba(239,68,68,0.06)',
+                      border: `1px solid ${log.status === 'success' ? 'rgba(114,176,29,0.15)' : 'rgba(239,68,68,0.15)'}`
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white truncate max-w-[150px]">{log.name}</span>
+                      <span className="text-[10px] text-[#475569]">{log.timestamp}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[11px] text-[#64748b]">{log.serial}</span>
+                      <span
+                        style={{
+                          padding: "1px 6px",
+                          borderRadius: "4px",
+                          fontSize: "9px",
+                          fontWeight: 800,
+                          color: "white",
+                          background: log.mode === 'salida' ? '#ef4444' : '#72b01d'
+                        }}
+                      >
+                        {log.mode === 'salida' ? 'RETIRADO' : 'INGRESADO'}
+                      </span>
+                    </div>
+                    <p className="text-[10px] mt-0.5" style={{ color: log.status === 'success' ? '#93c947' : '#f87171' }}>
+                      {log.details}
+                    </p>
+                    {log.name === "Desconocido" && (
+                      <button
+                        onClick={() => {
+                          setNewItem(prev => ({ ...prev, serial: log.serial, stock: log.mode === 'entrada' ? 1 : 0 }));
+                          setShowAddModal(true);
+                        }}
+                        className="mt-1 w-full text-center py-1 rounded bg-[#72b01d]/20 hover:bg-[#72b01d]/35 text-[#93c947] border border-[#72b01d]/40 font-bold text-[10px] cursor-pointer transition-all"
+                      >
+                        🆕 Registrar producto nuevo
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Quick stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -570,7 +584,8 @@ export default function InventoryPage() {
               <thead>
                 <tr>
                   <th>Ítem</th><th>Categoría</th><th>N° Serie</th><th>Ubicación</th>
-                  <th>Responsable</th><th>Stock</th><th>Estado</th><th>Acciones</th>
+                  <th>Responsable</th><th>Stock</th><th>Estado</th>
+                  {userRole !== "bodega" && <th>Acciones</th>}
                 </tr>
               </thead>
               <tbody>
@@ -619,9 +634,11 @@ export default function InventoryPage() {
                       <td>
                         <span className={`status-badge ${getStatusBg(item.status)}`}>{item.status}</span>
                       </td>
-                      <td>
-                        <button onClick={() => setEditItem(item)} className="btn-secondary text-xs py-1 px-2.5">Editar</button>
-                      </td>
+                      {userRole !== "bodega" && (
+                        <td>
+                          <button onClick={() => setEditItem(item)} className="btn-secondary text-xs py-1 px-2.5">Editar</button>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
