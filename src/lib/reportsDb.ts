@@ -15,7 +15,7 @@ export async function saveReportDB(report: TechnicalReport): Promise<void> {
 }
 
 export async function getReportsDB(): Promise<TechnicalReport[]> {
-  // Select lightweight fields from the data JSONB — skips heavy base64 images to avoid timeout
+  // Select ONLY lightweight fields for the list view to prevent TOAST table loading and timeouts
   const { data, error } = await supabaseInforme
     .from(TABLE_NAME)
     .select([
@@ -24,23 +24,7 @@ export async function getReportsDB(): Promise<TechnicalReport[]> {
       'data->otNumber',
       'data->clientName',
       'data->technicianName',
-      'data->technicianId',
       'data->diagnosis',
-      'data->solution',
-      'data->createdAt',
-      'data->fechaInicio',
-      'data->fechaFin',
-      'data->destinatario',
-      'data->direccion',
-      'data->ubicacionRef',
-      'data->comuna',
-      'data->numeroATM',
-      'data->serieATM',
-      'data->modeloMMBB',
-      'data->serieMMBB',
-      'data->solicitante',
-      'data->valorServicio',
-      'data->workOrderId',
       'data->materialsUsed',
     ].join(', '))
     .order('created_at', { ascending: false });
@@ -53,40 +37,76 @@ export async function getReportsDB(): Promise<TechnicalReport[]> {
 
   if (!data) return [];
 
-  // Supabase returns data->otNumber as "otNumber" (key without prefix)
   const results: TechnicalReport[] = (data as any[]).map(r => ({
     id: r.id,
     otNumber: r.otNumber ?? '',
     clientName: r.clientName ?? '',
     technicianName: r.technicianName ?? '',
-    technicianId: r.technicianId ?? '',
+    technicianId: '',
     diagnosis: r.diagnosis ?? '',
-    solution: r.solution ?? '',
-    createdAt: r.createdAt ?? r.created_at ?? '',
-    fechaInicio: r.fechaInicio ?? '',
-    fechaFin: r.fechaFin ?? '',
-    destinatario: r.destinatario ?? '',
-    direccion: r.direccion ?? '',
-    ubicacionRef: r.ubicacionRef ?? '',
-    comuna: r.comuna ?? '',
-    numeroATM: r.numeroATM ?? '',
-    serieATM: r.serieATM ?? '',
-    modeloMMBB: r.modeloMMBB ?? '',
-    serieMMBB: r.serieMMBB ?? '',
-    solicitante: r.solicitante ?? '',
-    valorServicio: r.valorServicio ?? '',
-    workOrderId: r.workOrderId ?? '',
+    solution: '',
+    createdAt: r.created_at ?? '',
+    fechaInicio: '',
+    fechaFin: '',
+    destinatario: '',
+    direccion: '',
+    ubicacionRef: '',
+    comuna: '',
+    numeroATM: '',
+    serieATM: '',
+    modeloMMBB: '',
+    serieMMBB: '',
+    solicitante: '',
+    valorServicio: '',
+    workOrderId: '',
     materialsUsed: r.materialsUsed ?? [],
     images: [],
   }));
 
-  results.sort((a, b) => {
-    const dateA = new Date(a.createdAt || 0).getTime();
-    const dateB = new Date(b.createdAt || 0).getTime();
-    return dateB - dateA;
-  });
-
   return results;
+}
+
+export async function getReportByIdDB(id: string): Promise<TechnicalReport | null> {
+  const { data, error } = await supabaseInforme
+    .from(TABLE_NAME)
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error(`Error fetching report ${id} from Supabase:`, error);
+    return null;
+  }
+
+  if (!data) return null;
+
+  const r = data;
+  const reportData = r.data || {};
+  return {
+    id: r.id,
+    otNumber: reportData.otNumber ?? '',
+    clientName: reportData.clientName ?? '',
+    technicianName: reportData.technicianName ?? '',
+    technicianId: reportData.technicianId ?? '',
+    diagnosis: reportData.diagnosis ?? reportData.detalletrabajo ?? '',
+    solution: reportData.solution ?? reportData.resumenTrabajo ?? '',
+    createdAt: reportData.createdAt ?? r.created_at ?? '',
+    fechaInicio: reportData.fechaInicio ?? '',
+    fechaFin: reportData.fechaFin ?? '',
+    destinatario: reportData.destinatario ?? '',
+    direccion: reportData.direccion ?? '',
+    ubicacionRef: reportData.ubicacionRef ?? '',
+    comuna: reportData.comuna ?? '',
+    numeroATM: reportData.numeroATM ?? '',
+    serieATM: reportData.serieATM ?? '',
+    modeloMMBB: reportData.modeloMMBB ?? '',
+    serieMMBB: reportData.serieMMBB ?? '',
+    solicitante: reportData.solicitante ?? '',
+    valorServicio: reportData.valorServicio ?? '',
+    workOrderId: reportData.workOrderId ?? '',
+    materialsUsed: reportData.materialsUsed ?? [],
+    images: reportData.images ?? [],
+  };
 }
 
 export async function deleteReportDB(id: string): Promise<void> {

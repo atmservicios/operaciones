@@ -9,7 +9,7 @@ import {
 import { mockWorkOrders } from "@/lib/mock-data";
 import { formatDateTime, formatDate } from "@/lib/utils";
 import type { TechnicalReport } from "@/types";
-import { getReportsDB, saveReportDB, deleteReportDB } from "@/lib/reportsDb";
+import { getReportsDB, saveReportDB, deleteReportDB, getReportByIdDB } from "@/lib/reportsDb";
 
 // ─── Word Document Generation Utility ─────────────────────────────────────────
 const formatDateForWord = (dateString?: string) => {
@@ -767,6 +767,7 @@ export default function ReportsPage() {
   const [editingReport, setEditingReport] = useState<TechnicalReport | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<TechnicalReport | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   useEffect(() => {
     const loadReports = async () => {
@@ -781,6 +782,75 @@ export default function ReportsPage() {
     loadReports();
   }, []);
 
+  const handleOpenViewer = async (reportId: string) => {
+    setLoadingDetail(true);
+    try {
+      const full = await getReportByIdDB(reportId);
+      if (full) {
+        setViewReport(full);
+      } else {
+        alert("No se pudo cargar el detalle del informe.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error al cargar el detalle.");
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const handleOpenEditor = async (reportId: string) => {
+    setLoadingDetail(true);
+    try {
+      const full = await getReportByIdDB(reportId);
+      if (full) {
+        setEditingReport(full);
+        setShowNew(true);
+      } else {
+        alert("No se pudo cargar el detalle del informe.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error al cargar el detalle.");
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const handleDownloadWord = async (reportId: string) => {
+    setLoadingDetail(true);
+    try {
+      const full = await getReportByIdDB(reportId);
+      if (full) {
+        await downloadReportAsWord(full);
+      } else {
+        alert("No se pudo descargar el documento Word.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error al generar Word.");
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const handleDownloadPdf = async (reportId: string) => {
+    setLoadingDetail(true);
+    try {
+      const full = await getReportByIdDB(reportId);
+      if (full) {
+        await downloadReportAsPdf(full);
+      } else {
+        alert("No se pudo descargar el PDF.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error al generar PDF.");
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
   const handleSave = async (newReport: TechnicalReport) => {
     await saveReportDB(newReport);
     setReports((prev) => {
@@ -788,7 +858,14 @@ export default function ReportsPage() {
       if (exists) {
         return prev.map((r) => r.id === newReport.id ? newReport : r);
       } else {
-        return [newReport, ...prev];
+        const listRep = {
+          ...newReport,
+          images: [],
+          solution: '',
+          fechaInicio: '',
+          fechaFin: '',
+        };
+        return [listRep, ...prev];
       }
     });
     setShowNew(false);
@@ -890,16 +967,16 @@ export default function ReportsPage() {
                 </div>
               </div>
               <div className="flex flex-row flex-wrap md:flex-col gap-2 flex-shrink-0 w-full md:w-auto mt-2 md:mt-0">
-                <button onClick={() => setViewReport(r)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
+                <button onClick={() => handleOpenViewer(r.id)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Eye size={12} /> Ver
                 </button>
-                <button onClick={() => { setEditingReport(r); setShowNew(true); }} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
+                <button onClick={() => handleOpenEditor(r.id)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Edit size={12} /> Editar
                 </button>
-                <button onClick={() => downloadReportAsWord(r)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
+                <button onClick={() => handleDownloadWord(r.id)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <Download size={12} /> Word
                 </button>
-                <button onClick={() => downloadReportAsPdf(r)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
+                <button onClick={() => handleDownloadPdf(r.id)} className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
                   <FileText size={12} /> PDF
                 </button>
                 <button className="btn-secondary text-xs py-1.5 px-3 flex-1 md:flex-none justify-center">
@@ -1018,6 +1095,12 @@ export default function ReportsPage() {
             setShowNew(true);
           }}
         />
+      )}
+      {loadingDetail && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(2px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+          <div style={{ width: 40, height: 40, border: "4px solid rgba(255,255,255,0.1)", borderTopColor: "#72b01d", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+          <div style={{ color: "#f1f5f9", fontSize: 14, fontWeight: 600 }}>Cargando detalles del informe...</div>
+        </div>
       )}
     </div>
   );
