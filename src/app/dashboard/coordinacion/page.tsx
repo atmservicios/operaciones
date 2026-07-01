@@ -41,6 +41,7 @@ const TIPO_COLOR = (tipo: string) => {
   if (t.includes("supervision") || t.includes("supervisión")) return { bg: "rgba(245,158,11,0.12)", color: "#fbbf24" };
   if (t.includes("servicio") || t.includes("mantencion") || t.includes("mantención")) return { bg: "rgba(114,176,29,0.12)", color: "#93c947" };
   if (t.includes("visita")) return { bg: "rgba(139,92,246,0.12)", color: "#a78bfa" };
+  if (t.includes("cerrajeria") || t.includes("cerrajería") || t.includes("cerrajero") || t.includes("chapa")) return { bg: "rgba(236,72,153,0.12)", color: "#ec4899" };
   return { bg: "rgba(100,116,139,0.1)", color: "#94a3b8" };
 };
 
@@ -839,6 +840,64 @@ export default function CoordinacionPage() {
                             </button>
                           )}
                         </div>
+                      )}
+                    </div>
+                  ) : f.key === "tipo_trabajo" ? (
+                    <div className="flex flex-col">
+                      <select
+                        className="ops-select"
+                        value={
+                          !formData.tipo_trabajo
+                            ? ""
+                            : [
+                                "ANCLAJE",
+                                "DESANCLAJE",
+                                "CERRAJERIA",
+                                "SUPERVISION NCR",
+                                "VISITA INSPECTIVA",
+                                "RECEPCION DE LLAVES",
+                                "SERVICIO ELECTRICO"
+                              ].includes(formData.tipo_trabajo)
+                            ? formData.tipo_trabajo
+                            : "CUSTOM"
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "CUSTOM") {
+                            setFormData({ ...formData, tipo_trabajo: "" });
+                          } else {
+                            setFormData({ ...formData, tipo_trabajo: val });
+                          }
+                        }}
+                      >
+                        <option value="">Selecciona tipo de trabajo...</option>
+                        <option value="ANCLAJE">ANCLAJE</option>
+                        <option value="DESANCLAJE">DESANCLAJE</option>
+                        <option value="CERRAJERIA">CERRAJERIA</option>
+                        <option value="SUPERVISION NCR">SUPERVISION NCR</option>
+                        <option value="VISITA INSPECTIVA">VISITA INSPECTIVA</option>
+                        <option value="RECEPCION DE LLAVES">RECEPCION DE LLAVES</option>
+                        <option value="SERVICIO ELECTRICO">SERVICIO ELECTRICO</option>
+                        <option value="CUSTOM">OTRO (Ingresar manualmente)...</option>
+                      </select>
+                      {(!formData.tipo_trabajo ||
+                        ![
+                          "ANCLAJE",
+                          "DESANCLAJE",
+                          "CERRAJERIA",
+                          "SUPERVISION NCR",
+                          "VISITA INSPECTIVA",
+                          "RECEPCION DE LLAVES",
+                          "SERVICIO ELECTRICO"
+                        ].includes(formData.tipo_trabajo)) && (
+                        <input
+                          className="ops-input mt-1.5"
+                          placeholder="Escribe el tipo de trabajo personalizado..."
+                          value={formData.tipo_trabajo || ""}
+                          onChange={(e) =>
+                            setFormData({ ...formData, tipo_trabajo: e.target.value.toUpperCase() })
+                          }
+                        />
                       )}
                     </div>
                   ) : (
