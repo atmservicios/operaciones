@@ -51,6 +51,7 @@ export default function CoordinacionPage() {
   const [search, setSearch] = useState("");
   const [filterBanco, setFilterBanco] = useState("all");
   const [filterInforme, setFilterInforme] = useState("all");
+  const [filterTipo, setFilterTipo] = useState("all");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [page, setPage] = useState(1);
@@ -225,9 +226,28 @@ export default function CoordinacionPage() {
           }
         }
       }
-      return matchSearch && matchBanco && matchInf && matchDate;
+      let matchTipo = true;
+      if (filterTipo !== "all") {
+        const rowTipo = (row.tipo_trabajo || "").toLowerCase();
+        if (filterTipo === "CERRAJERIA") {
+          matchTipo = rowTipo.includes("cerrajeria") || rowTipo.includes("cerrajería") || rowTipo.includes("cerrajero") || rowTipo.includes("chapa");
+        } else if (filterTipo === "ANCLAJE") {
+          matchTipo = rowTipo.includes("anclaje") && !rowTipo.includes("supervision") && !rowTipo.includes("supervisión");
+        } else if (filterTipo === "DESANCLAJE") {
+          matchTipo = rowTipo.includes("desanclaje");
+        } else if (filterTipo === "SUPERVISION") {
+          matchTipo = rowTipo.includes("supervision") || rowTipo.includes("supervisión") || rowTipo.includes("supervicion");
+        } else if (filterTipo === "MANTENCION") {
+          matchTipo = rowTipo.includes("mantencion") || rowTipo.includes("mantención") || rowTipo.includes("servicio");
+        } else if (filterTipo === "VISITA") {
+          matchTipo = rowTipo.includes("visita");
+        } else if (filterTipo === "SERVICIO ELECTRICO") {
+          matchTipo = rowTipo.includes("electrico") || rowTipo.includes("eléctrico");
+        }
+      }
+      return matchSearch && matchBanco && matchInf && matchDate && matchTipo;
     });
-  }, [data, search, filterBanco, filterInforme, dateFrom, dateTo]);
+  }, [data, search, filterBanco, filterInforme, filterTipo, dateFrom, dateTo]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ROWS_PER_PAGE, page * ROWS_PER_PAGE);
@@ -236,12 +256,13 @@ export default function CoordinacionPage() {
     setSearch("");
     setFilterBanco("all");
     setFilterInforme("all");
+    setFilterTipo("all");
     setDateFrom("");
     setDateTo("");
     setPage(1);
   };
 
-  const hasFilters = search || filterBanco !== "all" || filterInforme !== "all" || dateFrom || dateTo;
+  const hasFilters = search || filterBanco !== "all" || filterInforme !== "all" || filterTipo !== "all" || dateFrom || dateTo;
 
   const downloadExcel = () => {
     if (filtered.length === 0) {
@@ -421,6 +442,22 @@ export default function CoordinacionPage() {
           <option value="all">Con / Sin informe</option>
           <option value="SI">Con informe</option>
           <option value="NO">Sin informe</option>
+        </select>
+
+        {/* Tipo de Trabajo filter */}
+        <select
+          className="ops-select text-sm"
+          value={filterTipo}
+          onChange={(e) => { setFilterTipo(e.target.value); setPage(1); }}
+        >
+          <option value="all">Todas las categorías</option>
+          <option value="ANCLAJE">Anclaje</option>
+          <option value="DESANCLAJE">Desanclaje</option>
+          <option value="CERRAJERIA">Cerrajería</option>
+          <option value="SUPERVISION">Supervisión</option>
+          <option value="MANTENCION">Mantención</option>
+          <option value="VISITA">Visitas</option>
+          <option value="SERVICIO ELECTRICO">Eléctrico</option>
         </select>
 
         {/* Date filters */}
