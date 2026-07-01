@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import {
   Search, Calendar, Clock, MapPin, User, Building2, FileText,
   Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2, Download
@@ -8,6 +8,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import type { Technician } from "@/types";
 import * as XLSX from "xlsx";
+import { useSearchParams } from "next/navigation";
 
 interface ProgramacionRow {
   id: number;
@@ -45,7 +46,10 @@ const TIPO_COLOR = (tipo: string) => {
   return { bg: "rgba(100,116,139,0.1)", color: "#94a3b8" };
 };
 
-export default function CoordinacionPage() {
+function CoordinacionContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+
   const [data, setData] = useState<ProgramacionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -55,6 +59,14 @@ export default function CoordinacionPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    if (categoryParam) {
+      setFilterTipo(categoryParam.toUpperCase());
+    } else {
+      setFilterTipo("all");
+    }
+  }, [categoryParam]);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -977,5 +989,13 @@ export default function CoordinacionPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CoordinacionPage() {
+  return (
+    <Suspense fallback={<div className="glass-card p-12 text-center text-[#64748b]">Cargando Coordinación...</div>}>
+      <CoordinacionContent />
+    </Suspense>
   );
 }

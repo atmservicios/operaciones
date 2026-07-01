@@ -43,6 +43,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [coordinacionExpanded, setCoordinacionExpanded] = useState(false);
+  const [currentSearch, setCurrentSearch] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentSearch(window.location.search);
+      if (pathname.startsWith("/dashboard/coordinacion")) {
+        setCoordinacionExpanded(true);
+      }
+    }
+  }, [pathname]);
+
   const [notifOpen, setNotifOpen] = useState(false);
   const [showInactivityWarning, setShowInactivityWarning] = useState(false);
   const [inactivityCountdown, setInactivityCountdown] = useState(300); // 5 min to respond
@@ -259,8 +271,56 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-1 mt-2">
           {visibleNav.map((item) => {
+            const isCoordinacion = item.href === "/dashboard/coordinacion";
             const Icon = item.icon;
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            
+            if (isCoordinacion) {
+              const isSubActiveGeneral = pathname === "/dashboard/coordinacion" && !currentSearch.includes("category=CERRAJERIA");
+              const isSubActiveCerrajeria = pathname === "/dashboard/coordinacion" && currentSearch.includes("category=CERRAJERIA");
+              
+              return (
+                <div key={item.href} className="space-y-1">
+                  <div
+                    className={`sidebar-link flex items-center justify-between cursor-pointer ${isActive ? "active" : ""}`}
+                    onClick={() => setCoordinacionExpanded(!coordinacionExpanded)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon size={16} style={{ flexShrink: 0 }} />
+                      <span className="flex-1">{item.label}</span>
+                    </div>
+                    <ChevronDown size={14} style={{ transform: coordinacionExpanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s", color: "#64748b" }} />
+                  </div>
+                  {coordinacionExpanded && (
+                    <div className="pl-6 space-y-1" style={{ borderLeft: "1px solid rgba(255,255,255,0.05)", marginLeft: "14px" }}>
+                      <Link
+                        href="/dashboard/coordinacion"
+                        className={`sidebar-link text-xs py-1.5 ${isSubActiveGeneral ? "active" : ""}`}
+                        style={{ height: "auto" }}
+                        onClick={() => {
+                          setCurrentSearch("");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        General
+                      </Link>
+                      <Link
+                        href="/dashboard/coordinacion?category=CERRAJERIA"
+                        className={`sidebar-link text-xs py-1.5 ${isSubActiveCerrajeria ? "active" : ""}`}
+                        style={{ height: "auto" }}
+                        onClick={() => {
+                          setCurrentSearch("?category=CERRAJERIA");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        Cerrajería
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.href}
