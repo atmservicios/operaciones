@@ -850,7 +850,7 @@ function CoordinacionContent() {
 
             {/* Modal body (scrollable) */}
             <div className="p-5 overflow-y-auto" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-              {formFields.map(f => (
+              {formFields.filter(f => f.key !== "precio_pinares" || filterTipo === "CERRAJERIA").map(f => (
                 <div key={f.key} className="flex flex-col gap-1.5">
                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider pl-1">
                     {f.label}
