@@ -914,70 +914,15 @@ function CoordinacionContent() {
                         </div>
                       )}
                     </div>
-                  ) : f.key === "tipo_trabajo" ? (
-                    <div className="flex flex-col">
-                      <select
-                        className="ops-select"
-                        value={
-                          !formData.tipo_trabajo
-                            ? ""
-                            : [
-                                "ANCLAJE",
-                                "DESANCLAJE",
-                                "CERRAJERIA",
-                                "SUPERVISION NCR",
-                                "VISITA INSPECTIVA",
-                                "RECEPCION DE LLAVES",
-                                "SERVICIO ELECTRICO"
-                              ].includes(formData.tipo_trabajo)
-                            ? formData.tipo_trabajo
-                            : "CUSTOM"
-                        }
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val === "CUSTOM") {
-                            setFormData({ ...formData, tipo_trabajo: "" });
-                          } else {
-                            setFormData({ ...formData, tipo_trabajo: val });
-                          }
-                        }}
-                      >
-                        <option value="">Selecciona tipo de trabajo...</option>
-                        <option value="ANCLAJE">ANCLAJE</option>
-                        <option value="DESANCLAJE">DESANCLAJE</option>
-                        <option value="CERRAJERIA">CERRAJERIA</option>
-                        <option value="SUPERVISION NCR">SUPERVISION NCR</option>
-                        <option value="VISITA INSPECTIVA">VISITA INSPECTIVA</option>
-                        <option value="RECEPCION DE LLAVES">RECEPCION DE LLAVES</option>
-                        <option value="SERVICIO ELECTRICO">SERVICIO ELECTRICO</option>
-                        <option value="CUSTOM">OTRO (Ingresar manualmente)...</option>
-                      </select>
-                      {(!formData.tipo_trabajo ||
-                        ![
-                          "ANCLAJE",
-                          "DESANCLAJE",
-                          "CERRAJERIA",
-                          "SUPERVISION NCR",
-                          "VISITA INSPECTIVA",
-                          "RECEPCION DE LLAVES",
-                          "SERVICIO ELECTRICO"
-                        ].includes(formData.tipo_trabajo)) && (
-                        <input
-                          className="ops-input mt-1.5"
-                          placeholder="Escribe el tipo de trabajo personalizado..."
-                          value={formData.tipo_trabajo || ""}
-                          onChange={(e) =>
-                            setFormData({ ...formData, tipo_trabajo: e.target.value.toUpperCase() })
-                          }
-                        />
-                      )}
-                    </div>
                   ) : (
                     <input
                       className="ops-input"
                       placeholder={`Ingresa ${f.label.toLowerCase()}`}
                       value={formData[f.key as keyof ProgramacionRow] || ""}
-                      onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, [f.key]: f.key === "tipo_trabajo" ? val.toUpperCase() : val });
+                      }}
                     />
                   )}
                 </div>
