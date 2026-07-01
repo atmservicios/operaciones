@@ -26,6 +26,7 @@ interface ProgramacionRow {
   banco_empresa: string | null;
   informe: string | null;
   ot: string | null;
+  precio_pinares?: string | null;
 }
 
 const ROWS_PER_PAGE = 25;
@@ -282,22 +283,28 @@ function CoordinacionContent() {
       return;
     }
     
-    const rows = filtered.map(r => ({
-      "OT": r.ot || "",
-      "Fecha": r.fecha || "",
-      "Hora Inicio": r.hora_inicio || "",
-      "Hora Termino": r.hora_termino || "",
-      "Tipo de Trabajo": r.tipo_trabajo || "",
-      "Local": r.local || "",
-      "Direccion": r.direccion || "",
-      "Comuna": r.comuna || "",
-      "ATM": r.atm || "",
-      "Asignado a": r.asignado_a || "",
-      "Solicitante": r.nombre_solicitante || "",
-      "Solicitado por": r.solicitado_por || "",
-      "Banco/Empresa": r.banco_empresa || "",
-      "Informe": r.informe || ""
-    }));
+    const rows = filtered.map(r => {
+      const rowData: any = {
+        "OT": r.ot || "",
+        "Fecha": r.fecha || "",
+        "Hora Inicio": r.hora_inicio || "",
+        "Hora Termino": r.hora_termino || "",
+        "Tipo de Trabajo": r.tipo_trabajo || "",
+        "Local": r.local || "",
+        "Direccion": r.direccion || "",
+        "Comuna": r.comuna || "",
+        "ATM": r.atm || "",
+        "Asignado a": r.asignado_a || "",
+        "Solicitante": r.nombre_solicitante || "",
+        "Solicitado por": r.solicitado_por || "",
+        "Banco/Empresa": r.banco_empresa || "",
+        "Informe": r.informe || ""
+      };
+      if (filterTipo === "CERRAJERIA") {
+        rowData["Precio Pinares"] = r.precio_pinares || "";
+      }
+      return rowData;
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
@@ -387,6 +394,7 @@ function CoordinacionContent() {
     { key: "solicitado_por", label: "Solicitado por" },
     { key: "banco_empresa", label: "Banco/Empresa" },
     { key: "informe", label: "Informe (SI / NO)" },
+    { key: "precio_pinares", label: "Precio Pinares" },
   ];
 
   return (
@@ -509,42 +517,49 @@ function CoordinacionContent() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "rgba(27,30,36,0.9)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                {[
-                  { label: "OT", icon: Hash },
-                  { label: "Fecha", icon: Calendar },
-                  { label: "Hora Inicio", icon: Clock },
-                  { label: "Hora Término", icon: Clock },
-                  { label: "Tipo de Trabajo", icon: FileText },
-                  { label: "Local", icon: MapPin },
-                  { label: "Dirección", icon: MapPin },
-                  { label: "Comuna", icon: MapPin },
-                  { label: "ATM", icon: null },
-                  { label: "Asignado a", icon: User },
-                  { label: "Solicitante", icon: User },
-                  { label: "Solicitado Por", icon: User },
-                  { label: "Banco/Empresa", icon: Building2 },
-                  { label: "Informe", icon: null },
-                  { label: "Acciones", icon: null },
-                ].map(({ label, icon: Icon }) => (
-                  <th
-                    key={label}
-                    style={{
-                      padding: "12px 14px",
-                      textAlign: "left",
-                      color: "#64748b",
-                      fontSize: 11,
-                      fontWeight: 700,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      {Icon && <Icon size={11} />}
-                      {label}
-                    </div>
-                  </th>
-                ))}
+                {(() => {
+                  const headers = [
+                    { label: "OT", icon: Hash },
+                    { label: "Fecha", icon: Calendar },
+                    { label: "Hora Inicio", icon: Clock },
+                    { label: "Hora Término", icon: Clock },
+                    { label: "Tipo de Trabajo", icon: FileText },
+                    { label: "Local", icon: MapPin },
+                    { label: "Dirección", icon: MapPin },
+                    { label: "Comuna", icon: MapPin },
+                    { label: "ATM", icon: null },
+                    { label: "Asignado a", icon: User },
+                    { label: "Solicitante", icon: User },
+                    { label: "Solicitado Por", icon: User },
+                    { label: "Banco/Empresa", icon: Building2 },
+                    { label: "Informe", icon: null },
+                  ];
+                  if (filterTipo === "CERRAJERIA") {
+                    headers.push({ label: "Precio Pinares", icon: null });
+                  }
+                  headers.push({ label: "Acciones", icon: null });
+
+                  return headers.map(({ label, icon: Icon }) => (
+                    <th
+                      key={label}
+                      style={{
+                        padding: "12px 14px",
+                        textAlign: "left",
+                        color: "#64748b",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        {Icon && <Icon size={11} />}
+                        {label}
+                      </div>
+                    </th>
+                  ));
+                })()}
               </tr>
             </thead>
             <tbody>
@@ -678,6 +693,14 @@ function CoordinacionContent() {
                           {row.informe || "—"}
                         </span>
                       </td>
+                      {/* Precio Pinares */}
+                      {filterTipo === "CERRAJERIA" && (
+                        <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
+                          <span style={{ color: "#e2e8f0", fontSize: 12, fontWeight: 500 }}>
+                            {row.precio_pinares || "—"}
+                          </span>
+                        </td>
+                      )}
                       {/* Acciones */}
                       <td style={{ padding: "10px 14px", textAlign: "right" }}>
                         <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
