@@ -34,6 +34,7 @@ const ROWS_PER_PAGE = 25;
 const BADGE_COLORS: Record<string, { bg: string; color: string }> = {
   SI:  { bg: "rgba(114,176,29,0.12)", color: "#93c947" },
   NO:  { bg: "rgba(239,68,68,0.12)",  color: "#f87171" },
+  "N/A": { bg: "rgba(148,163,184,0.12)", color: "#94a3b8" },
   "": { bg: "rgba(100,116,139,0.12)", color: "#64748b" },
 };
 
@@ -459,9 +460,10 @@ function CoordinacionContent() {
           value={filterInforme}
           onChange={(e) => { setFilterInforme(e.target.value); setPage(1); }}
         >
-          <option value="all">Con / Sin informe</option>
-          <option value="SI">Con informe</option>
-          <option value="NO">Sin informe</option>
+          <option value="all">Todos los informes</option>
+          <option value="SI">Con informe (SI)</option>
+          <option value="NO">Sin informe (NO)</option>
+          <option value="N/A">No requiere informe (N/A)</option>
         </select>
 
         {/* Tipo de Trabajo filter */}
@@ -914,6 +916,17 @@ function CoordinacionContent() {
                         </div>
                       )}
                     </div>
+                  ) : f.key === "informe" ? (
+                    <select
+                      className="ops-select"
+                      value={formData.informe || ""}
+                      onChange={(e) => setFormData({ ...formData, informe: e.target.value })}
+                    >
+                      <option value="">Selecciona opción...</option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                      <option value="N/A">N/A</option>
+                    </select>
                   ) : (
                     <input
                       className="ops-input"

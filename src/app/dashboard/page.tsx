@@ -103,6 +103,8 @@ export default function DashboardPage() {
   
   const conInforme = data.filter(r => r.informe?.toUpperCase() === 'SI').length;
   const sinInforme = data.filter(r => r.informe?.toUpperCase() === 'NO').length;
+  const noRequiere = data.filter(r => r.informe?.toUpperCase() === 'N/A').length;
+  const requierenInforme = conInforme + sinInforme;
 
   const bancoCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -171,7 +173,7 @@ export default function DashboardPage() {
             <StatWidget 
               title="Total Coordinaciones" 
               value={totalServicios} 
-              sub="Registros en base de datos" 
+              sub={`${requierenInforme} requieren informe · ${noRequiere} N/A`} 
               icon={ClipboardList} 
               color="#3b82f6" 
               glow="0 0 20px rgba(59,130,246,0.08)" 
@@ -179,7 +181,7 @@ export default function DashboardPage() {
             <StatWidget 
               title="Con Informe (SI)" 
               value={conInforme} 
-              sub={`${((conInforme / totalServicios) * 100 || 0).toFixed(1)}% del total`} 
+              sub={`${((conInforme / (requierenInforme || 1)) * 100 || 0).toFixed(1)}% de los requeridos`} 
               icon={CheckCircle2} 
               color="#72b01d" 
               glow="0 0 20px rgba(114,176,29,0.08)" 
@@ -187,7 +189,7 @@ export default function DashboardPage() {
             <StatWidget 
               title="Sin Informe (NO)" 
               value={sinInforme} 
-              sub={`${((sinInforme / totalServicios) * 100 || 0).toFixed(1)}% del total`} 
+              sub={`${((sinInforme / (requierenInforme || 1)) * 100 || 0).toFixed(1)}% de los requeridos`} 
               icon={XCircle} 
               color="#ef4444" 
               glow="0 0 20px rgba(239,68,68,0.1)" 
