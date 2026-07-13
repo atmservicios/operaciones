@@ -239,7 +239,9 @@ export default function InventoryPage() {
         stock: editItem.stock,
         min_stock: editItem.minStock,
         location: editItem.location,
-        status: editItem.status
+        status: editItem.status,
+        category: editItem.category,
+        serial: editItem.serial
       })
       .eq("id", editItem.id);
 
@@ -649,6 +651,31 @@ export default function InventoryPage() {
               <div>
                 <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Nombre del producto</label>
                 <input className="ops-input" value={editItem.name} onChange={(e) => setEditItem({ ...editItem, name: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>Categoría</label>
+                  <input
+                    list="categories-list-edit"
+                    className="ops-input"
+                    placeholder="Escribe o selecciona..."
+                    value={editItem.category || ""}
+                    onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
+                  />
+                  <datalist id="categories-list-edit">
+                    {categories.map(cat => (
+                      <option key={cat} value={cat} />
+                    ))}
+                    {!categories.includes("Piezas ATM") && <option value="Piezas ATM" />}
+                    {!categories.includes("Routers") && <option value="Routers" />}
+                    {!categories.includes("Cerraduras") && <option value="Cerraduras" />}
+                    {!categories.includes("Fundas") && <option value="Fundas" />}
+                  </datalist>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#94a3b8" }}>N° Serie / Código</label>
+                  <input className="ops-input font-mono" value={editItem.serial || ""} onChange={(e) => setEditItem({ ...editItem, serial: e.target.value })} />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
