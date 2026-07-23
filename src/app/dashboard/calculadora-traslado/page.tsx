@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CHILE_REGIONS } from "@/data/chileData";
 import { 
   Calculator, MapPin, RotateCcw, Copy, Trash2, ArrowRightLeft, Check, FileText 
@@ -44,10 +44,37 @@ export default function CalculadoraTrasladoPage() {
 
   const [loadingDistance, setLoadingDistance] = useState(false);
   const [distanceError, setDistanceError] = useState("");
+  const [coordsIda, setCoordsIda] = useState<{ lat: number; lon: number } | null>(null);
+  const [coordsVuelta, setCoordsVuelta] = useState<{ lat: number; lon: number } | null>(null);
+  const [leafletLoaded, setLeafletLoaded] = useState(false);
+  const mapRef = useRef<any>(null);
+
+  // Load Leaflet dynamically
+  useEffect(() => {
+    if ((window as any).L) {
+      setLeafletLoaded(true);
+      return;
+    }
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    document.head.appendChild(link);
+
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    script.async = true;
+    script.onload = () => {
+      setLeafletLoaded(true);
+    };
+    document.head.appendChild(script);
+  }, []);
 
   // Auto calculate distance between selected comunas
   useEffect(() => {
     if (!regionIda || !comunaIda || !regionVuelta || !comunaVuelta) {
+      // Clear coordinates if inputs are incomplete
+      setCoordsIda(null);
+      setCoordsVuelta(null);
       return;
     }
 
@@ -66,7 +93,8 @@ export default function CalculadoraTrasladoPage() {
           throw new Error(`No se encontró el origen: ${comunaIda}`);
         }
         
-        const cIda = { lat: dataIda[0].lat, lon: dataIda[0].lon };
+        const cIda = { lat: Number(dataIda[0].lat), lon: Number(dataIda[0].lon) };
+        setCoordsIda(cIda);
 
         // 2. Get coordinates for Vuelta
         const qVuelta = encodeURIComponent(`${comunaVuelta}, ${regionVuelta}, Chile`);
@@ -79,7 +107,8 @@ export default function CalculadoraTrasladoPage() {
           throw new Error(`No se encontró el destino: ${comunaVuelta}`);
         }
 
-        const cVuelta = { lat: dataVuelta[0].lat, lon: dataVuelta[0].lon };
+        const cVuelta = { lat: Number(dataVuelta[0].lat), lon: Number(dataVuelta[0].lon) };
+        setCoordsVuelta(cVuelta);
 
         // 3. Get routing distance from OSRM
         const routeUrl = `https://router.project-osrm.org/route/v1/driving/${cIda.lon},${cIda.lat};${cVuelta.lon},${cVuelta.lat}?overview=false`;
@@ -102,6 +131,96 @@ export default function CalculadoraTrasladoPage() {
 
     calculateAutoDistance();
   }, [regionIda, comunaIda, regionVuelta, comunaVuelta]);
+
+  // Leaflet map rendering effect
+  useEffect(() => {
+    if (!leafletLoaded || !(window as any).L) return;
+    const L = (window as any).L;
+
+    const mapContainer = document.getElementById("map-element");
+    if (!mapContainer) return;
+
+    // Clear previous map instance if exists
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
+    }
+
+    // Default center in Chile (Santiago area)
+    const centerLat = coordsIda ? coordsIda.lat : -33.4489;
+    const centerLon = coordsIda ? coordsIda.lon : -70.6693;
+    const zoom = coordsIda && coordsVuelta ? 8 : 11;
+
+    // Initialize map
+    const map = L.map("map-element", {
+      zoomControl: true,
+      scrollWheelZoom: true,
+    }).setView([centerLat, centerLon], zoom);
+
+    mapRef.current = map;
+
+    // CartoDB Dark Matter layer
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(map);
+
+    // Glowing Neon Markers
+    const customIcon = L.divIcon({
+      className: 'custom-div-icon',
+      html: `<div style="background-color: #72b01d; width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid white; box-shadow: 0 0 10px #72b01d; animation: pulse 2s infinite;"></div>`,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7]
+    });
+
+    const destIcon = L.divIcon({
+      className: 'custom-div-icon',
+      html: `<div style="background-color: #a78bfa; width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid white; box-shadow: 0 0 10px #a78bfa; animation: pulse 2s infinite;"></div>`,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7]
+    });
+
+    if (coordsIda) {
+      L.marker([coordsIda.lat, coordsIda.lon], { icon: customIcon })
+        .addTo(map)
+        .bindPopup(`<b>Origen:</b> ${comunaIda}`)
+        .openPopup();
+    }
+
+    if (coordsVuelta) {
+      L.marker([coordsVuelta.lat, coordsVuelta.lon], { icon: destIcon })
+        .addTo(map)
+        .bindPopup(`<b>Destino:</b> ${comunaVuelta}`);
+      
+      if (!coordsIda) {
+        map.setView([coordsVuelta.lat, coordsVuelta.lon], 11);
+      }
+    }
+
+    if (coordsIda && coordsVuelta) {
+      const points = [
+        [coordsIda.lat, coordsIda.lon],
+        [coordsVuelta.lat, coordsVuelta.lon]
+      ];
+      
+      const line = L.polyline(points, {
+        color: '#93c947',
+        weight: 3,
+        opacity: 0.8,
+        dashArray: '6, 6'
+      }).addTo(map);
+
+      map.fitBounds(line.getBounds(), { padding: [50, 50] });
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [leafletLoaded, coordsIda, coordsVuelta, comunaIda, comunaVuelta]);
 
   // Filter comunas for selected regions
   const comunasIdaList = CHILE_REGIONS.find(r => r.region === regionIda)?.comunas || [];
@@ -380,6 +499,19 @@ Total a Pagar: ${formatCurrency(tot)}
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Map Card */}
+      <div className="glass-card p-6 space-y-4">
+        <div className="flex items-center gap-2 pb-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <MapPin className="text-[#93c947]" size={18} />
+          <h3 className="text-sm font-bold text-slate-100">Visualización de Ruta Terrestre</h3>
+        </div>
+        <div 
+          id="map-element" 
+          className="w-full rounded-xl overflow-hidden relative z-10 animate-fade-in" 
+          style={{ height: "400px", border: "1px solid rgba(255,255,255,0.08)", background: "#121418" }}
+        />
       </div>
 
       {/* History Panel */}
