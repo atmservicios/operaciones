@@ -46,6 +46,8 @@ export default function CalculadoraTrasladoPage() {
   const [distanceError, setDistanceError] = useState("");
   const [coordsIda, setCoordsIda] = useState<{ lat: number; lon: number } | null>(null);
   const [coordsVuelta, setCoordsVuelta] = useState<{ lat: number; lon: number } | null>(null);
+  const [routePath, setRoutePath] = useState<[number, number][]>([]);
+  const [routeDuration, setRouteDuration] = useState("");
   const [leafletLoaded, setLeafletLoaded] = useState(false);
   const mapRef = useRef<any>(null);
 
@@ -75,6 +77,8 @@ export default function CalculadoraTrasladoPage() {
       // Clear coordinates if inputs are incomplete
       setCoordsIda(null);
       setCoordsVuelta(null);
+      setRoutePath([]);
+      setRouteDuration("");
       return;
     }
 
@@ -110,8 +114,8 @@ export default function CalculadoraTrasladoPage() {
         const cVuelta = { lat: Number(dataVuelta[0].lat), lon: Number(dataVuelta[0].lon) };
         setCoordsVuelta(cVuelta);
 
-        // 3. Get routing distance from OSRM
-        const routeUrl = `https://router.project-osrm.org/route/v1/driving/${cIda.lon},${cIda.lat};${cVuelta.lon},${cVuelta.lat}?overview=false`;
+        // 3. Get routing distance from OSRM with full geometries
+        const routeUrl = `https://router.project-osrm.org/route/v1/driving/${cIda.lon},${cIda.lat};${cVuelta.lon},${cVuelta.lat}?overview=full&geometries=geojson`;
         const routeRes = await fetch(routeUrl);
         const routeData = await routeRes.json();
         
@@ -119,8 +123,19 @@ export default function CalculadoraTrasladoPage() {
           throw new Error("No se pudo trazar una ruta terrestre.");
         }
 
-        const distKm = Math.round(routeData.routes[0].distance / 1000);
+        const routeObj = routeData.routes[0];
+        const distKm = Math.round(routeObj.distance / 1000);
         setKm(distKm);
+
+        // Save path coordinates and duration
+        const coords = routeObj.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]] as [number, number]);
+        setRoutePath(coords);
+
+        const durationSeconds = routeObj.duration;
+        const hours = Math.floor(durationSeconds / 3600);
+        const minutes = Math.round((durationSeconds % 3600) / 60);
+        const durationText = hours > 0 ? `${hours} h ${minutes} min` : `${minutes} min`;
+        setRouteDuration(durationText);
       } catch (e: any) {
         console.error(e);
         setDistanceError("No se pudo calcular la ruta automáticamente. Por favor ingresa el kilometraje manual.");
@@ -198,7 +213,36 @@ export default function CalculadoraTrasladoPage() {
       }
     }
 
-    if (coordsIda && coordsVuelta) {
+    if (routePath && routePath.length > 0) {
+      const line = L.polyline(routePath, {
+        color: '#3b82f6',
+        weight: 6,
+        opacity: 0.85
+      }).addTo(map);
+
+      const midIndex = Math.floor(routePath.length / 2);
+      const midPoint = routePath[midIndex];
+
+      if (midPoint) {
+        L.popup({
+          closeButton: false,
+          autoClose: false,
+          closeOnEscapeKey: false,
+          closeOnClick: false,
+          className: 'route-info-popup'
+        })
+        .setLatLng(midPoint)
+        .setContent(`
+          <div style="background-color: #1e293b; color: #f1f5f9; padding: 6px 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-weight: 700; font-size: 11px; text-align: center; border: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 2px; min-width: 90px;">
+            <div style="color: #93c947; font-size: 12px;">🚗 ${km} Km</div>
+            <div style="color: #94a3b8; font-weight: 500; font-size: 10px;">⏱️ ${routeDuration}</div>
+          </div>
+        `)
+        .addTo(map);
+      }
+
+      map.fitBounds(line.getBounds(), { padding: [50, 50] });
+    } else if (coordsIda && coordsVuelta) {
       const points = [
         [coordsIda.lat, coordsIda.lon],
         [coordsVuelta.lat, coordsVuelta.lon]
@@ -220,7 +264,7 @@ export default function CalculadoraTrasladoPage() {
         mapRef.current = null;
       }
     };
-  }, [leafletLoaded, coordsIda, coordsVuelta, comunaIda, comunaVuelta]);
+  }, [leafletLoaded, coordsIda, coordsVuelta, routePath, routeDuration, comunaIda, comunaVuelta]);
 
   // Filter comunas for selected regions
   const comunasIdaList = CHILE_REGIONS.find(r => r.region === regionIda)?.comunas || [];
