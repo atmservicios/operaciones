@@ -42,6 +42,67 @@ export default function CalculadoraTrasladoPage() {
     }
   }, []);
 
+  const [loadingDistance, setLoadingDistance] = useState(false);
+  const [distanceError, setDistanceError] = useState("");
+
+  // Auto calculate distance between selected comunas
+  useEffect(() => {
+    if (!regionIda || !comunaIda || !regionVuelta || !comunaVuelta) {
+      return;
+    }
+
+    async function calculateAutoDistance() {
+      setLoadingDistance(true);
+      setDistanceError("");
+      try {
+        // 1. Get coordinates for Ida
+        const qIda = encodeURIComponent(`${comunaIda}, ${regionIda}, Chile`);
+        const resIda = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${qIda}&limit=1`, {
+          headers: { 'User-Agent': 'OpsATM-Calculator-Agent' }
+        });
+        const dataIda = await resIda.json();
+        
+        if (!dataIda || dataIda.length === 0) {
+          throw new Error(`No se encontró el origen: ${comunaIda}`);
+        }
+        
+        const cIda = { lat: dataIda[0].lat, lon: dataIda[0].lon };
+
+        // 2. Get coordinates for Vuelta
+        const qVuelta = encodeURIComponent(`${comunaVuelta}, ${regionVuelta}, Chile`);
+        const resVuelta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${qVuelta}&limit=1`, {
+          headers: { 'User-Agent': 'OpsATM-Calculator-Agent' }
+        });
+        const dataVuelta = await resVuelta.json();
+        
+        if (!dataVuelta || dataVuelta.length === 0) {
+          throw new Error(`No se encontró el destino: ${comunaVuelta}`);
+        }
+
+        const cVuelta = { lat: dataVuelta[0].lat, lon: dataVuelta[0].lon };
+
+        // 3. Get routing distance from OSRM
+        const routeUrl = `https://router.project-osrm.org/route/v1/driving/${cIda.lon},${cIda.lat};${cVuelta.lon},${cVuelta.lat}?overview=false`;
+        const routeRes = await fetch(routeUrl);
+        const routeData = await routeRes.json();
+        
+        if (!routeData.routes || routeData.routes.length === 0) {
+          throw new Error("No se pudo trazar una ruta terrestre.");
+        }
+
+        const distKm = Math.round(routeData.routes[0].distance / 1000);
+        setKm(distKm);
+      } catch (e: any) {
+        console.error(e);
+        setDistanceError("No se pudo calcular la ruta automáticamente. Por favor ingresa el kilometraje manual.");
+      } finally {
+        setLoadingDistance(false);
+      }
+    }
+
+    calculateAutoDistance();
+  }, [regionIda, comunaIda, regionVuelta, comunaVuelta]);
+
   // Filter comunas for selected regions
   const comunasIdaList = CHILE_REGIONS.find(r => r.region === regionIda)?.comunas || [];
   const comunasVueltaList = CHILE_REGIONS.find(r => r.region === regionVuelta)?.comunas || [];
@@ -231,14 +292,33 @@ Total a Pagar: ${formatCurrency(tot)}
                   <input
                     type="number"
                     min="0"
-                    placeholder="Ej: 120"
+                    placeholder={loadingDistance ? "Calculando..." : "Ej: 120"}
                     className="ops-input pr-10"
                     value={km}
                     onChange={(e) => setKm(e.target.value === "" ? "" : Number(e.target.value))}
+                    disabled={loadingDistance}
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500">Km</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500">
+                    {loadingDistance ? (
+                      <span className="animate-spin inline-block w-4 h-4 border-2 border-t-transparent rounded-full" style={{ borderTopColor: "transparent", borderColor: "#72b01d" }} />
+                    ) : (
+                      "Km"
+                    )}
+                  </span>
                 </div>
               </div>
+
+              {loadingDistance && (
+                <p className="text-xs text-[#93c947] font-semibold">
+                  🔄 Buscando coordenadas y trazando la ruta terrestre...
+                </p>
+              )}
+
+              {distanceError && (
+                <p className="text-xs text-amber-400 font-semibold">
+                  ⚠️ {distanceError}
+                </p>
+              )}
             </div>
 
             {/* Buttons */}
