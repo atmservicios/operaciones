@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import {
   Cpu, LayoutDashboard, ClipboardList, Monitor, Users, MapPin,
   Package, FileText, FolderOpen, BarChart3, ScrollText, Settings,
-  Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck, FileSpreadsheet,
+  Bell, Search, ChevronDown, LogOut, Menu, X, Circle, Zap, CalendarDays, ShieldCheck, Truck, FileSpreadsheet, Calculator,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -22,6 +22,7 @@ interface UserProfile {
 const navItems = [
   { href: "/dashboard",              icon: LayoutDashboard, label: "Dashboard",           badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",        badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/calculadora-traslado", icon: Calculator, label: "Calculadora de Traslado", badge: null, roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/technicians",  icon: Users,           label: "Técnicos",            badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/revisiones",   icon: Truck,           label: "Revisiones Técnicas", badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/atms",         icon: Monitor,         label: "Cajeros ATM",         badge: null,  roles: ['administrador','supervisor'] },
