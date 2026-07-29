@@ -15,18 +15,9 @@ export async function saveReportDB(report: TechnicalReport): Promise<void> {
 }
 
 export async function getReportsDB(): Promise<TechnicalReport[]> {
-  // Select ONLY lightweight fields for the list view to prevent TOAST table loading and timeouts
   const { data, error } = await supabaseInforme
     .from(TABLE_NAME)
-    .select([
-      'id',
-      'created_at',
-      'data->otNumber',
-      'data->clientName',
-      'data->technicianName',
-      'data->diagnosis',
-      'data->materialsUsed',
-    ].join(', '))
+    .select('id, created_at, data')
     .order('created_at', { ascending: false })
     .limit(10);
 
@@ -38,31 +29,34 @@ export async function getReportsDB(): Promise<TechnicalReport[]> {
 
   if (!data) return [];
 
-  const results: TechnicalReport[] = (data as any[]).map(r => ({
-    id: r.id,
-    otNumber: r.otNumber ?? '',
-    clientName: r.clientName ?? '',
-    technicianName: r.technicianName ?? '',
-    technicianId: '',
-    diagnosis: r.diagnosis ?? '',
-    solution: '',
-    createdAt: r.created_at ?? '',
-    fechaInicio: '',
-    fechaFin: '',
-    destinatario: '',
-    direccion: '',
-    ubicacionRef: '',
-    comuna: '',
-    numeroATM: '',
-    serieATM: '',
-    modeloMMBB: '',
-    serieMMBB: '',
-    solicitante: '',
-    valorServicio: '',
-    workOrderId: '',
-    materialsUsed: r.materialsUsed ?? [],
-    images: [],
-  }));
+  const results: TechnicalReport[] = (data as any[]).map(r => {
+    const reportData = r.data || {};
+    return {
+      id: r.id,
+      otNumber: reportData.otNumber ?? '',
+      clientName: reportData.clientName ?? '',
+      technicianName: reportData.technicianName ?? '',
+      technicianId: reportData.technicianId ?? '',
+      diagnosis: reportData.diagnosis ?? reportData.detalletrabajo ?? '',
+      solution: reportData.solution ?? reportData.resumenTrabajo ?? '',
+      createdAt: reportData.createdAt ?? r.created_at ?? '',
+      fechaInicio: reportData.fechaInicio ?? '',
+      fechaFin: reportData.fechaFin ?? '',
+      destinatario: reportData.destinatario ?? '',
+      direccion: reportData.direccion ?? '',
+      ubicacionRef: reportData.ubicacionRef ?? '',
+      comuna: reportData.comuna ?? '',
+      numeroATM: reportData.numeroATM ?? '',
+      serieATM: reportData.serieATM ?? '',
+      modeloMMBB: reportData.modeloMMBB ?? '',
+      serieMMBB: reportData.serieMMBB ?? '',
+      solicitante: reportData.solicitante ?? '',
+      valorServicio: reportData.valorServicio ?? '',
+      workOrderId: reportData.workOrderId ?? '',
+      materialsUsed: reportData.materialsUsed ?? [],
+      images: [], // Strip images in list view to keep client memory light
+    };
+  });
 
   return results;
 }
