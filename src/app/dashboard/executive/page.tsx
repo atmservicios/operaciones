@@ -135,7 +135,7 @@ export default function ExecutivePage() {
 
       servicios.forEach(s => {
         const workType = String(s.tipo_trabajo || "").toLowerCase();
-        if (workType.includes("elec") || workType.includes("cable") || workType.includes("enchufe") || workType.includes("lumin")) {
+        if (workType.includes("elec") || workType.includes("enchufe") || workType.includes("lumin")) {
           const m = getMonthName(s.fecha);
           if (m && electricMonths[m] !== undefined) {
             electricMonths[m] += 1;
