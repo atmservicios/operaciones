@@ -198,8 +198,7 @@ export default function ExecutivePage() {
       });
       const serviceTypeCounts = Object.entries(serviceTypeGroups)
         .map(([name, total]) => ({ name, total }))
-        .sort((a, b) => b.total - a.total)
-        .slice(0, 10);
+        .sort((a, b) => b.total - a.total);
       setServiceTypesData(serviceTypeCounts);
     };
 
