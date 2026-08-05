@@ -33,7 +33,7 @@ const fmtCLP = (v: number) => `$${(v / 1000000).toFixed(1)}M`;
 
 const getNormalizedWorkType = (workTypeRaw: string): string => {
   const w = String(workTypeRaw || "").trim().toUpperCase();
-  if (w.includes("VISITA INSPECTIVA") || w.includes("VISITA INAPECTIVA")) {
+  if (w.includes("VISITA INSPECTIVA")) {
     return "Visita Inspectiva";
   }
   if (w.includes("SERVICIO ELECTRICO")) {
