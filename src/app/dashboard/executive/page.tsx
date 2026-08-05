@@ -205,6 +205,18 @@ export default function ExecutivePage() {
     fetchData();
   }, []);
 
+  // Auto-select ATM if typed input matches a code exactly (case-insensitive & trimmed)
+  useEffect(() => {
+    if (!searchAtmInput.trim()) {
+      setSelectedAtm("");
+      return;
+    }
+    const match = allAtms.find(a => a.toLowerCase().trim() === searchAtmInput.toLowerCase().trim());
+    if (match && match !== selectedAtm) {
+      setSelectedAtm(match);
+    }
+  }, [searchAtmInput, allAtms, selectedAtm]);
+
   // Filter ATM suggestions
   const suggestions = allAtms.filter(a => 
     a.toLowerCase().includes(searchAtmInput.toLowerCase()) && a !== searchAtmInput
@@ -216,8 +228,11 @@ export default function ExecutivePage() {
     setShowAtmSuggestions(false);
   };
 
-  // Selected ATM services
-  const selectedAtmServices = allServices.filter(s => s.atm === selectedAtm);
+  // Selected ATM services (normalized exact comparison)
+  const selectedAtmServices = allServices.filter(s => {
+    if (!s.atm || !selectedAtm) return false;
+    return String(s.atm).trim().toLowerCase() === selectedAtm.trim().toLowerCase();
+  });
 
   // Group service types for selected ATM
   const selectedAtmTypesMap: Record<string, number> = {};
