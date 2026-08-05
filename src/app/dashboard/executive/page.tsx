@@ -31,6 +31,49 @@ const costData = [
 
 const fmtCLP = (v: number) => `$${(v / 1000000).toFixed(1)}M`;
 
+const getNormalizedWorkType = (workTypeRaw: string): string => {
+  const w = String(workTypeRaw || "").trim().toUpperCase();
+  if (w.includes("VISITA INSPECTIVA") || w.includes("VISITA INAPECTIVA")) {
+    return "Visita Inspectiva";
+  }
+  if (w.includes("SERVICIO ELECTRICO")) {
+    return "Servicio Eléctrico";
+  }
+  if (w.includes("CERRAJERIA") || w === "CERRAJERO") {
+    return "Cerrajería";
+  }
+  if (w.includes("DESRATIZACION")) {
+    return "Desratización";
+  }
+  if (w.includes("DESANCLAJE")) {
+    return "Desanclaje";
+  }
+  if (w.includes("ANCLAJE") && !w.includes("DESANCLAJE")) {
+    return "Anclaje";
+  }
+  if (w.includes("RECEPCION DE LLAVES") || w.includes("RECEPCIÓN DE LLAVES") || w.includes("ENTREGA DE LLAVES") || w.includes("RETIRO DE LLAVES")) {
+    return "Gestión de Llaves";
+  }
+  if (w.includes("REVISION ENLACE")) {
+    return "Revisión de Enlace";
+  }
+  if (w.includes("SUPERVISION ALARMA")) {
+    return "Supervisión Alarma";
+  }
+  if (w.includes("SUPERVISION NCR") || w.includes("SUPERVISAR A NCR") || w.includes("SUPERVISION A NCR")) {
+    return "Supervisión NCR";
+  }
+  if (w.includes("SUPERVISION A CARRIER") || w.includes("SUPERVISAR A CARRIER")) {
+    return "Supervisión Carrier";
+  }
+  if (w.includes("TRASLADO SERGIO CONTRERAS") || w.includes("TRASLADO GUSTAVO ROJAS")) {
+    return "Traslado de Personal";
+  }
+  
+  // Title case fallback
+  return w.split(" ").map(word => word.charAt(0) + word.slice(1).toLowerCase()).join(" ");
+};
+
 const COLORS = ["#72b01d", "#3b82f6", "#f59e0b", "#a78bfa", "#ec4899", "#14b8a6", "#e2e8f0"];
 
 export default function ExecutivePage() {
@@ -150,14 +193,11 @@ export default function ExecutivePage() {
       const serviceTypeGroups: Record<string, number> = {};
       servicios.forEach(s => {
         if (!s.tipo_trabajo || s.tipo_trabajo.trim() === "") return;
-        const name = s.tipo_trabajo.trim().toUpperCase();
+        const name = getNormalizedWorkType(s.tipo_trabajo);
         serviceTypeGroups[name] = (serviceTypeGroups[name] || 0) + 1;
       });
       const serviceTypeCounts = Object.entries(serviceTypeGroups)
-        .map(([name, total]) => ({ 
-          name: name.split(" ").map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(" "), 
-          total 
-        }))
+        .map(([name, total]) => ({ name, total }))
         .sort((a, b) => b.total - a.total)
         .slice(0, 10);
       setServiceTypesData(serviceTypeCounts);
@@ -183,7 +223,7 @@ export default function ExecutivePage() {
   // Group service types for selected ATM
   const selectedAtmTypesMap: Record<string, number> = {};
   selectedAtmServices.forEach(s => {
-    const type = s.tipo_trabajo || "General";
+    const type = getNormalizedWorkType(s.tipo_trabajo);
     selectedAtmTypesMap[type] = (selectedAtmTypesMap[type] || 0) + 1;
   });
   const selectedAtmTypesData = Object.entries(selectedAtmTypesMap).map(([name, value]) => ({ name, value }));
