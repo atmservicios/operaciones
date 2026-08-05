@@ -36,7 +36,7 @@ const getNormalizedWorkType = (workTypeRaw: string): string => {
   if (w.includes("VISITA INSPECTIVA")) {
     return "Visita Inspectiva";
   }
-  if (w.includes("SERVICIO ELECTRICO")) {
+  if (w.includes("SERVICIO ELECTRICO") || w.includes("ENCHUFE") || w.includes("LUMIN")) {
     return "Servicio Eléctrico";
   }
   if (w.includes("CERRAJERIA") || w === "CERRAJERO") {
@@ -179,7 +179,7 @@ export default function ExecutivePage() {
 
       servicios.forEach(s => {
         const workType = String(s.tipo_trabajo || "").toLowerCase();
-        if (workType.includes("elec") || workType.includes("enchufe") || workType.includes("lumin")) {
+        if (workType.includes("servicio electrico") || workType.includes("enchufe") || workType.includes("lumin")) {
           const m = getMonthName(s.fecha);
           if (m && electricMonths[m] !== undefined) {
             electricMonths[m] += 1;
