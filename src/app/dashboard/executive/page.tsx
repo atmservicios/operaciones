@@ -51,7 +51,7 @@ export default function ExecutivePage() {
       // Fetch needed fields from services (coordinations)
       const { data: serviciosData } = await supabase
         .from('servicios')
-        .select('atm, asignado_a, banco_empresa, tipo_de_trabajo, comuna, fecha');
+        .select('atm, asignado_a, banco_empresa, tipo_trabajo, comuna, fecha');
 
       const servicios = serviciosData || [];
       setAllServices(servicios);
@@ -134,7 +134,7 @@ export default function ExecutivePage() {
       };
 
       servicios.forEach(s => {
-        const workType = String(s.tipo_de_trabajo || "").toLowerCase();
+        const workType = String(s.tipo_trabajo || "").toLowerCase();
         if (workType.includes("elec") || workType.includes("cable") || workType.includes("enchufe") || workType.includes("lumin")) {
           const m = getMonthName(s.fecha);
           if (m && electricMonths[m] !== undefined) {
@@ -166,7 +166,7 @@ export default function ExecutivePage() {
   // Group service types for selected ATM
   const selectedAtmTypesMap: Record<string, number> = {};
   selectedAtmServices.forEach(s => {
-    const type = s.tipo_de_trabajo || "General";
+    const type = s.tipo_trabajo || "General";
     selectedAtmTypesMap[type] = (selectedAtmTypesMap[type] || 0) + 1;
   });
   const selectedAtmTypesData = Object.entries(selectedAtmTypesMap).map(([name, value]) => ({ name, value }));
@@ -365,7 +365,7 @@ export default function ExecutivePage() {
                       <td className="py-2 px-3 text-slate-200 font-semibold">{s.banco_empresa}</td>
                       <td className="py-2 px-3 text-slate-200">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold" style={{ background: "rgba(114,176,29,0.08)", color: "#93c947", border: "1px solid rgba(114,176,29,0.15)" }}>
-                          {s.tipo_de_trabajo || "General"}
+                          {s.tipo_trabajo || "General"}
                         </span>
                       </td>
                       <td className="py-2 px-3 text-slate-400">{s.comuna}</td>
