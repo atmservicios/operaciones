@@ -38,6 +38,7 @@ export default function ExecutivePage() {
   const [atmFaults, setAtmFaults] = useState<any[]>([]);
   const [comunasData, setComunasData] = useState<any[]>([]);
   const [electricData, setElectricData] = useState<any[]>([]);
+  const [serviceTypesData, setServiceTypesData] = useState<any[]>([]);
   
   // ATM analysis states
   const [allServices, setAllServices] = useState<any[]>([]);
@@ -144,6 +145,22 @@ export default function ExecutivePage() {
       });
       const electricCounts = Object.entries(electricMonths).map(([month, total]) => ({ month, total }));
       setElectricData(electricCounts);
+
+      // ── Gráfico 5: Conteo General por Tipo de Trabajo ────────────────
+      const serviceTypeGroups: Record<string, number> = {};
+      servicios.forEach(s => {
+        if (!s.tipo_trabajo || s.tipo_trabajo.trim() === "") return;
+        const name = s.tipo_trabajo.trim().toUpperCase();
+        serviceTypeGroups[name] = (serviceTypeGroups[name] || 0) + 1;
+      });
+      const serviceTypeCounts = Object.entries(serviceTypeGroups)
+        .map(([name, total]) => ({ 
+          name: name.split(" ").map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(" "), 
+          total 
+        }))
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 10);
+      setServiceTypesData(serviceTypeCounts);
     };
 
     fetchData();
@@ -434,6 +451,30 @@ export default function ExecutivePage() {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Service Types General Count Chart */}
+      <div className="glass-card p-5 relative overflow-hidden">
+        <div className="absolute -left-24 -bottom-24 w-48 h-48 rounded-full blur-[100px]" style={{ background: "rgba(167,139,250,0.08)" }} />
+        
+        <div className="flex items-center gap-2 mb-1">
+          <Activity size={18} className="text-[#a78bfa]" />
+          <h3 className="font-semibold text-sm text-slate-100">Distribución General por Tipo de Servicio</h3>
+        </div>
+        <div className="text-xs mb-4 text-slate-500">Conteo acumulado de coordinaciones agrupadas por tipo de trabajo (Top 10)</div>
+        
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={serviceTypesData} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
+            <XAxis type="number" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis type="category" dataKey="name" tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} width={140} />
+            <Tooltip 
+              contentStyle={{ background: "rgba(22, 26, 34, 0.95)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8 }}
+              itemStyle={{ color: "#f1f5f9", fontWeight: 600 }}
+            />
+            <Bar dataKey="total" radius={[0, 6, 6, 0]} fill="#a78bfa" name="Cantidad" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       {/* SLA by bank + Cost breakdown */}
