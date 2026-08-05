@@ -500,13 +500,13 @@ export default function ExecutivePage() {
           <Activity size={18} className="text-[#a78bfa]" />
           <h3 className="font-semibold text-sm text-slate-100">Distribución General por Tipo de Servicio</h3>
         </div>
-        <div className="text-xs mb-4 text-slate-500">Conteo acumulado de coordinaciones agrupadas por tipo de trabajo (Top 10)</div>
+        <div className="text-xs mb-4 text-slate-500">Conteo acumulado de coordinaciones agrupadas por tipo de trabajo (Todos los servicios)</div>
         
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={500}>
           <BarChart data={serviceTypesData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
             <XAxis type="number" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis type="category" dataKey="name" tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} width={140} />
+            <YAxis type="category" dataKey="name" tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} width={180} />
             <Tooltip 
               contentStyle={{ background: "rgba(22, 26, 34, 0.95)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8 }}
               itemStyle={{ color: "#f1f5f9", fontWeight: 600 }}
