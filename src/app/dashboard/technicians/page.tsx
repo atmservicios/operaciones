@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Search, Phone, Mail, MapPin, Award, X, TrendingUp,
-  CheckCircle2, Plus, Save, User, Pencil, Truck,
+  CheckCircle2, Plus, Save, User, Pencil, Truck, Trash2,
 } from "lucide-react";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
@@ -444,12 +444,13 @@ function EditTechModal({
 
 // ─── Tech Detail Modal ─────────────────────────────────────────────────────────
 function TechModal({
-  tech, onClose, onUpdateStatus, onEdit,
+  tech, onClose, onUpdateStatus, onEdit, onDelete,
 }: {
   tech: Technician;
   onClose: () => void;
   onUpdateStatus: (id: string, s: TechnicianStatus) => void;
   onEdit: () => void;
+  onDelete: (id: string) => void;
 }) {
   const radarData = [
     { subject: "Productividad", value: tech.productivity },
@@ -500,7 +501,7 @@ function TechModal({
         </div>
 
         {/* Edit button */}
-        <div className="px-6 pt-4">
+        <div className="px-6 pt-4 flex gap-3">
           <button
             onClick={onEdit}
             style={{
@@ -511,6 +512,17 @@ function TechModal({
             }}
           >
             <Pencil size={14} /> Editar datos
+          </button>
+          <button
+            onClick={() => onDelete(tech.id)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 16px", background: "rgba(239, 68, 68, 0.12)",
+              color: "#ef4444", borderRadius: 8, fontSize: 13, fontWeight: 600,
+              border: "1px solid rgba(239, 68, 68, 0.25)", cursor: "pointer", fontFamily: "inherit",
+            }}
+          >
+            <Trash2 size={14} /> Eliminar Técnico
           </button>
         </div>
 
@@ -757,6 +769,19 @@ export default function TechniciansPage() {
     await supabase.from('tecnicos').update({ status: newStatus }).eq('id', id);
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar a este técnico? Esta acción no se puede deshacer y lo removerá de la base de datos.")) {
+      return;
+    }
+    const { error } = await supabase.from('tecnicos').delete().eq('id', id);
+    if (error) {
+      alert("Error al eliminar el técnico: " + error.message);
+      return;
+    }
+    setTechnicians(prev => prev.filter(t => t.id !== id));
+    setSelectedTech(null);
+  };
+
 
   return (
     <div className="space-y-6">
@@ -816,6 +841,7 @@ export default function TechniciansPage() {
           onClose={() => setSelectedTech(null)}
           onUpdateStatus={handleUpdateStatus}
           onEdit={() => setEditingTech(selectedTech)}
+          onDelete={handleDelete}
         />
       )}
       {editingTech && (
