@@ -287,21 +287,21 @@ function CoordinacionContent() {
     
     const rows = filtered.map(r => {
       const rowData: any = {
-        "Ticket": r.ticket || "",
         "Fecha": r.fecha || "",
         "Hora Inicio": r.hora_inicio || "",
         "Hora Termino": r.hora_termino || "",
         "Tipo de Trabajo": r.tipo_trabajo || "",
         "Local": r.local || "",
         "Direccion": r.direccion || "",
-        "ATM": r.atm || "",
         "Comuna": r.comuna || "",
+        "ATM": r.atm || "",
         "Asignado a": r.asignado_a || "",
         "Solicitante": r.nombre_solicitante || "",
         "Solicitado por": r.solicitado_por || "",
         "Banco/Empresa": r.banco_empresa || "",
         "Informe": r.informe || "",
-        "OT": r.ot || ""
+        "OT": r.ot || "",
+        "Ticket": r.ticket || ""
       };
       if (filterTipo === "CERRAJERIA") {
         rowData["Precio Pinares"] = r.precio_pinares || "";
