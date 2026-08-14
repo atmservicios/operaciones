@@ -288,7 +288,7 @@ function CoordinacionContent() {
     const rows = filtered.map(r => {
       const rowData: any = {
         "OT": r.ot || "",
-        "Ticket": r.ticket || "",
+        "N° de Ticket": r.ticket || "",
         "Fecha": r.fecha || "",
         "Hora Inicio": r.hora_inicio || "",
         "Hora Termino": r.hora_termino || "",
