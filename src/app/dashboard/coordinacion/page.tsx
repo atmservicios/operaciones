@@ -26,6 +26,7 @@ interface ProgramacionRow {
   banco_empresa: string | null;
   informe: string | null;
   ot: string | null;
+  ticket?: string | null;
   precio_pinares?: string | null;
 }
 
@@ -222,7 +223,7 @@ function CoordinacionContent() {
       const matchSearch =
         !q ||
         [row.fecha, row.tipo_trabajo, row.local, row.direccion, row.atm, row.comuna,
-          row.asignado_a, row.nombre_solicitante, row.banco_empresa, row.ot]
+          row.asignado_a, row.nombre_solicitante, row.banco_empresa, row.ot, row.ticket]
           .some((f) => (f || "").toLowerCase().includes(q));
       const matchBanco = filterBanco === "all" || row.banco_empresa === filterBanco;
       const matchInf = filterInforme === "all" || row.informe === filterInforme;
@@ -287,6 +288,7 @@ function CoordinacionContent() {
     const rows = filtered.map(r => {
       const rowData: any = {
         "OT": r.ot || "",
+        "Ticket": r.ticket || "",
         "Fecha": r.fecha || "",
         "Hora Inicio": r.hora_inicio || "",
         "Hora Termino": r.hora_termino || "",
@@ -382,6 +384,7 @@ function CoordinacionContent() {
   // Mapeo de campos para el formulario
   const formFields = [
     { key: "ot", label: "OT" },
+    { key: "ticket", label: "N° de Ticket" },
     { key: "fecha", label: "Fecha (DD-MM-YYYY)" },
     { key: "hora_inicio", label: "Hora Inicio" },
     { key: "hora_termino", label: "Hora Término" },
@@ -522,6 +525,7 @@ function CoordinacionContent() {
                 {(() => {
                   const headers = [
                     { label: "OT", icon: Hash },
+                    { label: "Ticket", icon: Hash },
                     { label: "Fecha", icon: Calendar },
                     { label: "Hora Inicio", icon: Clock },
                     { label: "Hora Término", icon: Clock },
@@ -567,13 +571,13 @@ function CoordinacionContent() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={14} style={{ textAlign: "center", padding: 40, color: "#475569" }}>
+                  <td colSpan={16} style={{ textAlign: "center", padding: 40, color: "#475569" }}>
                     Conectando con Supabase...
                   </td>
                 </tr>
               ) : paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={14} style={{ textAlign: "center", padding: 40, color: "#475569" }}>
+                  <td colSpan={16} style={{ textAlign: "center", padding: 40, color: "#475569" }}>
                     No se encontraron registros
                   </td>
                 </tr>
@@ -600,6 +604,10 @@ function CoordinacionContent() {
                         <span style={{ fontWeight: 700, color: "#72b01d", fontSize: 12 }}>
                           {row.ot || "—"}
                         </span>
+                      </td>
+                      {/* Ticket */}
+                      <td style={{ padding: "10px 14px", whiteSpace: "nowrap", color: "#cbd5e1", fontSize: 12 }}>
+                        {row.ticket || "—"}
                       </td>
                       {/* Fecha */}
                       <td style={{ padding: "10px 14px", whiteSpace: "nowrap", color: "#cbd5e1", fontSize: 12 }}>
