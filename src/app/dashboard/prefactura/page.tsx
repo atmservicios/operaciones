@@ -503,6 +503,9 @@ export default function PrefacturaPage() {
                   FECHA
                 </th>
                 <th style={{ padding: "10px 12px", textAlign: "left", color: "#64748b", fontWeight: 700 }}>
+                  BANCO / EMPRESA
+                </th>
+                <th style={{ padding: "10px 12px", textAlign: "left", color: "#64748b", fontWeight: 700 }}>
                   SERVICIO COORDINACIÓN
                 </th>
                 <th style={{ padding: "10px 12px", textAlign: "left", color: "#64748b", fontWeight: 700, minWidth: 280 }}>
@@ -519,14 +522,14 @@ export default function PrefacturaPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={11} style={{ textAlign: "center", padding: 40, color: "#64748b" }}>
+                  <td colSpan={12} style={{ textAlign: "center", padding: 40, color: "#64748b" }}>
                     Cargando coordinaciones desde Supabase...
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={11} style={{ textAlign: "center", padding: 40, color: "#64748b" }}>
-                    No se encontraron servicios para los filtros seleccionados
+                  <td colSpan={12} style={{ textAlign: "center", padding: 40, color: "#64748b" }}>
+                    No se encontraron servicios de Banco Santander para los filtros seleccionados
                   </td>
                 </tr>
               ) : (
@@ -603,6 +606,13 @@ export default function PrefacturaPage() {
                       {/* Fecha */}
                       <td style={{ padding: "10px 12px", whiteSpace: "nowrap", color: "#cbd5e1" }}>
                         {row.fecha || "—"}
+                      </td>
+
+                      {/* Banco / Empresa */}
+                      <td style={{ padding: "10px 12px", whiteSpace: "nowrap" }}>
+                        <span className="px-2 py-0.5 rounded text-[11px] font-semibold" style={{ background: "rgba(236,0,0,0.12)", color: "#ff6b6b", border: "1px solid rgba(236,0,0,0.25)" }}>
+                          {row.banco_empresa || "SANTANDER"}
+                        </span>
                       </td>
 
                       {/* Servicio Coordinación */}
@@ -728,6 +738,10 @@ export default function PrefacturaPage() {
                   <div>
                     <span className="text-slate-500 block">B9 (FECHA EJECUCIÓN):</span>
                     <span className="text-white font-medium">{previewRow.row.fecha || "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">BANCO / EMPRESA:</span>
+                    <span className="text-red-400 font-semibold">{previewRow.row.banco_empresa || "SANTANDER"}</span>
                   </div>
                 </div>
               </div>
