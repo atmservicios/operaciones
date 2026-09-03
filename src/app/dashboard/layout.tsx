@@ -22,6 +22,7 @@ interface UserProfile {
 const navItems = [
   { href: "/dashboard",              icon: LayoutDashboard, label: "Dashboard",           badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",        badge: null,  roles: ['administrador','supervisor','operaria'] },
+  { href: "/dashboard/prefactura",   icon: FileSpreadsheet, label: "Prefactura",          badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/calculadora-traslado", icon: Calculator, label: "Calculadora de Traslado", badge: null, roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/technicians",  icon: Users,           label: "Técnicos",            badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/revisiones",   icon: Truck,           label: "Revisiones Técnicas", badge: null,  roles: ['administrador','supervisor','operaria'] },
