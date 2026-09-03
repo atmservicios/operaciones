@@ -63,7 +63,6 @@ export default function PrefacturaPage() {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [filterBanco, setFilterBanco] = useState("all");
   const [filterMes, setFilterMes] = useState("ALL");
   const [filterAnio, setFilterAnio] = useState("2026");
 
@@ -76,7 +75,8 @@ export default function PrefacturaPage() {
     setLoading(true);
     const { data: servicios, error } = await supabase
       .from("servicios")
-      .select("*");
+      .select("*")
+      .ilike("banco_empresa", "%santander%");
 
     if (error) {
       console.error("Error fetching servicios:", error.message);
@@ -107,23 +107,19 @@ export default function PrefacturaPage() {
     fetchServicios();
   }, []);
 
-  // Distinct banks
-  const bancos = useMemo(() => {
-    const set = new Set(data.map((r) => r.banco_empresa).filter(Boolean));
-    return Array.from(set).sort() as string[];
-  }, [data]);
-
-  // Filtered rows
+  // Filtered rows (strictly Santander)
   const filtered = useMemo(() => {
     return data.filter((row) => {
+      // Solo los que dicen Santander
+      const isSantander = (row.banco_empresa || "").toUpperCase().includes("SANTANDER");
+      if (!isSantander) return false;
+
       const q = search.toLowerCase();
       const matchSearch =
         !q ||
         [row.fecha, row.tipo_trabajo, row.local, row.direccion, row.atm, row.comuna,
           row.asignado_a, row.nombre_solicitante, row.banco_empresa, row.ot, row.ticket]
           .some((f) => (f || "").toLowerCase().includes(q));
-
-      const matchBanco = filterBanco === "all" || row.banco_empresa === filterBanco;
 
       let matchFecha = true;
       if (row.fecha) {
@@ -140,9 +136,9 @@ export default function PrefacturaPage() {
         matchFecha = false;
       }
 
-      return matchSearch && matchBanco && matchFecha;
+      return matchSearch && matchFecha;
     });
-  }, [data, search, filterBanco, filterMes, filterAnio]);
+  }, [data, search, filterMes, filterAnio]);
 
   // When filtered changes, by default select all filtered rows
   useEffect(() => {
@@ -239,7 +235,7 @@ export default function PrefacturaPage() {
 
       const payload = {
         periodo: periodoTexto,
-        banco: filterBanco !== "all" ? filterBanco : "General",
+        banco: "SANTANDER",
         servicios: selectedRows.slice(0, 250).map((r, idx) => {
           const cust = getRowCustomization(r);
           return {
@@ -277,9 +273,8 @@ export default function PrefacturaPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      const bancoTitle = filterBanco !== "all" ? filterBanco.replace(/\s+/g, "_") : "Todos";
       const mesTitle = filterMes !== "ALL" ? `_${filterMes}` : "";
-      a.download = `Prefactura_${bancoTitle}${mesTitle}_${filterAnio}.xlsx`;
+      a.download = `Prefactura_SANTANDER${mesTitle}_${filterAnio}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -302,9 +297,9 @@ export default function PrefacturaPage() {
               <FileSpreadsheet size={24} style={{ color: "#93c947" }} />
             </div>
             <div>
-              <h2 className="section-title text-xl font-bold">Prefactura</h2>
+              <h2 className="section-title text-xl font-bold">Prefactura Santander</h2>
               <p className="section-subtitle text-xs text-slate-400">
-                Generador de prefactura multi-hoja por cajero basado en la plantilla oficial de adhesión
+                Generador de prefactura multi-hoja por cajero exclusivo para Banco Santander (adhesión)
               </p>
             </div>
           </div>
@@ -413,18 +408,13 @@ export default function PrefacturaPage() {
             )}
           </div>
 
-          {/* Banco / Empresa */}
-          <div>
-            <select
-              className="ops-select text-xs w-full"
-              value={filterBanco}
-              onChange={(e) => setFilterBanco(e.target.value)}
-            >
-              <option value="all">Todos los Bancos / Clientes</option>
-              {bancos.map((b) => (
-                <option key={b} value={b}>{b}</option>
-              ))}
-            </select>
+          {/* Banco Santander Exclusivo */}
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl ops-input text-xs" style={{ background: "rgba(236,0,0,0.08)", border: "1px solid rgba(236,0,0,0.25)" }}>
+            <Building2 size={15} style={{ color: "#ec0000" }} />
+            <span className="font-bold text-white">Banco Santander</span>
+            <span className="ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "rgba(236,0,0,0.2)", color: "#ff8787" }}>
+              Exclusivo
+            </span>
           </div>
 
           {/* Mes */}
