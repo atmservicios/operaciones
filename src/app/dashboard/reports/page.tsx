@@ -9,7 +9,7 @@ import {
 import { mockWorkOrders } from "@/lib/mock-data";
 import { formatDateTime, formatDate } from "@/lib/utils";
 import type { TechnicalReport } from "@/types";
-import { getReportsDB, saveReportDB, deleteReportDB, getReportByIdDB } from "@/lib/reportsDb";
+import { getReportsDB, saveReportDB, deleteReportDB, getReportByIdDB, searchReportsDB } from "@/lib/reportsDb";
 
 // ─── Word Document Generation Utility ─────────────────────────────────────────
 const formatDateForWord = (dateString?: string) => {
@@ -764,6 +764,11 @@ export default function ReportsPage() {
   const [showNew, setShowNew] = useState(false);
   const [viewReport, setViewReport] = useState<TechnicalReport | null>(null);
   const [reports, setReports] = useState<TechnicalReport[]>([]);
+  const [totalReports, setTotalReports] = useState(0);
+  const [searchResults, setSearchResults] = useState<TechnicalReport[] | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [editingReport, setEditingReport] = useState<TechnicalReport | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<TechnicalReport | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -773,15 +778,59 @@ export default function ReportsPage() {
   useEffect(() => {
     const loadReports = async () => {
       try {
-        const saved = await getReportsDB();
+        const { reports: saved, total } = await getReportsDB(10, 1);
         setReports(saved);
+        setTotalReports(total);
       } catch (e) {
-        console.error("Error loading reports from Supabase:", e);
+        console.error("Error loading reports:", e);
         setReports([]);
       }
     };
     loadReports();
   }, []);
+
+  // Database-wide search effect with debounce
+  useEffect(() => {
+    if (!search.trim()) {
+      setSearchResults(null);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await searchReportsDB(search);
+        setSearchResults(results);
+      } catch (e) {
+        console.error("Error searching reports across database:", e);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const handleLoadMore = async () => {
+    if (loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const { reports: more, total } = await getReportsDB(10, nextPage);
+      setReports((prev) => {
+        const ids = new Set(prev.map((r) => r.id));
+        const filtered = more.filter((r) => !ids.has(r.id));
+        return [...prev, ...filtered];
+      });
+      setTotalReports(total);
+      setPage(nextPage);
+    } catch (e) {
+      console.error("Error loading more reports:", e);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const handleOpenViewer = async (reportId: string) => {
     setLoadingDetail(true);
@@ -892,21 +941,7 @@ export default function ReportsPage() {
     (o) => o.status === "finalizada" && !reports.find((r) => r.workOrderId === o.id)
   );
 
-  const filteredReports = reports.filter((r) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase().trim();
-    return (
-      (r.otNumber || "").toLowerCase().includes(q) ||
-      (r.clientName || "").toLowerCase().includes(q) ||
-      (r.technicianName || "").toLowerCase().includes(q) ||
-      (r.diagnosis || "").toLowerCase().includes(q) ||
-      ((r as any).numeroATM || "").toLowerCase().includes(q) ||
-      ((r as any).direccion || "").toLowerCase().includes(q) ||
-      ((r as any).comuna || "").toLowerCase().includes(q) ||
-      ((r as any).solicitante || "").toLowerCase().includes(q) ||
-      ((r as any).destinatario || "").toLowerCase().includes(q)
-    );
-  });
+  const displayReports = searchResults !== null ? searchResults : reports;
 
   return (
     <div className="space-y-6">
@@ -916,7 +951,9 @@ export default function ReportsPage() {
           <h2 className="section-title">Informes Técnicos</h2>
           <p className="section-subtitle">
             Creación y gestión de informes de servicio en terreno
-            {search.trim() ? ` · Mostrando ${filteredReports.length} de ${reports.length}` : ` · ${reports.length} informes`}
+            {search.trim()
+              ? ` · Mostrando ${displayReports.length} ${displayReports.length === 1 ? 'resultado encontrado' : 'resultados encontrados'} en toda la base de datos`
+              : ` · Mostrando los últimos ${reports.length} de ${totalReports || reports.length} informes en base de datos`}
           </p>
         </div>
         <button
@@ -936,10 +973,10 @@ export default function ReportsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: "Informes generados", value: reports.length, color: "#72b01d" },
+          { label: "Informes en base de datos", value: totalReports || reports.length, color: "#72b01d" },
           { label: "Este mes", value: 1, color: "#cbd5e1" },
           { label: "Pendientes de informe", value: pendingOrders.length, color: "#f59e0b" },
-          { label: "Con Word generado", value: reports.length, color: "#578814" },
+          { label: "Con Word generado", value: totalReports || reports.length, color: "#578814" },
         ].map((s) => (
           <div key={s.label} className="stat-card py-3">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
@@ -950,10 +987,14 @@ export default function ReportsPage() {
 
       {/* Search Bar */}
       <div className="relative">
-        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        {isSearching ? (
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-slate-500 border-t-[#72b01d] rounded-full animate-spin" />
+        ) : (
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        )}
         <input
           type="text"
-          placeholder="Buscar por N° de OT, cliente, cajero ATM, técnico, dirección, comuna..."
+          placeholder="Buscar por N° de OT, cliente, cajero ATM, técnico, dirección, comuna en toda la base de datos..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="ops-input pl-10 pr-10 text-xs sm:text-sm w-full py-2.5 rounded-xl"
@@ -976,7 +1017,7 @@ export default function ReportsPage() {
 
       {/* Reports list */}
       <div className="space-y-3">
-        {filteredReports.length === 0 ? (
+        {displayReports.length === 0 ? (
           <div className="glass-card p-12 text-center rounded-xl">
             <FileText size={40} className="mx-auto text-slate-500 mb-3 opacity-50" />
             <div className="text-sm font-semibold text-slate-300">
@@ -993,7 +1034,7 @@ export default function ReportsPage() {
             )}
           </div>
         ) : (
-          filteredReports.map((r) => (
+          displayReports.map((r) => (
           <div key={r.id} className="glass-card p-5">
             <div className="flex flex-col md:flex-row items-start md:justify-between gap-4">
               <div className="flex items-start gap-4 w-full">
@@ -1062,6 +1103,33 @@ export default function ReportsPage() {
           </div>
         ))
       )}
+
+        {!search.trim() && reports.length < totalReports && (
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="btn-secondary text-xs px-5 py-2.5 flex items-center gap-2 rounded-xl transition-all"
+              style={{
+                background: "rgba(114,176,29,0.08)",
+                border: "1px solid rgba(114,176,29,0.25)",
+                color: "#93c947",
+                fontWeight: 600,
+              }}
+            >
+              {loadingMore ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-[#72b01d]/40 border-t-[#72b01d] rounded-full animate-spin" />
+                  Cargando más informes...
+                </>
+              ) : (
+                <>
+                  Ver más informes ({reports.length} de {totalReports})
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── Modal Confirmar Borrar ── */}
