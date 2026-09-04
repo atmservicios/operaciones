@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import {
   FileText, Plus, Download, Send, Eye, X, ClipboardList, MapPin,
   Monitor, Cpu, User, Calendar, ImageIcon, Save, FileOutput,
-  CheckCircle2, Trash2, Clock, Edit,
+  CheckCircle2, Trash2, Clock, Edit, Search,
 } from "lucide-react";
 import { mockWorkOrders } from "@/lib/mock-data";
 import { formatDateTime, formatDate } from "@/lib/utils";
@@ -768,6 +768,7 @@ export default function ReportsPage() {
   const [confirmDelete, setConfirmDelete] = useState<TechnicalReport | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const loadReports = async () => {
@@ -891,13 +892,32 @@ export default function ReportsPage() {
     (o) => o.status === "finalizada" && !reports.find((r) => r.workOrderId === o.id)
   );
 
+  const filteredReports = reports.filter((r) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase().trim();
+    return (
+      (r.otNumber || "").toLowerCase().includes(q) ||
+      (r.clientName || "").toLowerCase().includes(q) ||
+      (r.technicianName || "").toLowerCase().includes(q) ||
+      (r.diagnosis || "").toLowerCase().includes(q) ||
+      ((r as any).numeroATM || "").toLowerCase().includes(q) ||
+      ((r as any).direccion || "").toLowerCase().includes(q) ||
+      ((r as any).comuna || "").toLowerCase().includes(q) ||
+      ((r as any).solicitante || "").toLowerCase().includes(q) ||
+      ((r as any).destinatario || "").toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="section-title">Informes Técnicos</h2>
-          <p className="section-subtitle">Creación y gestión de informes de servicio en terreno</p>
+          <p className="section-subtitle">
+            Creación y gestión de informes de servicio en terreno
+            {search.trim() ? ` · Mostrando ${filteredReports.length} de ${reports.length}` : ` · ${reports.length} informes`}
+          </p>
         </div>
         <button
           onClick={() => setShowNew(true)}
@@ -928,11 +948,52 @@ export default function ReportsPage() {
         ))}
       </div>
 
-
+      {/* Search Bar */}
+      <div className="relative">
+        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          type="text"
+          placeholder="Buscar por N° de OT, cliente, cajero ATM, técnico, dirección, comuna..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="ops-input pl-10 pr-10 text-xs sm:text-sm w-full py-2.5 rounded-xl"
+          style={{
+            background: "rgba(27,30,36,0.9)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            color: "#f1f5f9",
+          }}
+        />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+            title="Limpiar búsqueda"
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
 
       {/* Reports list */}
       <div className="space-y-3">
-        {reports.map((r) => (
+        {filteredReports.length === 0 ? (
+          <div className="glass-card p-12 text-center rounded-xl">
+            <FileText size={40} className="mx-auto text-slate-500 mb-3 opacity-50" />
+            <div className="text-sm font-semibold text-slate-300">
+              {search ? `No se encontraron informes que coincidan con "${search}"` : "No hay informes registrados"}
+            </div>
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="mt-3 text-xs font-semibold px-3 py-1.5 rounded-lg"
+                style={{ background: "rgba(114,176,29,0.15)", color: "#93c947", border: "1px solid rgba(114,176,29,0.3)" }}
+              >
+                Limpiar búsqueda
+              </button>
+            )}
+          </div>
+        ) : (
+          filteredReports.map((r) => (
           <div key={r.id} className="glass-card p-5">
             <div className="flex flex-col md:flex-row items-start md:justify-between gap-4">
               <div className="flex items-start gap-4 w-full">
@@ -999,9 +1060,8 @@ export default function ReportsPage() {
               </div>
             </div>
           </div>
-        ))}
-
-
+        ))
+      )}
       </div>
 
       {/* ── Modal Confirmar Borrar ── */}
