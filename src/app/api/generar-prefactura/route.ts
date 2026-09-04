@@ -41,6 +41,26 @@ export async function POST(request: NextRequest) {
     if (periodo) titleParts.push(periodo.toUpperCase());
     sheetResumen.cell('A1').value(titleParts.join(' - '));
 
+    // Ensure servicios are sorted from first day of month to last day (chronological ascending: 1 al 31)
+    servicios.sort((a: any, b: any) => {
+      const parseD = (d: string | null) => {
+        if (!d) return 0;
+        const p = String(d).trim().split('-');
+        if (p.length === 3) {
+          let y = p[2];
+          if (y.length === 2) y = `20${y}`;
+          const day = p[0].padStart(2, '0');
+          const month = p[1].padStart(2, '0');
+          return new Date(`${y}-${month}-${day}`).getTime() || 0;
+        }
+        return 0;
+      };
+      const dateA = parseD(a.fecha);
+      const dateB = parseD(b.fecha);
+      if (dateA !== dateB) return dateA - dateB;
+      return (a.id || 0) - (b.id || 0);
+    });
+
     // Limit to 250 sheets maximum (the template has sheets "1" through "250")
     const maxServices = Math.min(servicios.length, 250);
 

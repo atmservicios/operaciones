@@ -81,22 +81,24 @@ export default function PrefacturaPage() {
     if (error) {
       console.error("Error fetching servicios:", error.message);
     } else if (servicios) {
-      // Sort: newest to oldest by date
+      // Sort: chronological ascending order (from first day of month to last day: 1 al 31)
       servicios.sort((a, b) => {
         const parseD = (d: string | null) => {
           if (!d) return 0;
-          const p = d.split('-');
+          const p = d.trim().split('-');
           if (p.length === 3) {
             let y = p[2];
             if (y.length === 2) y = `20${y}`;
-            return new Date(`${y}-${p[1]}-${p[0]}`).getTime();
+            const day = p[0].padStart(2, '0');
+            const month = p[1].padStart(2, '0');
+            return new Date(`${y}-${month}-${day}`).getTime() || 0;
           }
           return 0;
         };
         const dateA = parseD(a.fecha);
         const dateB = parseD(b.fecha);
-        if (dateB !== dateA) return dateB - dateA;
-        return b.id - a.id;
+        if (dateA !== dateB) return dateA - dateB;
+        return a.id - b.id;
       });
       setData(servicios);
     }
