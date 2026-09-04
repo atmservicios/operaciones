@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       sheetNum.cell('B4').value(atmStr);
       sheetNum.cell('B5').value(localStr);
       sheetNum.cell('B6').value(ticketStr);
-      sheetNum.cell('B7').value(otStr);
+      sheetNum.cell('B7').value(''); // Celda B7 (OT) vacía según solicitud
       sheetNum.cell('B8').value(tipoMaquinaStr);
       sheetNum.cell('B9').value(fechaStr);
 
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
       // ── Populate corresponding row in "RESUMEN PRE FACTURA" ────────
       const resumenRow = 4 + i;
-      sheetResumen.cell(`B${resumenRow}`).value(otStr);
+      sheetResumen.cell(`B${resumenRow}`).value(''); // Columna OT vacía
       sheetResumen.cell(`C${resumenRow}`).value(ticketStr);
       sheetResumen.cell(`F${resumenRow}`).value(tipoMaquinaStr);
       sheetResumen.cell(`G${resumenRow}`).value(atmStr);

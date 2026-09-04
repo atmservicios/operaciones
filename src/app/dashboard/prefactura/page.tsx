@@ -244,7 +244,7 @@ export default function PrefacturaPage() {
             hojaIndex: idx + 1,
             atm: r.atm || "",
             local: r.local || "",
-            ot: r.ot || "",
+            ot: "", // OT vacía en la prefactura según requerimiento
             ticket: r.ticket || "",
             fecha: r.fecha || "",
             tipo_trabajo: r.tipo_trabajo || "",
@@ -731,7 +731,7 @@ export default function PrefacturaPage() {
                   </div>
                   <div>
                     <span className="text-slate-500 block">B7 (OT):</span>
-                    <span className="text-[#93c947] font-medium">{previewRow.row.ot || "—"}</span>
+                    <span className="text-slate-400 font-medium italic">— (Vacío)</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block">B8 (TIPO MÁQUINA):</span>
