@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { generarDocx } from '@/lib/generarDocx';
 import { Informe } from '@/types/informe';
 import { supabaseInforme } from '@/lib/supabaseInforme';
+import { getReportFileName } from '@/lib/utils';
 
 export const runtime = 'nodejs';
 
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     const buffer = await generarDocx(informe);
     const uint8 = new Uint8Array(buffer);
 
-    const fileName = `Informe-OT-${informe.numeroATM || 'nuevo'}.docx`;
+    const fileName = getReportFileName(informe, 'docx');
 
     return new Response(uint8, {
       status: 200,

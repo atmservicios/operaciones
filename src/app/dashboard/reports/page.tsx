@@ -7,7 +7,7 @@ import {
   CheckCircle2, Trash2, Clock, Edit, Search,
 } from "lucide-react";
 import { mockWorkOrders } from "@/lib/mock-data";
-import { formatDateTime, formatDate } from "@/lib/utils";
+import { formatDateTime, formatDate, getReportFileName } from "@/lib/utils";
 import type { TechnicalReport } from "@/types";
 import { getReportsDB, saveReportDB, deleteReportDB, getReportByIdDB, searchReportsDB } from "@/lib/reportsDb";
 
@@ -29,7 +29,7 @@ const formatDateForWord = (dateString?: string) => {
 };
 
 const downloadReportAsWord = async (report: any) => {
-  const filename = `Informe_OT_${report.otNumber || "10895"}.docx`;
+  const filename = getReportFileName(report, 'docx');
   
   const mappedInforme = {
     numeroOT: report.otNumber || "",
@@ -149,7 +149,7 @@ const downloadReportAsPdf = async (report: any) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Informe_OT_${report.otNumber || "10895"}.pdf`;
+    a.download = getReportFileName(report, 'pdf');
     a.target = '_blank';
     document.body.appendChild(a);
     a.click();

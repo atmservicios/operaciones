@@ -90,3 +90,61 @@ export function getStatusBg(status: string): string {
 export function truncate(str: string, maxLength: number): string {
   return str.length > maxLength ? str.slice(0, maxLength) + "…" : str;
 }
+
+/**
+ * Genera el nombre del archivo de informe técnico según la estructura solicitada:
+ * [Destinatario] Informe_OT_[N° OT] [Ubicación / Referencia] [ATM N°] [Detalle sin precio].[ext]
+ * Ejemplo: Santander Informe_OT_11.222 SUCURSAL PRINCIPE DE GALES LA REINA ATM 601 CONEXION DE EQUIPOS.docx
+ */
+export function getReportFileName(report: any, extension: 'docx' | 'pdf' = 'docx'): string {
+  if (!report) return `Informe_OT.${extension}`;
+
+  const sanitize = (str?: string) =>
+    (str || '')
+      .replace(/[/\\?%*:|"<>]/g, '')
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  // 1. Destinatario
+  const destinatario = sanitize(report.destinatario || report.clientName);
+
+  // 2. OT
+  const rawOt = String(report.numeroOT || report.otNumber || '').trim();
+  const otClean = rawOt
+    .replace(/^Informe_OT_/i, '')
+    .replace(/^OT[-_\s]*/i, '')
+    .replace(/[/\\?%*:|"<>]/g, '')
+    .trim();
+  const otPart = otClean ? `Informe_OT_${otClean}` : 'Informe_OT';
+
+  // 3. Ubicación / Referencia
+  const ubicacion = sanitize(report.ubicacion || report.ubicacionRef || report.direccion);
+
+  // 4. ATM
+  let atmPart = '';
+  const rawAtm = report.numeroATM !== undefined && report.numeroATM !== null ? String(report.numeroATM).trim() : '';
+  if (rawAtm) {
+    const cleanAtm = sanitize(rawAtm);
+    if (cleanAtm) {
+      atmPart = /^ATM\b/i.test(cleanAtm) ? cleanAtm : `ATM ${cleanAtm}`;
+    }
+  }
+
+  // 5. Detalle (solo detalle sin precio)
+  let detalle = sanitize(report.detalle || report.diagnosis || report.detalletrabajo || report.solution || '');
+  // Eliminar precios si existiesen en el texto (ej: $ 139.000, + IVA, etc.)
+  detalle = detalle.replace(/\$\s*[\d.,]+(?:\s*\+\s*IVA)?/gi, '').trim();
+  if (detalle.length > 70) {
+    detalle = detalle.substring(0, 70).trim();
+  }
+
+  const parts = [destinatario, otPart, ubicacion, atmPart, detalle].filter(Boolean);
+
+  let baseName = parts.join(' ').replace(/\s+/g, ' ').trim();
+  if (!baseName) {
+    baseName = `Informe_OT_${rawOt || '10895'}`;
+  }
+
+  return `${baseName}.${extension}`;
+}
