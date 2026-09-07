@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, Suspense } from "react";
 import {
   Search, Calendar, Clock, MapPin, User, Building2, FileText,
-  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2, Download
+  Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2, Download, Copy
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { Technician } from "@/types";
@@ -330,6 +330,14 @@ function CoordinacionContent() {
   const handleOpenEdit = (row: ProgramacionRow) => {
     setEditingRow(row);
     setFormData(row);
+    setIsModalOpen(true);
+  };
+
+  const handleDuplicate = (e: React.MouseEvent, row: ProgramacionRow) => {
+    e.stopPropagation();
+    const { id, created_at, ...copyData } = row as any;
+    setEditingRow(null);
+    setFormData({ ...copyData });
     setIsModalOpen(true);
   };
 
@@ -715,6 +723,25 @@ function CoordinacionContent() {
                       <td style={{ padding: "10px 14px", textAlign: "right" }}>
                         <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
                           <button
+                            onClick={(e) => handleDuplicate(e, row)}
+                            style={{
+                              background: "rgba(56,189,248,0.1)",
+                              color: "#38bdf8",
+                              border: "1px solid rgba(56,189,248,0.25)",
+                              borderRadius: "6px",
+                              padding: "4px 8px",
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              fontSize: "11px",
+                              fontWeight: 600,
+                            }}
+                            title="Duplicar este servicio para este cajero"
+                          >
+                            <Copy size={12} /> Duplicar
+                          </button>
+                          <button
                             onClick={(e) => { e.stopPropagation(); handleOpenEdit(row); }}
                             style={{
                               background: "rgba(114,176,29,0.1)",
@@ -847,10 +874,18 @@ function CoordinacionContent() {
             <div className="flex items-center justify-between p-5 shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               <div>
                 <div style={{ color: "#f1f5f9", fontSize: 16, fontWeight: 700 }}>
-                  {editingRow ? `Editar Coordinación #${editingRow.ot || editingRow.id}` : "Nueva Coordinación"}
+                  {editingRow
+                    ? `Editar Coordinación #${editingRow.ot || editingRow.id}`
+                    : formData.atm
+                    ? `Duplicar Coordinación (ATM ${formData.atm})`
+                    : "Nueva Coordinación"}
                 </div>
                 <div style={{ color: "#475569", fontSize: 12, marginTop: 2 }}>
-                  {editingRow ? "Modifica los campos del registro seleccionado." : "Ingresa los datos para el nuevo registro."}
+                  {editingRow
+                    ? "Modifica los campos del registro seleccionado."
+                    : formData.atm
+                    ? "Crea un nuevo servicio con los datos prellenados de este cajero."
+                    : "Ingresa los datos para el nuevo registro."}
                 </div>
               </div>
               <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}>
@@ -969,7 +1004,7 @@ function CoordinacionContent() {
                 ) : (
                   <>
                     <Save size={16} />
-                    {editingRow ? "Guardar Cambios" : "Crear Registro"}
+                    {editingRow ? "Guardar Cambios" : formData.atm ? "Guardar Duplicado" : "Crear Registro"}
                   </>
                 )}
               </button>
