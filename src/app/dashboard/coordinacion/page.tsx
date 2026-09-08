@@ -52,6 +52,8 @@ const TIPO_COLOR = (tipo: string) => {
 function CoordinacionContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
+  const isTNS = (categoryParam || "").toUpperCase() === "TNS";
+  const isCerrajeria = (categoryParam || "").toUpperCase() === "CERRAJERIA";
 
   const [data, setData] = useState<ProgramacionRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,8 +66,8 @@ function CoordinacionContent() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (categoryParam) {
-      setFilterTipo(categoryParam.toUpperCase());
+    if (categoryParam && categoryParam.toUpperCase() === "CERRAJERIA") {
+      setFilterTipo("CERRAJERIA");
     } else {
       setFilterTipo("all");
     }
@@ -94,7 +96,10 @@ function CoordinacionContent() {
 
   const createNewTech = async () => {
     if (!techSearch.trim()) return;
-    const newName = techSearch.trim();
+    let newName = techSearch.trim();
+    if (isTNS && !newName.toUpperCase().includes("TNS")) {
+      newName = `${newName} TNS`;
+    }
 
     // Determine next techNumber
     let maxNum = 0;
@@ -131,6 +136,9 @@ function CoordinacionContent() {
 
     if (error) {
       console.error("Error creando técnico:", error.message);
+      toggleTech(newName);
+      setTechSearch("");
+      setShowTechDropdown(false);
       return;
     }
 
@@ -217,6 +225,54 @@ function CoordinacionContent() {
     return Array.from(set).sort() as string[];
   }, [data]);
 
+  const tnsCount = useMemo(() => {
+    return data.filter(r => (r.asignado_a || "").toUpperCase().includes("TNS")).length;
+  }, [data]);
+
+  const allKnownTechs = useMemo(() => {
+    const map = new Map<string, Technician>();
+    techs.forEach(t => map.set(t.name.trim().toLowerCase(), t));
+    let extraId = 1;
+    data.forEach(row => {
+      if (row.asignado_a) {
+        row.asignado_a.split(",").map(s => s.trim()).filter(Boolean).forEach(name => {
+          const key = name.toLowerCase();
+          if (!map.has(key)) {
+            map.set(key, {
+              id: `known-${extraId++}`,
+              techNumber: "",
+              name: name,
+              rut: "—",
+              phone: "—",
+              email: "",
+              region: "Metropolitana",
+              vehicle: "",
+              certifications: [],
+              status: "disponible",
+              completedOrders: 0,
+              avgTime: 0,
+              productivity: 0,
+            });
+          }
+        });
+      }
+    });
+
+    const list = Array.from(map.values());
+    if (isTNS) {
+      list.sort((a, b) => {
+        const aTns = a.name.toUpperCase().includes("TNS");
+        const bTns = b.name.toUpperCase().includes("TNS");
+        if (aTns && !bTns) return -1;
+        if (!aTns && bTns) return 1;
+        return a.name.localeCompare(b.name);
+      });
+    } else {
+      list.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return list;
+  }, [techs, data, isTNS]);
+
   const filtered = useMemo(() => {
     return data.filter((row) => {
       const q = search.toLowerCase();
@@ -260,9 +316,15 @@ function CoordinacionContent() {
           matchTipo = rowTipo.includes("electrico") || rowTipo.includes("eléctrico");
         }
       }
-      return matchSearch && matchBanco && matchInf && matchDate && matchTipo;
+
+      // Si estamos en la subcategoría TNS, solo incluir los que tengan técnico TNS
+      const matchCategory = isTNS
+        ? (row.asignado_a || "").toUpperCase().includes("TNS")
+        : true;
+
+      return matchSearch && matchBanco && matchInf && matchDate && matchTipo && matchCategory;
     });
-  }, [data, search, filterBanco, filterInforme, filterTipo, dateFrom, dateTo]);
+  }, [data, search, filterBanco, filterInforme, filterTipo, dateFrom, dateTo, isTNS]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ROWS_PER_PAGE, page * ROWS_PER_PAGE);
@@ -311,9 +373,11 @@ function CoordinacionContent() {
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Coordinaciones");
+    const sheetName = isTNS ? "Coordinaciones TNS" : "Coordinaciones";
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
     
-    XLSX.writeFile(workbook, `coordinaciones_${new Date().toISOString().split("T")[0]}.xlsx`);
+    const filePrefix = isTNS ? "coordinaciones_tns" : "coordinaciones";
+    XLSX.writeFile(workbook, `${filePrefix}_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
 
   const displayDate = (d: string | null) => {
@@ -343,11 +407,17 @@ function CoordinacionContent() {
 
   const handleSave = async () => {
     setIsSaving(true);
+    const payload = { ...formData };
+    // Si estamos en la subcategoría TNS y se asignó un técnico sin sufijo TNS, asegurar que lo lleve
+    if (isTNS && payload.asignado_a && !payload.asignado_a.toUpperCase().includes("TNS")) {
+      payload.asignado_a = `${payload.asignado_a.trim()} TNS`;
+    }
+
     if (editingRow) {
       // Editar
       const { error } = await supabase
         .from("servicios")
-        .update(formData)
+        .update(payload)
         .eq("id", editingRow.id);
       
       if (error) {
@@ -360,7 +430,7 @@ function CoordinacionContent() {
       // Crear nuevo
       const { error } = await supabase
         .from("servicios")
-        .insert([formData]);
+        .insert([payload]);
       
       if (error) {
         alert(`Error al crear: ${error.message}`);
@@ -414,9 +484,27 @@ function CoordinacionContent() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="section-title">Coordinación (Supabase)</h2>
+          <div className="flex items-center gap-2.5">
+            <h2 className="section-title">
+              {isTNS ? "Coordinación — TNS" : isCerrajeria ? "Coordinación — Cerrajería" : "Coordinación (Supabase)"}
+            </h2>
+            {isTNS && (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold" style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)" }}>
+                Subcategoría TNS
+              </span>
+            )}
+            {isCerrajeria && (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold" style={{ background: "rgba(236,72,153,0.15)", color: "#ec4899", border: "1px solid rgba(236,72,153,0.3)" }}>
+                Subcategoría Cerrajería
+              </span>
+            )}
+          </div>
           <p className="section-subtitle">
-            {loading ? "Cargando datos desde la nube..." : `${filtered.length} de ${data.length} registros (Ordenados del más reciente al más antiguo)`}
+            {loading
+              ? "Cargando datos desde la nube..."
+              : isTNS
+              ? `${filtered.length} de ${tnsCount} registros con técnicos TNS (de ${data.length} totales)`
+              : `${filtered.length} de ${data.length} registros (Ordenados del más reciente al más antiguo)`}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -428,8 +516,8 @@ function CoordinacionContent() {
             <Download size={14} />
             Exportar Excel
           </button>
-          <div className="px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "rgba(114,176,29,0.1)", color: "#72b01d", border: "1px solid rgba(114,176,29,0.2)" }}>
-            {data.length} registros totales
+          <div className="px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: isTNS ? "rgba(56,189,248,0.1)" : "rgba(114,176,29,0.1)", color: isTNS ? "#38bdf8" : "#72b01d", border: `1px solid ${isTNS ? "rgba(56,189,248,0.2)" : "rgba(114,176,29,0.2)"}` }}>
+            {isTNS ? `${tnsCount} registros TNS` : `${data.length} registros totales`}
           </div>
           <button
             onClick={handleOpenCreate}
@@ -437,7 +525,7 @@ function CoordinacionContent() {
             style={{ display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <Plus size={16} />
-            Nueva Coordinación
+            {isTNS ? "Nueva Coordinación TNS" : "Nueva Coordinación"}
           </button>
         </div>
       </div>
@@ -676,9 +764,16 @@ function CoordinacionContent() {
                         </span>
                       </td>
                       {/* Asignado */}
-                      <td style={{ padding: "10px 14px", maxWidth: 160 }}>
-                        <div style={{ color: "#e2e8f0", fontSize: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {row.asignado_a || "—"}
+                      <td style={{ padding: "10px 14px", maxWidth: 180 }}>
+                        <div className="flex items-center gap-1.5" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {(row.asignado_a || "").toUpperCase().includes("TNS") && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0" style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)" }}>
+                              TNS
+                            </span>
+                          )}
+                          <span style={{ color: "#e2e8f0", fontSize: 12, overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {row.asignado_a || "—"}
+                          </span>
                         </div>
                       </td>
                       {/* Solicitante */}
@@ -878,6 +973,8 @@ function CoordinacionContent() {
                     ? `Editar Coordinación #${editingRow.ot || editingRow.id}`
                     : formData.atm
                     ? `Duplicar Coordinación (ATM ${formData.atm})`
+                    : isTNS
+                    ? "Nueva Coordinación TNS"
                     : "Nueva Coordinación"}
                 </div>
                 <div style={{ color: "#475569", fontSize: 12, marginTop: 2 }}>
@@ -885,6 +982,8 @@ function CoordinacionContent() {
                     ? "Modifica los campos del registro seleccionado."
                     : formData.atm
                     ? "Crea un nuevo servicio con los datos prellenados de este cajero."
+                    : isTNS
+                    ? "Ingresa los datos para el nuevo servicio asignado a técnico TNS."
                     : "Ingresa los datos para el nuevo registro."}
                 </div>
               </div>
@@ -928,8 +1027,9 @@ function CoordinacionContent() {
                           <div className="flex justify-end p-1 sticky top-0 bg-[#23272f]">
                             <button onClick={() => setShowTechDropdown(false)} className="text-slate-400 hover:text-white"><X size={14} /></button>
                           </div>
-                          {techs.filter(t => t.name.toLowerCase().includes(techSearch.toLowerCase()) || t.techNumber?.includes(techSearch)).map(tech => {
+                          {allKnownTechs.filter(t => t.name.toLowerCase().includes(techSearch.toLowerCase()) || t.techNumber?.includes(techSearch)).map(tech => {
                             const isSelected = (formData.asignado_a || "").includes(tech.name);
+                            const isTnsTech = tech.name.toUpperCase().includes("TNS");
                             return (
                               <button
                                 key={tech.id}
@@ -941,19 +1041,24 @@ function CoordinacionContent() {
                                 <div className="flex items-center gap-2">
                                   {tech.techNumber && <span style={{ color: "#72b01d", fontWeight: 700 }}>#{tech.techNumber}</span>}
                                   <span style={{ color: isSelected ? "#93c947" : "#e2e8f0" }}>{tech.name}</span>
+                                  {isTnsTech && (
+                                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold" style={{ background: "rgba(56,189,248,0.15)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.3)" }}>
+                                      TNS
+                                    </span>
+                                  )}
                                 </div>
                                 {isSelected && <Check size={14} style={{ color: "#93c947" }} />}
                               </button>
                             );
                           })}
-                          {techSearch.trim() !== "" && !techs.some(t => t.name.toLowerCase() === techSearch.trim().toLowerCase()) && (
+                          {techSearch.trim() !== "" && !allKnownTechs.some(t => t.name.toLowerCase() === techSearch.trim().toLowerCase()) && (
                             <button
                               type="button"
                               onClick={createNewTech}
                               className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs hover:bg-white/5 transition-colors"
                               style={{ color: "#f59e0b", borderTop: "1px solid rgba(255,255,255,0.06)" }}
                             >
-                              <Plus size={14} /> Crear nuevo: <b>{techSearch.trim()}</b>
+                              <Plus size={14} /> Crear nuevo{isTNS ? " técnico TNS" : ""}: <b>{techSearch.trim()}{isTNS && !techSearch.toUpperCase().includes("TNS") ? " TNS" : ""}</b>
                             </button>
                           )}
                         </div>

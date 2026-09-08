@@ -49,12 +49,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [currentSearch, setCurrentSearch] = useState("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentSearch(window.location.search);
-      if (pathname.startsWith("/dashboard/coordinacion")) {
-        setCoordinacionExpanded(true);
+    const updateSearch = () => {
+      if (typeof window !== "undefined") {
+        setCurrentSearch(window.location.search);
+        if (window.location.pathname.startsWith("/dashboard/coordinacion")) {
+          setCoordinacionExpanded(true);
+        }
       }
-    }
+    };
+    updateSearch();
+    window.addEventListener("popstate", updateSearch);
+    return () => window.removeEventListener("popstate", updateSearch);
   }, [pathname]);
 
   const [notifOpen, setNotifOpen] = useState(false);
@@ -278,8 +283,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
             
             if (isCoordinacion) {
-              const isSubActiveGeneral = pathname === "/dashboard/coordinacion" && !currentSearch.includes("category=CERRAJERIA");
+              const isSubActiveGeneral = pathname === "/dashboard/coordinacion" && !currentSearch.includes("category=CERRAJERIA") && !currentSearch.includes("category=TNS");
               const isSubActiveCerrajeria = pathname === "/dashboard/coordinacion" && currentSearch.includes("category=CERRAJERIA");
+              const isSubActiveTNS = pathname === "/dashboard/coordinacion" && currentSearch.includes("category=TNS");
               
               return (
                 <div key={item.href} className="space-y-1">
@@ -316,6 +322,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         }}
                       >
                         Cerrajería
+                      </Link>
+                      <Link
+                        href="/dashboard/coordinacion?category=TNS"
+                        className={`sidebar-link text-xs py-1.5 ${isSubActiveTNS ? "active" : ""}`}
+                        style={{ height: "auto" }}
+                        onClick={() => {
+                          setCurrentSearch("?category=TNS");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        TNS
                       </Link>
                     </div>
                   )}
