@@ -1,5 +1,1175 @@
 [
   {
+    "id": "rep-1789996826822",
+    "otNumber": "11245",
+    "clientName": "GABRIEL OVALLE",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "SERVICIO ELECTRICO",
+    "solution": "De acuerdo con lo solicitado por Gabriel Ovalle, se realiza asistencia técnica al ATM N.° 1903, ubicado en Sucursal San Antonio.\n\nDurante la revisión inicial, se verifica que el cajero se encuentra carteleado, con pantalla negra y presentando un bloqueo del sistema (System Freeze). Asimismo, se detecta que el equipo Magic se encontraba incorrectamente conectado y pintado.\n\nSe procede con la instalación de un Magic nuevo, realizando su correcta conexión. Además, se efectúa el reemplazo del acondicionador de línea existente, el cual se encontraba defectuoso, instalando un equipo nuevo. También se instala una zapatilla eléctrica nueva y enchufes Magic nuevos.\n\nMediciones eléctricas del local\n\nMedición\n\n\t\n\nResultado\n\n\n\n\nF-N\n\n\t\n\n225 V\n\n\n\n\nN-T\n\n\t\n\n0,01 V\n\n\n\n\nF-T\n\n\t\n\n225 V\n\nMediciones del acondicionador nuevo con carga\n\nMedición\n\n\t\n\nResultado\n\n\n\n\nF-N\n\n\t\n\n214 V\n\n\n\n\nN-T\n\n\t\n\n0,0 V\n\n\n\n\nF-T\n\n\t\n\n214 V\n\nLas mediciones realizadas al acondicionador de línea nuevo, con carga, presentan valores dentro de los parámetros verificados.\n\nEstado operativo\n\nPosterior a los trabajos realizados, el ATM logra iniciar y quedar operativo. Sin embargo, se detecta un problema asociado al sistema operativo, debido a que, al realizar una consulta de saldo, el cajero rechaza la tarjeta y posteriormente se reinicia.\n\nEstado final: ATM 1903 queda operativo, con acondicionador de línea, zapatilla eléctrica y conexiones Magic nuevas. Se mantiene una incidencia asociada al sistema operativo, debido al rechazo de tarjetas y reinicio del equipo durante la consulta de saldo, quedando pendiente de revisión especializada.",
+    "createdAt": "2026-09-21T13:20:26.822Z",
+    "fechaInicio": "2026-09-17T14:00",
+    "fechaFin": "2026-09-17T15:23",
+    "destinatario": "ITAU",
+    "direccion": "Av. Barros Luco 1750",
+    "ubicacionRef": "Sucursal San Antonio",
+    "comuna": "San Antonio",
+    "numeroATM": "1903",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "GABRIEL OVALLE",
+    "valorServicio": "",
+    "workOrderId": "wo-1789996826822",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789995068851",
+    "otNumber": "11244",
+    "clientName": "TICKETERA",
+    "technicianName": "VICTOR ORTEGA",
+    "technicianId": "tech-001",
+    "diagnosis": "SERVICIO ELECTRICO",
+    "solution": "De acuerdo con lo solicitado por Ticketera, se realiza visita técnica al ATM N.° 2699, ubicado en Pronto Copec Rancagua Kennedy.\n\nDurante la intervención, se verifica que el cajero automático se encuentra bloqueado en el lector debido a la activación de la protección antiskimming.\n\nSe efectúan mediciones de voltaje, obteniendo los siguientes resultados:\n\nN-T: 220 V.\n\nF-T: 0 V.\n\nLos voltajes se encuentran dentro de los parámetros normales. Asimismo, se verifica que el equipo se encuentra funcional y correctamente cerrado.\n\nFinalmente, se retira el personal de BRINKS.\n\nEstado final: Cajero automático queda operativo y funcionando correctamente.",
+    "createdAt": "2026-09-21T12:51:08.851Z",
+    "fechaInicio": "2026-09-17T08:30",
+    "fechaFin": "2026-09-17T10:00",
+    "destinatario": "SANTANDER",
+    "direccion": "CAMINO A TUNICHE 715",
+    "ubicacionRef": "PRONTO COPEC RANCAGUA KENNEDY ",
+    "comuna": "RANCAGUA ",
+    "numeroATM": "2699",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "TICKETERA",
+    "valorServicio": "$ 133.550",
+    "workOrderId": "wo-1789995068851",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789664306851",
+    "otNumber": "11243",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "Alberto Retamal González",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE LLAVES\n",
+    "solution": "Se realiza entrega de llaves correspondientes al ATM 7538 a don Lorenzo Gajardo, representante de la empresa Loomis. Al momento de la entrega, el ATM se encontraba en proceso de carga de valores.",
+    "createdAt": "2026-09-17T16:58:26.851Z",
+    "fechaInicio": "2026-09-17T12:00",
+    "fechaFin": "2026-09-17T12:10",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS I",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7538",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "$66.775(VISITA)",
+    "workOrderId": "wo-1789664306851",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789663982675",
+    "otNumber": "11242",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "Alberto Retamal González",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE LLAVES\n",
+    "solution": "Se realiza entrega de llaves correspondientes al ATM 7541 a Don Lorenzo Gajardo, representante de la empresa Loomis. Al momento de la entrega, el ATM se encontraba en proceso de carga de valores.",
+    "createdAt": "2026-09-17T16:53:02.675Z",
+    "fechaInicio": "2026-09-17T12:00",
+    "fechaFin": "2026-09-17T12:10",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS IV",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7541",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "$66.775(VISITA)",
+    "workOrderId": "wo-1789663982675",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789578734277",
+    "otNumber": "11241",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "MATIAS URRA",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCION DE LLAVES\n",
+    "solution": "Se realiza visita técnica al ATM 7541 para efectuar la recepción de llaves por parte de la empresa ETV Loomis.\n\nLa actividad se realiza de manera satisfactoria, quedando las llaves correctamente recepcionadas.",
+    "createdAt": "2026-09-16T17:12:14.278Z",
+    "fechaInicio": "2026-09-15T10:30",
+    "fechaFin": "2026-09-15T16:50",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS IV",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7541",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "$66.775 (VISITA)",
+    "workOrderId": "wo-1789578734277",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789578441432",
+    "otNumber": "11240",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "MATIAS URRA",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCION DE LLAVES\n",
+    "solution": "Se realiza visita técnica al ATM 7538, efectuándose la recepción de llaves correspondientes al equipo por parte de la empresa ETV Loomis.\n\nLa actividad se realiza conforme a lo coordinado, quedando las llaves recepcionadas correctamente.",
+    "createdAt": "2026-09-16T17:07:21.432Z",
+    "fechaInicio": "2026-09-15T10:30",
+    "fechaFin": "2026-09-15T16:50",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS I",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7538",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "$66.775 (VISITA)",
+    "workOrderId": "wo-1789578441432",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789578131539",
+    "otNumber": "11243",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "DESANCLAJE",
+    "solution": "De acuerdo con lo solicitado por Dayanne Soto, se realiza servicio de desanclaje del ATM N.° 7539, ubicado en Metro Las Rejas II.\n\nAl momento de la llegada al punto, personal de Metro informa que los trabajos pueden comenzar una vez que haya pasado el último tren, programado para las 23:45 horas.\n\nUna vez autorizado el inicio de las labores, se ejecuta el servicio de desanclaje del cajero automático y su funda.\n\nEstado final: Servicio de desanclaje finalizado satisfactoriamente. El cajero automático y la funda quedan debidamente resguardados, con cierre perimetral instalado.",
+    "createdAt": "2026-09-16T17:02:11.539Z",
+    "fechaInicio": "2026-09-15T23:00",
+    "fechaFin": "2026-09-16T04:59",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS II",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7539",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1789578131539",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789577481715",
+    "otNumber": "11242",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "DESANCLAJE",
+    "solution": "De acuerdo con lo solicitado por Dayanne Soto, se realiza servicio de desanclaje del ATM 7540, ubicado en Metro Las Rejas III.\nAl momento de la llegada al punto, personal de Metro informa que los trabajos pueden comenzar una vez que haya pasado el último tren, programado para las 23:45 horas.\nUna vez autorizado el inicio de las labores, se ejecuta el servicio de desanclaje del cajero automático y su funda.\nEstado final: Servicio de desanclaje finalizado satisfactoriamente. El cajero automático y la funda quedan debidamente resguardados, con cierre perimetral instalado.\n",
+    "createdAt": "2026-09-16T16:51:21.715Z",
+    "fechaInicio": "2026-09-15T23:00",
+    "fechaFin": "2026-09-16T04:59",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS III",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7540",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1789577481715",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789575281046",
+    "otNumber": "11239",
+    "clientName": "DORIS BUSTAMANTE",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "TRASPASO DE ETV",
+    "solution": "Según lo solicitado por Doris Bustamante, se realiza asistencia técnica al ATM M229, ubicado en Work Café Plaza Perú, con el objetivo de efectuar la supervisión del proceso de traspaso de ETV.\n\nDurante la intervención, se realiza visita en conjunto con personal de la empresa de transporte de valores BRINKS, quienes efectúan las labores correspondientes al traspaso del servicio de ETV desde BRINKS a Green Value.\n\nLa actividad se desarrolla conforme a lo coordinado, sin inconvenientes durante su ejecución y sin novedades.\n\nEstado final: Supervisión del proceso de traspaso de ETV realizada satisfactoriamente.",
+    "createdAt": "2026-09-16T16:14:41.046Z",
+    "fechaInicio": "2026-09-15T09:00",
+    "fechaFin": "2026-09-15T10:30",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE ISIDORA GOYENECHEA 3000",
+    "ubicacionRef": "WORKCAFE PLAZA PERU",
+    "comuna": "LAS CONDES",
+    "numeroATM": "M229",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DORIS BUSTAMANTE",
+    "valorServicio": "",
+    "workOrderId": "wo-1789575281046",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789573472094",
+    "otNumber": "11238",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "SUPERVISION ALARMA Y DESCONEXION DE EQUIPOS",
+    "solution": "Se realiza asistencia técnica en Metro Las Rejas III, para efectuar trabajos de desconexión de alarma y equipos asociados al ATM N.° 7540.\n\nDurante la intervención, el personal de alarmas procede a desarmar la central de alarma, efectuando además el retiro de las cámaras correspondientes.\n\nPosteriormente, se realiza la desconexión de todos los equipos ubicados en el mueble de comunicación del ATM 7540. Los equipos desconectados quedan debidamente resguardados en el interior del mismo mueble, el cual permanece cerrado.\n\nEstado final: Central de alarma desarmada, cámaras retiradas y equipos de comunicación desconectados y resguardados dentro del mueble de comunicación cerrado.",
+    "createdAt": "2026-09-16T15:44:32.094Z",
+    "fechaInicio": "2026-09-14T23:00",
+    "fechaFin": "2026-09-14T00:41",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS III",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7540",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1789573472094",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789573039068",
+    "otNumber": "11237",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "SUPERVISION DE ALARMA Y DESCONEXION DE EQUIPOS",
+    "solution": "Se realiza asistencia técnica en Metro Las Rejas II, de acuerdo con lo coordinado, para efectuar trabajos de desconexión de alarma y equipos asociados al ATM N.° 7539.\n\nDurante la intervención, el personal de alarmas procede a desarmar la central de alarma, efectuando además el retiro de las cámaras correspondientes.\n\nPosteriormente, se realiza la desconexión de todos los equipos ubicados en el mueble de comunicación del ATM 7539. Los equipos desconectados quedan debidamente resguardados en el interior del mismo mueble, el cual permanece cerrado.\n\nEstado final: Central de alarma desarmada, cámaras retiradas y equipos de comunicación desconectados y resguardados dentro del mueble de comunicación cerrado.",
+    "createdAt": "2026-09-16T15:37:19.068Z",
+    "fechaInicio": "2026-09-14T23:00",
+    "fechaFin": "2026-09-14T00:41",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS II",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7539",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1789573039068",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789420418254",
+    "otNumber": "11236",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCIÓN DE LLAVES",
+    "solution": "De acuerdo con lo solicitado por Dayanne Soto, se realiza asistencia técnica en Metro Las Rejas III, correspondiente al ATM N.° 7540.\n\n\n\nDurante la visita, se realiza la recepción de llaves correspondientes al ATM 7540, quedando estas bajo resguardo conforme a lo coordinado.\n\n\n\nEstado final: Llaves del ATM 7540 recepcionadas satisfactoriamente.",
+    "createdAt": "2026-09-14T21:13:38.254Z",
+    "fechaInicio": "2026-09-14T12:00",
+    "fechaFin": "2026-09-14T12:30",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS III",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7540",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "$ 59.838 (Recepción de llaves)",
+    "workOrderId": "wo-1789420418254",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789416081803",
+    "otNumber": "11235",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCIÓN DE LLAVES",
+    "solution": "De acuerdo con lo solicitado por Dayanne Soto, se realiza asistencia técnica en Metro Las Rejas III, correspondiente al ATM N.° 7540.\n\nDurante la visita, se realiza la recepción de llaves correspondientes al ATM N.° 7539, quedando estas bajo resguardo conforme a lo coordinado.\n\nEstado final: Llaves del ATM 7539 recepcionadas satisfactoriamente.",
+    "createdAt": "2026-09-14T20:01:21.804Z",
+    "fechaInicio": "2026-09-14T12:00",
+    "fechaFin": "2026-09-14T12:30",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS II",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7539",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "$ 59.838 (Recepción de llaves)",
+    "workOrderId": "wo-1789416081803",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789398888168",
+    "otNumber": "11234",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "CRISTIAN VILLEGAS",
+    "technicianId": "tech-001",
+    "diagnosis": "DESPACHO DE PC CORE CURICÓ",
+    "solution": "De acuerdo con lo solicitado por Karen Riquelme, se realiza el despacho de equipo PC Core con destino a la Sucursal Banco Falabella Curicó II, ubicada en Barros Luco 1399, Curicó.\nPersona de contacto: Patricio Villalobos Campos\nCelular: 945017161\nEl despacho se realiza conforme a lo coordinado, quedando el equipo enviado a la sucursal indicada.\nEstado final: PC Core despachado satisfactoriamente a Sucursal Banco Falabella Curicó II.\n",
+    "createdAt": "2026-09-14T15:14:48.168Z",
+    "fechaInicio": "2026-09-14T10:00",
+    "fechaFin": "2026-09-14T10:30",
+    "destinatario": "NCR",
+    "direccion": "Barros Luco 1399",
+    "ubicacionRef": "Banco Falabella Curicó II",
+    "comuna": "Curicó",
+    "numeroATM": "",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1789398888168",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789397832968",
+    "otNumber": "11233",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "CRISTIAN VILLEGAS",
+    "technicianId": "tech-001",
+    "diagnosis": "DESPACHO DE PC CORE CALAMA",
+    "solution": "De acuerdo con lo solicitado por Karen Riquelme, se realiza el despacho de equipo PC Core con destino a la Sucursal Banco Falabella Calama, ubicada en Balmaceda 2342, Calama.\n\nPersona de contacto: Lorena Vilca Donoso\nCelular: 964080521\n\nEl despacho se realiza conforme a lo coordinado, quedando el equipo enviado a la sucursal indicada.\n\nEstado final: PC Core despachado satisfactoriamente a Banco Falabella Calama.",
+    "createdAt": "2026-09-14T14:57:12.968Z",
+    "fechaInicio": "2026-09-14T10:00",
+    "fechaFin": "2026-09-14T10:30",
+    "destinatario": "NCR",
+    "direccion": "Balmaceda 2342",
+    "ubicacionRef": "BANCO FALABELLA CALAMA",
+    "comuna": "Calama",
+    "numeroATM": "",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1789397832967",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789393205491",
+    "otNumber": "11231",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "DESPACHO PC CORE CONCEPCION\n",
+    "solution": "De acuerdo con lo solicitado por Karen Riquelme, se realiza el despacho de equipo PC Core con destino a la Sucursal NCR Concepción, ubicada en Lincoyán 26, Concepción.\n\nEl despacho se realiza conforme a lo coordinado, quedando el equipo enviado a la sucursal indicada.\n\nEstado final: PC Core despachado satisfactoriamente a Sucursal NCR Concepción.",
+    "createdAt": "2026-09-14T13:40:05.491Z",
+    "fechaInicio": "2026-09-11T10:00",
+    "fechaFin": "2026-09-11T10:30",
+    "destinatario": "NCR",
+    "direccion": "Lincoyán 26",
+    "ubicacionRef": "Sucursal NCR Concepción",
+    "comuna": "CONCEPCION",
+    "numeroATM": "",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1789393205491",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789392371914",
+    "otNumber": "11230",
+    "clientName": "GABRIEL OVALLE",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "DESPACHO TARJETA SUPERVISOR",
+    "solution": "Según lo solicitado por Gabriel Ovalle, se realiza el despacho de tarjeta de supervisor con destino a la Sucursal Itaú Valparaíso.\n\nEl despacho se realiza conforme a lo coordinado, quedando la tarjeta enviada a la sucursal indicada.\n\nEstado final: Tarjeta de supervisor despachada satisfactoriamente a Sucursal Itaú Valparaíso.",
+    "createdAt": "2026-09-14T13:26:11.914Z",
+    "fechaInicio": "2026-09-11T10:00",
+    "fechaFin": "2026-09-11T10:20",
+    "destinatario": "ITAU",
+    "direccion": "CALLE PRAT 828",
+    "ubicacionRef": "SUCURSAL ITAU VALPARAISO",
+    "comuna": "VALPARAISO",
+    "numeroATM": "",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "GABRIEL OVALLE",
+    "valorServicio": "",
+    "workOrderId": "wo-1789392371914",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789392060573",
+    "otNumber": "11229",
+    "clientName": "DORIS BUSTAMANTE",
+    "technicianName": "Alberto Retamal",
+    "technicianId": "tech-001",
+    "diagnosis": "TRASPASO DE ETV\n",
+    "solution": "Se realiza atención en ATM M123, efectuando el cambio de chapas correspondiente.\n\nPosteriormente, se realiza el traspaso de llaves del ATM 213, haciendo entrega de estas desde Brinks a ETV Green Value.\n\nServicio realizado sin novedades.",
+    "createdAt": "2026-09-14T13:21:00.573Z",
+    "fechaInicio": "2026-09-10T09:00",
+    "fechaFin": "2026-09-10T11:30",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA PRESIDENTE ALESSANDRI 20040",
+    "ubicacionRef": "WORKCAFE MALL PLAZA SUR",
+    "comuna": "SAN BERNARDO",
+    "numeroATM": "M123",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DORIS BUSTAMANTE",
+    "valorServicio": "$66.775 (VISITA)",
+    "workOrderId": "wo-1789392060573",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789391751255",
+    "otNumber": "11228",
+    "clientName": "DORIS BUSTAMANTE",
+    "technicianName": "ALBERTO RETAMAL",
+    "technicianId": "tech-001",
+    "diagnosis": "TRASPASO DE ETV",
+    "solution": "Según lo solicitado por Doris Bustamante, se realiza asistencia técnica al ATM N.° 2182, ubicado en Work Café Mall Plaza Sur, con el objetivo de efectuar la supervisión del proceso de traspaso de ETV.\n\nDurante la intervención, se realiza visita en conjunto con personal de la empresa de transporte de valores BRINKS, quienes efectúan las labores correspondientes al traspaso del servicio de ETV desde BRINKS a Green Value.\n\nLa actividad se desarrolla conforme a lo coordinado, sin inconvenientes durante su ejecución y sin novedades.\n\nEstado final: Supervisión del proceso de traspaso de ETV realizada satisfactoriamente.",
+    "createdAt": "2026-09-14T13:15:51.255Z",
+    "fechaInicio": "2026-09-10T09:00",
+    "fechaFin": "2026-09-10T11:30",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA PRESIDENTE ALESSANDRI 20040",
+    "ubicacionRef": "WORKCAFE MALL PLAZA SUR",
+    "comuna": "SAN BERNARDO",
+    "numeroATM": "2182",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DORIS BUSTAMANTE",
+    "valorServicio": "$ 66.775 (Visita)",
+    "workOrderId": "wo-1789391751255",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789147002087",
+    "otNumber": "11223",
+    "clientName": "TICEKTERA",
+    "technicianName": "SIMON PICHUANTE",
+    "technicianId": "tech-001",
+    "diagnosis": "SERVICIO ELECTRICO",
+    "solution": "De acuerdo con lo solicitado por Ticketera, se realiza visita técnica al ATM N.° 5407, ubicado en Punto Copec Constitución, Av. Mac Iver 790, esquina Av. Santa María, Constitución.\n\nDurante la visita, se efectúan mediciones de voltaje y revisión general del cajero, verificándose que el equipo se encuentra en buenas condiciones.\n\nAsimismo, se realizan mediciones y revisión de las condiciones del local, encontrándose estas en buenas condiciones.\n\nDurante la inspección, se detecta que el acondicionador de línea se encuentra defectuoso y que la UPS se encuentra inhabilitada, por lo que ambos equipos requieren revisión y/o reemplazo.\n\nFinalmente, el servicio técnico de Belltech realiza las verificaciones correspondientes, dejando el cajero encendido y operativo.\n\nEstado final: ATM 5407 queda encendido y operativo. Se detecta acondicionador de línea defectuoso y UPS inhabilitada, quedando ambos pendientes de solución.",
+    "createdAt": "2026-09-11T17:16:42.087Z",
+    "fechaInicio": "2026-09-11T10:00",
+    "fechaFin": "2026-09-11T11:34",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA MAC IVER 790 ESQUINA AVENIDA SANTA MARIA",
+    "ubicacionRef": "PUNTO COPEC CONSTITUCION",
+    "comuna": "CONSTITUCIÓN",
+    "numeroATM": "5407",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "TICEKTERA",
+    "valorServicio": "$ 220.910 (Visita zonal $133.550 + Traslado técnico $ 87.360)",
+    "workOrderId": "wo-1789147002087",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789068096546",
+    "otNumber": "11232",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Cristian Villegas Menanteau",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE LLAVES\n",
+    "solution": "Se realiza entrega de llaves a personal de Loomis, posterior a la intervención efectuada el día anterior, en la cual se realizó el cambio de PC Core del cajero automático.\n\nLa entrega se realiza conforme a personal de Loomis, quedando finalizado el procedimiento.\n\nEstado: Servicio realizado y entrega de llaves efectuada conforme.",
+    "createdAt": "2026-09-10T19:21:36.546Z",
+    "fechaInicio": "2026-09-10T12:00",
+    "fechaFin": "2026-09-10T12:15",
+    "destinatario": "NCR",
+    "direccion": "CALETERAS LOS AROMOS 441",
+    "ubicacionRef": "Tottus Talagante II ",
+    "comuna": "TALAGANTE",
+    "numeroATM": "7239",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1789068096546",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789066845921",
+    "otNumber": "11231",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Cristian Villegas Menanteau",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE LLAVES\n",
+    "solution": "Se realiza entrega de llaves a personal de Loomis, posterior a los trabajos efectuados el día anterior, correspondientes al cambio de PC Core del cajero automático.\n\nSe realiza entrega de llaves, quedando el equipo bajo responsabilidad de personal de Loomis.\n\nEstado: Servicio realizado y entrega de llaves conforme.",
+    "createdAt": "2026-09-10T19:00:45.921Z",
+    "fechaInicio": "2026-09-10T09:00",
+    "fechaFin": "2026-09-10T09:15",
+    "destinatario": "NCR",
+    "direccion": "Av. Larraín 5862",
+    "ubicacionRef": "Mall Plaza Egaña IV",
+    "comuna": "La Reina",
+    "numeroATM": "7451",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1789066845921",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789064154692",
+    "otNumber": "11230",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Jorge Urra Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCION DE LLAVES - SUPERVISION NCR\n",
+    "solution": "Se realiza supervisión de los trabajos efectuados por personal de NCR, quienes se encontraban realizando el cambio de PC Core del cajero automático.\n\nDurante la intervención, se instala CPU nueva en el equipo. Posteriormente, el técnico de NCR realiza las pruebas correspondientes con el cajero automático, verificando su correcto funcionamiento y quedando el equipo en buenas condiciones operativas.\n\nFinalmente, personal de Falabella queda realizando pruebas adicionales con el cajero automático, quedando el equipo listo para la entrega de llaves programada para el día 10/09.\n\nEstado: Cajero operativo y en condiciones para entrega de llaves.",
+    "createdAt": "2026-09-10T18:15:54.692Z",
+    "fechaInicio": "2026-09-09T12:00",
+    "fechaFin": "2026-09-09T17:00",
+    "destinatario": "NCR",
+    "direccion": "CALETERAS LOS AROMOS 441",
+    "ubicacionRef": "Tottus Talagante II ",
+    "comuna": "TALAGANTE",
+    "numeroATM": "7239",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1789064154692",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789063328967",
+    "otNumber": "11229",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Jorge Urra Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE PC CORE\n",
+    "solution": "Se realiza entrega de PC Core correspondiente al ATM 7239, quedando el equipo entregado en el punto indicado.\n\nEstado: PC Core entregado conforme.",
+    "createdAt": "2026-09-10T18:02:08.967Z",
+    "fechaInicio": "2026-09-09T12:00",
+    "fechaFin": "2026-09-09T13:00",
+    "destinatario": "NCR",
+    "direccion": "CALETERAS LOS AROMOS 441",
+    "ubicacionRef": "Tottus Talagante II ",
+    "comuna": "TALAGANTE",
+    "numeroATM": "7239",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1789063328967",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789062129068",
+    "otNumber": "11225",
+    "clientName": "PATRICIO RAMIREZ",
+    "technicianName": "Jamzhitt Elias Baeza Muñoz",
+    "technicianId": "tech-001",
+    "diagnosis": "RETIRO Y ENTREGA DE GAVETAS\n",
+    "solution": "Se realiza la recepción y traslado de 4 gavetas desde la Bodega Quilín Santander hacia la Sucursal Santander Puente Alto.\n\nLas gavetas fueron recepcionadas conforme por Viviana Calfiñir, quedando bajo su responsabilidad en la sucursal.\n\nEstado: Servicio realizado y recepción conforme.",
+    "createdAt": "2026-09-10T17:42:09.068Z",
+    "fechaInicio": "2026-09-09T15:00",
+    "fechaFin": "2026-09-09T16:13",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA CONCHA Y TORO 1050",
+    "ubicacionRef": "SUCURSAL NUEVA PUENTE ALTO",
+    "comuna": "PUENTE ALTO",
+    "numeroATM": "M292-M291",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PATRICIO RAMIREZ",
+    "valorServicio": "$ 139.000 (Visita)",
+    "workOrderId": "wo-1789062129068",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1789049684550",
+    "otNumber": "11224",
+    "clientName": "TICKETERA",
+    "technicianName": "IGNACIO ARANCIBIA OLIVARES TNS",
+    "technicianId": "tech-001",
+    "diagnosis": "SERVICIO ELECTRICO\n",
+    "solution": "Se realiza visita al punto coordinado, verificando que el ATM no presenta daños visibles ni suciedad.\n la revisión, se detectan cables del router parcialmente sueltos, los cuales son reconectados y asegurados correctamente.\n\nPosteriormente, se verifican los voltajes de alimentación, encontrándose dentro de los parámetros correctos. Se energiza y reinicia el cajero, comprobando que realiza correctamente su proceso de carga e inicio.\n\nFinalmente, se realizan pruebas operativas de giro de dinero y consulta de saldo, en conjunto con usuarios y personal de Prosegur, obteniendo resultados satisfactorios.\n\nEstado final: ATM 5082 queda operativo y funcionando correctamente.",
+    "createdAt": "2026-09-10T14:14:44.550Z",
+    "fechaInicio": "2026-09-09T19:00",
+    "fechaFin": "2026-09-09T20:15",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA ALESSANDRI 3401 ESQUINA INDICO",
+    "ubicacionRef": "PUNTO COPEC VINA DEL MAR AVENIDA ALESSANDRI",
+    "comuna": "VIÑA DEL MAR",
+    "numeroATM": "5082",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "TICKETERA",
+    "valorServicio": "$133.550 (VOSITA ZONAL)",
+    "workOrderId": "wo-1789049684550",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788981120831",
+    "otNumber": "11223",
+    "clientName": "DORIS BUSTAMANTE",
+    "technicianName": "Cristian Villegas Menanteau",
+    "technicianId": "tech-001",
+    "diagnosis": "TRASPASO DE ETV\n",
+    "solution": "Se asiste al punto programado para la realización de entrega de llaves. No se hizo posible coordinacion con  las empresas ETV Green Value y Brinks, debido a la suspensión del servicio.\n\nPor lo anterior, no es posible ejecutar los trabajos programados, quedando el servicio pendiente de recoordinación para una nueva fecha.",
+    "createdAt": "2026-09-09T19:12:00.831Z",
+    "fechaInicio": "2026-09-09T15:00",
+    "fechaFin": "2026-09-09T15:30",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE ISIDORA GOYENECHEA 3000",
+    "ubicacionRef": "WORKCAFE PLAZA PERU",
+    "comuna": "LAS CONDES",
+    "numeroATM": "M229",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DORIS BUSTAMANTE",
+    "valorServicio": "66775",
+    "workOrderId": "wo-1788981120831",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788959883736",
+    "otNumber": "11228",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "RODOLFO SALINAS",
+    "technicianId": "tech-001",
+    "diagnosis": "Supervisión NCR",
+    "solution": "Se realiza asistencia técnica en el ATM N.° 7451, en coordinación con el técnico de NCR, Claudio Astudillo, con el objetivo de supervisar la continuidad y término de los trabajos de configuración del equipo, pendientes de la intervención realizada el día 07-09.\n\nDurante la jornada, se supervisan los trabajos efectuados por el técnico de NCR, correspondientes a la finalización de la configuración del PC Core y las pruebas operativas del ATM.\n\nEstado final: Se supervisa satisfactoriamente la continuidad de los trabajos pendientes del día 07-09, quedando el ATM a disposición de NCR para la validación correspondiente.",
+    "createdAt": "2026-09-09T13:18:03.736Z",
+    "fechaInicio": "2026-09-08T09:30",
+    "fechaFin": "2026-09-08T12:15",
+    "destinatario": "NCR",
+    "direccion": "Av. Larraín 5862",
+    "ubicacionRef": "Mall Plaza Egaña IV",
+    "comuna": "La Reina",
+    "numeroATM": "7451",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788959883736",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788959307924",
+    "otNumber": "11227",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "RODOLFO SALINAS",
+    "technicianId": "tech-001",
+    "diagnosis": "Entrega de llaves",
+    "solution": "Se realiza la entrega de llaves correspondientes al ATM N.° 7449, ubicado en Mall Plaza Egaña II, Av. Larraín 5862, comuna de La Reina, a la empresa transportadora de valores Loomis, siendo recibidas por don Felipe Parada.\n\nEstado final: Llaves entregadas y recibidas conforme.",
+    "createdAt": "2026-09-09T13:08:27.924Z",
+    "fechaInicio": "2026-09-08T08:30",
+    "fechaFin": "2026-09-08T09:50",
+    "destinatario": "NCR",
+    "direccion": "Av. Larraín 5862",
+    "ubicacionRef": "MALL PLAZA EGAÑA II",
+    "comuna": "La Reina",
+    "numeroATM": "7449",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788959307924",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788877250086",
+    "otNumber": "11226",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Rodolfo Salinas Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCION DE LLAVES - SUPERVISION NCR\n",
+    "solution": "Se informa llegada a punto en dependencias de Banco Falabella, Mall Plaza Egaña, para realizar trabajos técnicos programados en el ATM 7451, consistentes en el cambio de PC Core.\n\nUna vez en el lugar, se coordinó la intervención con el técnico de NCR, Claudio Astudillo, quien procedió a desmontar y retirar el PC Core antiguo del equipo, dejando el ATM preparado para la instalación del nuevo componente.\n\nPosteriormente, el técnico de NCR realizó la instalación del nuevo PC Core en el ATM 7451, continuando con las conexiones y configuraciones necesarias para su correcta puesta en funcionamiento.\n\nDurante la intervención, el técnico permaneció realizando trabajos de configuración y pruebas en el equipo. Asimismo, se realizó la firma de la guía correspondiente por parte del técnico de NCR, Claudio Astudillo.\n\nLos trabajos de configuración se extendieron durante la jornada; sin embargo, no fue posible finalizar correctamente la puesta en marcha del ATM debido a una falla de configuración detectada durante el proceso.\n\nPor lo anterior, el ATM 7451 quedó fuera de servicio y pendiente de una nueva coordinación para continuar y finalizar los trabajos de configuración durante la jornada siguiente.\n\nTrabajos realizados:\nLlegada y coordinación en Banco Falabella, Mall Plaza Egaña.\nCambio de PC Core del ATM 7451.\nDesmontaje y retiro de PC Core antiguo.\nInstalación de nuevo PC Core.\nTrabajos de configuración del sistema.\nFirma de guía por técnico de NCR, Claudio Astudillo.\nRevisión y pruebas de configuración.\nEstado final:\n\nATM 7451 presenta falla de configuración, quedando pendiente una nueva coordinación para continuar los trabajos y completar su puesta en servicio.",
+    "createdAt": "2026-09-08T14:20:50.086Z",
+    "fechaInicio": "2026-09-07T08:30",
+    "fechaFin": "2026-09-07T19:45",
+    "destinatario": "NCR",
+    "direccion": "Av. Larraín 5862",
+    "ubicacionRef": "Mall Plaza Egaña IV",
+    "comuna": "La Reina",
+    "numeroATM": "7451",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788877250086",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788876123324",
+    "otNumber": "11225",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Rodolfo Salinas Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCION DE LLAVES - SUPERVISION NCR\n",
+    "solution": "Se informa asistencia técnica realizada en ATM 7449 ubicado en Mall Plaza Egaña, en coordinación con personal de Loomis y técnico de NCR, Claudio Astudillo.\n\nAl inicio de la intervención, se permaneció a la espera de la recepción y entrega de llaves del ATM al personal correspondiente de Loomis, con el fin de permitir el acceso al equipo para efectuar los trabajos programados.\n\nUna vez en el punto y coordinados con el técnico de NCR, se procedió a realizar el cambio de PC Core del ATM 7449. Para ello, el técnico desmontó y retiró el PC Core antiguo, dejando el equipo preparado para la instalación del nuevo componente.\n\nPosteriormente, se efectuó la instalación del nuevo PC Core, continuando con los trabajos de conexión, configuración y puesta en marcha del sistema. El técnico de NCR permaneció realizando las configuraciones necesarias para el correcto funcionamiento del nuevo PC Core.\n\nDurante el proceso de intervención, el ATM se mantuvo fuera de servicio y apagado mientras se esperaba la llegada de una tarjeta de reemplazo, debido a que la tarjeta original se encontraba dañada.\n\nUna vez recibida la tarjeta correspondiente, se procedió a efectuar su reemplazo y finalizar la configuración del equipo.\n\nFinalmente, se realizaron las pruebas operativas correspondientes, quedando el ATM 7449 de Mall Plaza Egaña operativo y funcionando correctamente.\n\nTrabajos realizados:\nCambio de PC Core.\nDesmontaje y retiro de PC Core antiguo.\nInstalación de nuevo PC Core.\nConfiguración del nuevo sistema.\nCambio de tarjeta dañada.\nPruebas de funcionamiento.\nPuesta en servicio del ATM.\n\nEstado final: ATM 7449 Mall Plaza Egaña operativo.",
+    "createdAt": "2026-09-08T14:02:03.324Z",
+    "fechaInicio": "2026-09-07T08:30",
+    "fechaFin": "2026-09-07T19:45",
+    "destinatario": "NCR",
+    "direccion": "Av. Larraín 5862",
+    "ubicacionRef": "MALL PLAZA EGAÑA II",
+    "comuna": "La Reina",
+    "numeroATM": "7449",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788876123324",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788809877868",
+    "otNumber": "11224",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Rodolfo Salinas Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE PC CORE\n",
+    "solution": "Se realiza la entrega de un equipo PC Core al técnico Claudio Astudillo, correspondiente al ATM 7451, ubicado en Mall Plaza Egaña.\n\nEl equipo PC Core quedará destinado para su instalación y puesta en operación en el ATM 7451, con el objetivo de efectuar las labores técnicas correspondientes.\n\n\n\n",
+    "createdAt": "2026-09-07T19:37:57.868Z",
+    "fechaInicio": "2026-09-07T08:30",
+    "fechaFin": "2026-09-07T09:30",
+    "destinatario": "NCR",
+    "direccion": "Av. Larraín 5862",
+    "ubicacionRef": "Mall Plaza Egaña IV",
+    "comuna": "La Reina",
+    "numeroATM": "7451",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788809877868",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788809336331",
+    "otNumber": "11223",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Rodolfo Salinas Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE PC CORE\n",
+    "solution": "Se realiza la entrega de equipo PC Core al técnico Claudio Astudillo, correspondiente al ATM 7449, ubicado en Mall Plaza Egaña.\n\nEl equipo es entregado al técnico para los fines operativos y técnicos correspondientes.\n\nEntrega realizada satisfactoriamente.",
+    "createdAt": "2026-09-07T19:28:56.331Z",
+    "fechaInicio": "2026-09-07T08:30",
+    "fechaFin": "2026-09-07T09:00",
+    "destinatario": "NCR",
+    "direccion": "Av. Larraín 5862",
+    "ubicacionRef": "MALL PLAZA EGAÑA II",
+    "comuna": "La Reina",
+    "numeroATM": "7449",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788809336331",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788796736153",
+    "otNumber": "11.222",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "CRISTIAN DURAN",
+    "technicianId": "tech-001",
+    "diagnosis": "ENTREGA DE LLAVES",
+    "solution": "Se realiza la entrega de dos llaves correspondientes al depositario M282, ubicado en Work Café Iquique Sur, las cuales son entregadas a Felipe Vogh.\n\nDurante la intervención se efectúan las pruebas de apertura de las diferentes cerraduras, obteniendo resultados satisfactorios.\n\nComo única observación, queda pendiente la apertura de la parte delantera (pilote), debido a que la llave no gira correctamente en la cerradura.\n\nEstado final: Dos llaves entregadas a Felipe Vogh. Pruebas de apertura satisfactorias, quedando pendiente la revisión de la cerradura del pilote.",
+    "createdAt": "2026-09-07T15:58:56.153Z",
+    "fechaInicio": "2026-09-07T08:30",
+    "fechaFin": "2026-09-07T10:30",
+    "destinatario": "NCR",
+    "direccion": "AVENIDA FRANCISCO BILBAO 3412 - A",
+    "ubicacionRef": "WORKCAFE IQUIQUE SUR",
+    "comuna": "IQUIQUE",
+    "numeroATM": "M282",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788796736153",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788788016311",
+    "otNumber": "11.222",
+    "clientName": "DANIEL HUAIQUIÑIR",
+    "technicianName": "Rodolfo Salinas Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "CONEXION DE EQUIPOS\n",
+    "solution": "Se realizan trabajos técnicos en el ATM 601, ubicado en la sucursal Banco Santander Príncipe de Gales.\nDurante la intervención, se procede a realizar la energización de los equipos de comunicación asociados al ATM 601, verificando el correcto encendido y funcionamiento de los equipos.\nPosteriormente, se realizan las pruebas correspondientes para verificar el estado de las comunicaciones del equipo.\nComo resultado de las verificaciones realizadas, se confirma que el enlace de comunicación del ATM 601 se encuentra operativo.\nSe finalizan satisfactoriamente los trabajos de energización y verificación de los equipos de comunicación correspondientes al ATM 601, ubicado en sucursal Banco Santander Príncipe de Gales.",
+    "createdAt": "2026-09-07T13:33:36.311Z",
+    "fechaInicio": "2026-09-05T10:00",
+    "fechaFin": "2026-09-05T11:00",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE PRINCIPE DE GALES 7007",
+    "ubicacionRef": "SUCURSAL PRINCIPE DE GALES",
+    "comuna": "LA REINA",
+    "numeroATM": "601",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DANIEL HUAIQUIÑIR",
+    "valorServicio": "210.000",
+    "workOrderId": "wo-1788788016311",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788787138513",
+    "otNumber": "11.221",
+    "clientName": "DANIEL HUAIQUIÑIR",
+    "technicianName": "Jorge Urra Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "CONEXION DE EQUIPOS\n",
+    "solution": "Se realizan trabajos técnicos en el ATM 2181, ubicado en sucursal José Pedro Alessandri.\n\nDurante la intervención se efectúa el ordenamiento y organización del cableado asociado al equipo, dejando las conexiones correctamente distribuidas y ordenadas.\n\nPosteriormente, se realiza la conexión de los equipos correspondientes al ATM 2181, verificando el correcto funcionamiento de las conexiones.\nFinalizados los trabajos de ordenamiento y conexión, se realizan las verificaciones correspondientes.\nSe confirma que el enlace de comunicación se encuentra operativo, quedando el ATM 2181 conectado y operativo.\n\nSe finalizan satisfactoriamente los trabajos de ordenamiento de cables y conexión de equipos correspondientes al ATM 2181, ubicado en sucursal José Pedro Alessandri.\n\nEstado final:\nCableado ordenado.\nEquipos conectados.\nEnlace operativo.\nATM 2181 operativo.",
+    "createdAt": "2026-09-07T13:18:58.513Z",
+    "fechaInicio": "2026-09-05T10:00",
+    "fechaFin": "2026-09-05T11:00",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA JOSE PALESSANDRI 2858",
+    "ubicacionRef": "SUCURSAL JOSE PEDRO ALESSANDRI",
+    "comuna": "MACUL",
+    "numeroATM": "2181",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DANIEL HUAIQUIÑIR",
+    "valorServicio": "210.000",
+    "workOrderId": "wo-1788787138513",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788785867351",
+    "otNumber": "11.220",
+    "clientName": "DANIEL HUAIQUIÑIR",
+    "technicianName": "Rodolfo Salinas Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCION DE LLAVES-DESCONEXION DE EQUIPOS-ENTREGA DE LLAVES\n",
+    "solution": "se realiza la recepción de las llaves correspondientes por parte de la señorita Lorena Castillo, representante de Banco Santander.\n\nSe procede a realizar la desconexión de los equipos de comunicación correspondientes al ATM 601.\n\nDurante la intervención, se realiza la desconexión de los equipos de comunicación asociados al terminal, dejando los componentes desconectados conforme al procedimiento técnico establecido.\n\nSe finaliza satisfactoriamente el proceso de desconexión de los equipos de comunicación correspondientes al ATM 601, ubicado en la sucursal Banco Santander Príncipe de Gales.",
+    "createdAt": "2026-09-07T12:57:47.351Z",
+    "fechaInicio": "2026-09-04T16:00",
+    "fechaFin": "2026-09-04T17:00",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE PRINCIPE DE GALES 7007",
+    "ubicacionRef": "SUCURSAL PRINCIPE DE GALES",
+    "comuna": "LA REINA",
+    "numeroATM": "601",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DANIEL HUAIQUIÑIR",
+    "valorServicio": "210.000",
+    "workOrderId": "wo-1788785867351",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788785019015",
+    "otNumber": "11.219",
+    "clientName": "DANIEL HUAIQUIÑIR",
+    "technicianName": "Jorge Urra Pizarro",
+    "technicianId": "tech-001",
+    "diagnosis": "RECEPCION DE LLAVES-DESCONEXION DE EQUIPOS-ENTREGA DE LLAVES\n",
+    "solution": "Se realiza procedimiento técnico correspondiente a la recepción de llaves, desconexión de equipos y posterior entrega de llaves, asociado al equipo ATM 2181.\n\nDurante la intervención se efectuó la recepción y verificación de los siguientes elementos:\n\nGavetas.\nLlaves de bóveda.\nLlaves de tapa superior de ATM.\nLlaves de pilote.\nUna  llave de contrapuesta.\nUna pila correspondiente a chapa Kava.\n\nPosteriormente, una vez finalizadas las labores técnicas, se realiza la correspondiente entrega de llaves.\n\nSe realiza la desconexión de los equipos asociados al ATM 2181, incluyendo los siguientes componentes de comunicación:\n\nFibra óptica.\nEquipos de comunicación.\nConexiones de fibra óptica asociadas al equipo.\n\nUna vez realizada la desconexión, los equipos y componentes retirados quedan resguardados en la sucursal, según procedimiento correspondiente.\n\nSe ejecuta satisfactoriamente el procedimiento de recepción de llaves, desconexión de equipos de comunicación y fibra óptica, además del resguardo de los equipos asociados al ATM 2181.\n\nFinalmente, se realiza la entrega de llaves, quedando el procedimiento técnico finalizado.",
+    "createdAt": "2026-09-07T12:43:39.015Z",
+    "fechaInicio": "2026-09-04T16:00",
+    "fechaFin": "2026-09-04T17:07",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA JOSE PALESSANDRI 2858",
+    "ubicacionRef": "SUCURSAL JOSE PEDRO ALESSANDRI",
+    "comuna": "MACUL",
+    "numeroATM": "2181",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DANIEL HUAIQUIÑIR",
+    "valorServicio": "210.000",
+    "workOrderId": "wo-1788785019015",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1788555372370",
+    "otNumber": "11.221",
+    "clientName": "KAREN RIQUELME",
+    "technicianName": "Cristian Duran TNZ",
+    "technicianId": "tech-001",
+    "diagnosis": "SUPERVISION NCR\n",
+    "solution": "Se realizó intervención técnica en el equipo M282, efectuando las siguientes actividades:\n\nSe modificó la configuración de las gavetas, cambiando la denominación de moneda de USD a CLP.\nSe realizó el rescate de la dirección IP del equipo.\nSe efectuó el cambio de pantalla del equipo.\n\nLas actividades fueron realizadas de acuerdo con los requerimientos establecidos, dejando el equipo con la configuración de moneda en CLP y con la pantalla reemplazada.",
+    "createdAt": "2026-09-04T20:56:12.370Z",
+    "fechaInicio": "2026-09-04T14:00",
+    "fechaFin": "2026-09-04T16:12",
+    "destinatario": "NCR",
+    "direccion": "AVENIDA FRANCISCO BILBAO 3412 – A",
+    "ubicacionRef": "WORKCAFE IQUIQUE SUR",
+    "comuna": "IQUIQUE",
+    "numeroATM": "M282",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "KAREN RIQUELME",
+    "valorServicio": "",
+    "workOrderId": "wo-1788555372370",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
     "id": "rep-1788458791041",
     "otNumber": "11.218",
     "clientName": "TICKETERA",

@@ -3,6 +3,32 @@ import { supabaseInforme } from './supabaseInforme';
 
 const TABLE_NAME = 'informes';
 
+export function getReportTime(r: any): number {
+  if (!r) return 0;
+  if (r.createdAt) {
+    const t = new Date(r.createdAt).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  if (r.created_at) {
+    const t = new Date(r.created_at).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  const digits = (r.id || '').replace(/[^0-9]/g, '');
+  if (digits && digits.length >= 10) {
+    const t = parseInt(digits, 10);
+    if (!isNaN(t) && t > 0) return t;
+  }
+  return 0;
+}
+
+export function sortReportsDescending<T = any>(reports: T[]): T[] {
+  return reports.sort((a: any, b: any) => {
+    const timeDiff = getReportTime(b) - getReportTime(a);
+    if (timeDiff !== 0) return timeDiff;
+    return String(b.id || '').localeCompare(String(a.id || ''));
+  });
+}
+
 export async function saveReportDB(report: TechnicalReport): Promise<void> {
   const { error } = await supabaseInforme
     .from(TABLE_NAME)
@@ -31,7 +57,7 @@ export async function getReportsDB(limit = 10, page = 1): Promise<{ reports: Tec
     if (res.ok) {
       const json = await res.json();
       if (Array.isArray(json.reports) && json.reports.length > 0) {
-        return { reports: json.reports, total: json.total || json.reports.length };
+        return { reports: sortReportsDescending(json.reports), total: json.total || json.reports.length };
       }
     }
   } catch (e) {
@@ -42,7 +68,7 @@ export async function getReportsDB(limit = 10, page = 1): Promise<{ reports: Tec
   const { data, error } = await supabaseInforme
     .from(TABLE_NAME)
     .select('id, created_at, data')
-    .order('id', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(limit);
 
   if (error) {
@@ -82,7 +108,7 @@ export async function getReportsDB(limit = 10, page = 1): Promise<{ reports: Tec
     };
   });
 
-  return { reports: results, total: results.length };
+  return { reports: sortReportsDescending(results), total: results.length };
 }
 
 export async function searchReportsDB(query: string): Promise<TechnicalReport[]> {
@@ -96,7 +122,7 @@ export async function searchReportsDB(query: string): Promise<TechnicalReport[]>
     const res = await fetch(`/api/informes?q=${encodeURIComponent(q)}`, { cache: 'no-store' });
     if (res.ok) {
       const json = await res.json();
-      return json.reports || [];
+      return sortReportsDescending(json.reports || []);
     }
   } catch (e) {
     console.error("Error calling /api/informes search:", e);

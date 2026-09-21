@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import type { TechnicalReport } from '@/types';
 import { supabaseInforme } from '@/lib/supabaseInforme';
+import { sortReportsDescending } from '@/lib/reportsDb';
 import cachedReportsJson from '@/data/informes_cache.json';
 
 // In-memory reports store
-let memoryReports: TechnicalReport[] = [...(cachedReportsJson as TechnicalReport[])];
+let memoryReports: TechnicalReport[] = sortReportsDescending([...(cachedReportsJson as TechnicalReport[])]);
 let lastLiveSync = 0;
 
-// Sync latest 15 reports from Supabase if more than 30s elapsed
+// Sync latest 50 reports from Supabase if more than 30s elapsed
 async function syncLatestFromDB() {
   const now = Date.now();
   if (now - lastLiveSync < 30000) return; // 30s throttle
@@ -17,11 +18,12 @@ async function syncLatestFromDB() {
     const { data, error } = await supabaseInforme
       .from('informes')
       .select('id, created_at, data')
-      .order('id', { ascending: false })
-      .limit(15);
+      .order('created_at', { ascending: false })
+      .limit(50);
 
     if (error || !data) return;
 
+    let changed = false;
     for (const r of data) {
       const rd = r.data || {};
       const reportItem: TechnicalReport = {
@@ -54,8 +56,13 @@ async function syncLatestFromDB() {
       if (existingIndex >= 0) {
         memoryReports[existingIndex] = reportItem;
       } else {
-        memoryReports.unshift(reportItem);
+        memoryReports.push(reportItem);
       }
+      changed = true;
+    }
+
+    if (changed) {
+      sortReportsDescending(memoryReports);
     }
   } catch (e) {
     console.error('Error syncing live reports:', e);
@@ -115,6 +122,8 @@ export async function GET(request: Request) {
     );
   });
 
+  sortReportsDescending(matches);
+
   return NextResponse.json({
     total: memoryReports.length,
     matchCount: matches.length,
@@ -131,8 +140,9 @@ export async function POST(request: Request) {
       if (existingIndex >= 0) {
         memoryReports[existingIndex] = cleanItem;
       } else {
-        memoryReports.unshift(cleanItem);
+        memoryReports.push(cleanItem);
       }
+      sortReportsDescending(memoryReports);
       return NextResponse.json({ success: true, total: memoryReports.length });
     }
   } catch (e) {

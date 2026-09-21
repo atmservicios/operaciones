@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   FileText, Plus, Download, Send, Eye, X, ClipboardList, MapPin,
   Monitor, Cpu, User, Calendar, ImageIcon, Save, FileOutput,
@@ -9,7 +9,7 @@ import {
 import { mockWorkOrders } from "@/lib/mock-data";
 import { formatDateTime, formatDate, getReportFileName } from "@/lib/utils";
 import type { TechnicalReport } from "@/types";
-import { getReportsDB, saveReportDB, deleteReportDB, getReportByIdDB, searchReportsDB } from "@/lib/reportsDb";
+import { getReportsDB, saveReportDB, deleteReportDB, getReportByIdDB, searchReportsDB, sortReportsDescending } from "@/lib/reportsDb";
 
 // ─── Word Document Generation Utility ─────────────────────────────────────────
 const formatDateForWord = (dateString?: string) => {
@@ -779,7 +779,7 @@ export default function ReportsPage() {
     const loadReports = async () => {
       try {
         const { reports: saved, total } = await getReportsDB(10, 1);
-        setReports(saved);
+        setReports(sortReportsDescending(saved));
         setTotalReports(total);
       } catch (e) {
         console.error("Error loading reports:", e);
@@ -801,7 +801,7 @@ export default function ReportsPage() {
     const timer = setTimeout(async () => {
       try {
         const results = await searchReportsDB(search);
-        setSearchResults(results);
+        setSearchResults(sortReportsDescending(results));
       } catch (e) {
         console.error("Error searching reports across database:", e);
       } finally {
@@ -821,7 +821,7 @@ export default function ReportsPage() {
       setReports((prev) => {
         const ids = new Set(prev.map((r) => r.id));
         const filtered = more.filter((r) => !ids.has(r.id));
-        return [...prev, ...filtered];
+        return sortReportsDescending([...prev, ...filtered]);
       });
       setTotalReports(total);
       setPage(nextPage);
@@ -905,8 +905,9 @@ export default function ReportsPage() {
     await saveReportDB(newReport);
     setReports((prev) => {
       const exists = prev.some((r) => r.id === newReport.id);
+      let updated: TechnicalReport[];
       if (exists) {
-        return prev.map((r) => r.id === newReport.id ? newReport : r);
+        updated = prev.map((r) => r.id === newReport.id ? newReport : r);
       } else {
         const listRep = {
           ...newReport,
@@ -915,8 +916,9 @@ export default function ReportsPage() {
           fechaInicio: '',
           fechaFin: '',
         };
-        return [listRep, ...prev];
+        updated = [listRep, ...prev];
       }
+      return sortReportsDescending(updated);
     });
     setShowNew(false);
     setEditingReport(null);
@@ -941,7 +943,10 @@ export default function ReportsPage() {
     (o) => o.status === "finalizada" && !reports.find((r) => r.workOrderId === o.id)
   );
 
-  const displayReports = searchResults !== null ? searchResults : reports;
+  const displayReports = useMemo(() => {
+    const list = searchResults !== null ? searchResults : reports;
+    return sortReportsDescending([...list]);
+  }, [searchResults, reports]);
 
   return (
     <div className="space-y-6">
@@ -1060,7 +1065,7 @@ export default function ReportsPage() {
                       <User size={10} /> {r.technicianName}
                     </span>
                     <span className="text-xs flex items-center gap-1" style={{ color: "#475569" }}>
-                      <Calendar size={10} /> {formatDateTime(r.createdAt)}
+                      <Calendar size={10} /> {formatDateTime(r.createdAt || r.id)}
                     </span>
                     <span className="text-xs flex items-center gap-1" style={{ color: "#475569" }}>
                       📦 {r.materialsUsed.length} materiales

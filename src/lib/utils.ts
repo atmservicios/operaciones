@@ -22,7 +22,15 @@ export function formatDate(date: string | Date): string {
 }
 
 export function formatDateTime(date: string | Date): string {
-  const d = new Date(date);
+  if (!date) return "—";
+  let d = new Date(date);
+  if (isNaN(d.getTime())) {
+    if (typeof date === 'string' && date.startsWith('rep-')) {
+      const ts = parseInt(date.replace('rep-', ''), 10);
+      if (!isNaN(ts) && ts > 0) d = new Date(ts);
+    }
+    if (isNaN(d.getTime())) return String(date);
+  }
   return d.toLocaleString("es-CL", {
     day: "2-digit",
     month: "2-digit",
