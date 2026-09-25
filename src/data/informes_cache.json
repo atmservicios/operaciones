@@ -1,5 +1,395 @@
 [
   {
+    "id": "rep-1790186139958",
+    "otNumber": "11255",
+    "clientName": "TICKETERA",
+    "technicianName": "Alberto Retamal González",
+    "technicianId": "tech-001",
+    "diagnosis": "RETIRO DE CLAVES REDBANC\n",
+    "solution": "Se realiza retiro de claves correspondientes al ATM 971, desde dependencias de Redbanc, por tecnico de  ATM's Servicios.\n\nEstado final: Retiro de claves realizado satisfactoriamente.",
+    "createdAt": "2026-09-23T17:55:39.958Z",
+    "fechaInicio": "2026-09-23T09:20",
+    "fechaFin": "2026-09-23T10:20",
+    "destinatario": "SANTANDER",
+    "direccion": "HUERFANOS 770 PISO -1",
+    "ubicacionRef": "REDBANC",
+    "comuna": "SANTIAGO",
+    "numeroATM": "971",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "TICKETERA",
+    "valorServicio": "",
+    "workOrderId": "wo-1790186139958",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790172810519",
+    "otNumber": "11254",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "Cristian Villegas Menanteau",
+    "technicianId": "tech-001",
+    "diagnosis": "ANCLAJE\n",
+    "solution": "Según lo solicitado por Dayanne Soto, se realizan trabajos de instalación y aseguramiento del ATM 7540, junto con módulo MMBB, en Metro Las Rejas, contemplando el posicionamiento y alineación de los blindajes y del ATM.\n\nUna vez posicionados los equipos, se procede a realizar el anclaje tanto del ATM como del módulo MMBB.\n\nFinalizadas las labores, se verifica la correcta fijación del ATM. Las llaves quedan resguardadas en portallaves con clave.\n\nEstado final: Trabajos finalizados satisfactoriamente.",
+    "createdAt": "2026-09-23T14:13:30.519Z",
+    "fechaInicio": "2026-09-22T23:00",
+    "fechaFin": "2026-09-22T03:50",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS III",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7540",
+    "serieATM": "94-62310019",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1790172810519",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790172158897",
+    "otNumber": "11253",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "Cristian Villegas Menanteau",
+    "technicianId": "tech-001",
+    "diagnosis": "ANCLAJE\n",
+    "solution": "Segun lo solicitado por Dayanne Soto, se realizan trabajos de instalación y aseguramiento del ATM 7539, junto con MMMBB en Metro Las Rejas, contemplando el posicionamiento, alineación de los blindajes, junto con el ATM. \n\nUna vez posicionado los equipos, se procede a realizar el anclaje tanto del ATM como del módulo MMBB, asegurando su correcta fijación estructural conforme a las especificaciones técnicas requeridas\n\nFinalizadas las labores, se verifica la correcta fijación y seguridad del ATM. Las llaves quedan resguardadas en portallaves con clave.\n\nEstado final: Trabajos finalizados satisfactoriamente.",
+    "createdAt": "2026-09-23T14:02:38.897Z",
+    "fechaInicio": "2026-09-22T23:00",
+    "fechaFin": "2026-09-22T03:50",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS II",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7539",
+    "serieATM": "94-62310018",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1790172158897",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790101535577",
+    "otNumber": "11252",
+    "clientName": "PAOLA TAPIA",
+    "technicianName": "JORGE URRA UTEAU",
+    "technicianId": "tech-001",
+    "diagnosis": "LIMPIEZA DE FUNDA",
+    "solution": "De acuerdo con lo solicitado por Paola Tapia, se realiza servicio de limpieza del depositario M295, ubicado en Work Café Expresso Centro.\n\nDurante la intervención se realizan las siguientes actividades:\n\nAspirado del depositario.\nLimpieza mediante paño seco.\nAplicación de líquido desinfectante Laysofort y posterior secado.\nRemoción de manchas de pintura al agua.\nRetoques con pintura del tono correspondiente en sectores donde se encontraba dañada la pintura original.\nRegistro fotográfico del estado antes y después.\n\nEstado final: Servicio de limpieza del depositario M295 realizado satisfactoriamente, quedando el equipo en buenas condiciones de limpieza y presentación.",
+    "createdAt": "2026-09-22T18:25:35.577Z",
+    "fechaInicio": "2026-09-22T11:50",
+    "fechaFin": "2026-09-22T13:45",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE AGUSTINAS 920",
+    "ubicacionRef": "WORKCAFE EXPRESSO CENTRO",
+    "comuna": "SANTIAGO",
+    "numeroATM": "M295",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PAOLA TAPIA",
+    "valorServicio": "$ 66.775 (Limpieza de funda)",
+    "workOrderId": "wo-1790101535577",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790101353916",
+    "otNumber": "11251",
+    "clientName": "PAOLA TAPIA",
+    "technicianName": "JORGE URRA UTEAU",
+    "technicianId": "tech-001",
+    "diagnosis": "LIMPIEZA DE FUNDA",
+    "solution": "De acuerdo con lo solicitado por Paola Tapia, se realiza servicio de limpieza del depositario M296, ubicado en Work Café Expresso Centro.\n\nDurante la intervención se realizan las siguientes actividades:\n\nAspirado del depositario.\nLimpieza mediante paño seco.\nAplicación de líquido desinfectante Laysofort y posterior secado.\nRemoción de manchas de pintura al agua.\nRetoques con pintura del tono correspondiente en sectores donde se encontraba dañada la pintura original.\nRegistro fotográfico del estado antes y después.\n\nEstado final: Servicio de limpieza del depositario M296 realizado satisfactoriamente, quedando el equipo en buenas condiciones de limpieza y presentación.",
+    "createdAt": "2026-09-22T18:22:33.916Z",
+    "fechaInicio": "2026-09-22T11:50",
+    "fechaFin": "2026-09-22T13:45",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE AGUSTINAS 920",
+    "ubicacionRef": "WORKCAFE EXPRESSO CENTRO",
+    "comuna": "SANTIAGO",
+    "numeroATM": "M296",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PAOLA TAPIA",
+    "valorServicio": "$ 66.775 (Limpieza de funda)",
+    "workOrderId": "wo-1790101353916",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790101178206",
+    "otNumber": "11250",
+    "clientName": "PAOLA TAPIA",
+    "technicianName": "JORGE URRA UTEAU",
+    "technicianId": "tech-001",
+    "diagnosis": "LIMPIEZA DE FUNDA",
+    "solution": "De acuerdo con lo solicitado por Paola Tapia, se realiza servicio de limpieza del depositario M297, ubicado en Work Café Expresso Centro.\n\nDurante la intervención se realizan las siguientes actividades:\n\nAspirado del depositario.\nLimpieza mediante paño seco.\nAplicación de líquido desinfectante Laysofort y posterior secado.\nRemoción de manchas de pintura al agua.\nRetoques con pintura del tono correspondiente en sectores donde se encontraba dañada la pintura original.\nRegistro fotográfico del estado antes y después.\n\nEstado final: Servicio de limpieza del depositario M297 realizado satisfactoriamente, quedando el equipo en buenas condiciones de limpieza y presentación.",
+    "createdAt": "2026-09-22T18:19:38.206Z",
+    "fechaInicio": "2026-09-22T11:50",
+    "fechaFin": "2026-09-22T13:45",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE AGUSTINAS 920",
+    "ubicacionRef": "WORKCAFE EXPRESSO CENTRO",
+    "comuna": "SANTIAGO",
+    "numeroATM": "M297",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PAOLA TAPIA",
+    "valorServicio": "$ 66.775 (Limpieza de funda)",
+    "workOrderId": "wo-1790101178206",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790101038581",
+    "otNumber": "11249",
+    "clientName": "PAOLA TAPIA",
+    "technicianName": "JORGE URRA UTEAU",
+    "technicianId": "tech-001",
+    "diagnosis": "LIMPIEZA DE FUNDA",
+    "solution": "De acuerdo con lo solicitado por Paola Tapia, se realiza servicio de limpieza del depositario M298, ubicado en Work Café Expresso Centro.\n\nDurante la intervención se realizan las siguientes actividades:\n\nAspirado del depositario.\nLimpieza mediante paño seco.\nAplicación de líquido desinfectante Laysofort y posterior secado.\nRemoción de manchas de pintura al agua.\nRetoques con pintura del tono correspondiente en sectores donde se encontraba dañada la pintura original.\nRegistro fotográfico del estado antes y después.\n\nEstado final: Servicio de limpieza del depositario M298 realizado satisfactoriamente, quedando el equipo en buenas condiciones de limpieza y presentación.",
+    "createdAt": "2026-09-22T18:17:18.581Z",
+    "fechaInicio": "2026-09-22T11:50",
+    "fechaFin": "2026-09-22T13:45",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE AGUSTINAS 920",
+    "ubicacionRef": "WORKCAFE EXPRESSO CENTRO",
+    "comuna": "SANTIAGO",
+    "numeroATM": "M298",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PAOLA TAPIA",
+    "valorServicio": "$ 66.775 (Limpieza de funda)",
+    "workOrderId": "wo-1790101038581",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790100872740",
+    "otNumber": "11248",
+    "clientName": "PAOLA TAPIA",
+    "technicianName": "JORGE URRA UTEAU",
+    "technicianId": "tech-001",
+    "diagnosis": "LIMPIEZA DE FUNDA",
+    "solution": "De acuerdo con lo solicitado por Paola Tapia, se realiza servicio de limpieza del depositario M299, ubicado en Work Café Expresso Centro.\n\nDurante la intervención se realizan las siguientes actividades:\n\nAspirado del depositario.\nLimpieza mediante paño seco.\nAplicación de líquido desinfectante Laysofort y posterior secado.\nRemoción de manchas de pintura al agua.\nRetoques con pintura del tono correspondiente en sectores donde se encontraba dañada la pintura original.\nRegistro fotográfico del estado antes y después.\n\nEstado final: Servicio de limpieza del depositario M299 realizado satisfactoriamente, quedando el equipo en buenas condiciones de limpieza y presentación.",
+    "createdAt": "2026-09-22T18:14:32.740Z",
+    "fechaInicio": "2026-09-22T11:50",
+    "fechaFin": "2026-09-22T13:45",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE AGUSTINAS 920",
+    "ubicacionRef": "WORKCAFE EXPRESSO CENTRO",
+    "comuna": "SANTIAGO",
+    "numeroATM": "M299",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PAOLA TAPIA",
+    "valorServicio": "$ 66.775 (Limpieza de funda)",
+    "workOrderId": "wo-1790100872740",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790100625664",
+    "otNumber": "11247",
+    "clientName": "PAOLA TAPIA",
+    "technicianName": "JORGE URRA UTEAU",
+    "technicianId": "tech-001",
+    "diagnosis": "LIMPIEZA DE FUNDA",
+    "solution": "De acuerdo con lo solicitado por Paola Tapia, se realiza servicio de limpieza del depositario M300, ubicado en Work Café Expresso Centro.\n\nDurante la intervención se realizan las siguientes actividades:\n\nAspirado del depositario.\nLimpieza mediante paño seco.\nAplicación de líquido desinfectante Laysofort y posterior secado.\nRemoción de manchas de pintura al agua.\nRetoques con pintura del tono correspondiente en sectores donde se encontraba dañada la pintura original.\nRegistro fotográfico del estado antes y después.\n\nEstado final: Servicio de limpieza del depositario M300 realizado satisfactoriamente, quedando el equipo en buenas condiciones de limpieza y presentación.",
+    "createdAt": "2026-09-22T18:10:25.664Z",
+    "fechaInicio": "2026-09-22T11:50",
+    "fechaFin": "2026-09-22T13:45",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE AGUSTINAS 920",
+    "ubicacionRef": "WORKCAFE EXPRESSO CENTRO",
+    "comuna": "SANTIAGO",
+    "numeroATM": "M300",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PAOLA TAPIA",
+    "valorServicio": "$ 66.775 (Limpieza de funda)",
+    "workOrderId": "wo-1790100625664",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790100426854",
+    "otNumber": "11246",
+    "clientName": "PAOLA TAPIA",
+    "technicianName": "JORGE URRA UTEAU",
+    "technicianId": "tech-001",
+    "diagnosis": "LIMPIEZA DE FUNDA",
+    "solution": "De acuerdo con lo solicitado por Paola Tapia, se realiza servicio de limpieza del depositario M301, ubicado en Work Café Expresso Centro.\n\nDurante la intervención se realizan las siguientes labores:\n\nAspirado del depositario.\nLimpieza mediante paño seco.\nAplicación de líquido desinfectante Laysofort y posterior secado.\nRemoción de manchas de pintura al agua.\nRetoques con pintura del tono correspondiente en sectores donde se encontraba dañada la pintura original.\nRegistro fotográfico del estado antes y después de los trabajos.\n\nEstado final: Servicio de limpieza del depositario M301 realizado satisfactoriamente, quedando el equipo en buenas condiciones de limpieza y presentación.",
+    "createdAt": "2026-09-22T18:07:06.854Z",
+    "fechaInicio": "2026-09-22T11:50",
+    "fechaFin": "2026-09-22T13:45",
+    "destinatario": "SANTANDER",
+    "direccion": "CALLE AGUSTINAS 920",
+    "ubicacionRef": "WORKCAFE EXPRESSO CENTRO",
+    "comuna": "SANTIAGO",
+    "numeroATM": "M301",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "PAOLA TAPIA",
+    "valorServicio": "$ 66.775 (Limpieza de funda)",
+    "workOrderId": "wo-1790100426854",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790011153077",
+    "otNumber": "11246",
+    "clientName": "GABRIEL OVALLE",
+    "technicianName": "Técnico de Turno",
+    "technicianId": "tech-001",
+    "diagnosis": "DESPACHO TARJETA SUPERVISOR",
+    "solution": "De acuerdo con lo solicitado por Gabriel Ovalle, se realiza el despacho de tarjeta de supervisor correspondiente al ATM N.° 1915, ubicado en Sucursal Osorno Plaza.\n\nLa tarjeta de supervisor es despachada conforme a lo coordinado y entregada sin ninguna novedad.\n\nEstado final: Tarjeta de supervisor despachada y entregada satisfactoriamente, sin inconvenientes.",
+    "createdAt": "2026-09-21T17:19:13.077Z",
+    "fechaInicio": "2026-09-17T10:30",
+    "fechaFin": "2026-09-17T11:18",
+    "destinatario": "ITAU",
+    "direccion": "Manuel Antonio Matta 624 ",
+    "ubicacionRef": "Sucursal Osorno Plaza",
+    "comuna": "Osorno",
+    "numeroATM": "1915",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "GABRIEL OVALLE",
+    "valorServicio": "",
+    "workOrderId": "wo-1790011153076",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790000531930",
+    "otNumber": "11247",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "SERVICIO ELECTRICO",
+    "solution": "De acuerdo con lo solicitado por Dayanne Soto, se realiza visita técnica al ATM N.° 7538, ubicado en Metro Las Rejas I.\n\nAl momento de llegar al lugar, se verifica que el cajero se encuentra operativo y funcionando correctamente.\n\nEstado final: ATM 7538 se encuentra operativo al momento de la visita, sin presentar novedades.",
+    "createdAt": "2026-09-21T14:22:11.930Z",
+    "fechaInicio": "2026-09-16T10:30",
+    "fechaFin": "2026-09-16T10:41",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS I",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7538",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1790000531930",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
+    "id": "rep-1790000294680",
+    "otNumber": "11246",
+    "clientName": "DAYANNE SOTO",
+    "technicianName": "JORGE URRA PIZARRO",
+    "technicianId": "tech-001",
+    "diagnosis": "SERVICIO ELECTRICO",
+    "solution": "De acuerdo con lo solicitado por Dayanne Soto, se realiza visita técnica al ATM N.° 7541, ubicado en Metro Las Rejas IV.\n\nAl momento de llegar al lugar, se verifica que el cajero se encuentra operativo y funcionando correctamente.\n\nEstado final: ATM 7541 se encuentra operativo al momento de la visita, sin presentar novedades.",
+    "createdAt": "2026-09-21T14:18:14.680Z",
+    "fechaInicio": "2026-09-16T10:30",
+    "fechaFin": "2026-09-16T10:41",
+    "destinatario": "SANTANDER",
+    "direccion": "AVENIDA LIBERTADOR BERNARDO OHIGGINS 5299",
+    "ubicacionRef": "METRO LAS REJAS IV",
+    "comuna": "ESTACIÓN CENTRAL",
+    "numeroATM": "7541",
+    "serieATM": "",
+    "modeloMMBB": "",
+    "serieMMBB": "",
+    "solicitante": "DAYANNE SOTO",
+    "valorServicio": "",
+    "workOrderId": "wo-1790000294680",
+    "materialsUsed": [
+      {
+        "name": "Materiales y repuestos varios",
+        "quantity": 1
+      }
+    ],
+    "images": []
+  },
+  {
     "id": "rep-1789996826822",
     "otNumber": "11245",
     "clientName": "GABRIEL OVALLE",

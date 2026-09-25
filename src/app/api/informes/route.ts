@@ -8,57 +8,78 @@ import cachedReportsJson from '@/data/informes_cache.json';
 let memoryReports: TechnicalReport[] = sortReportsDescending([...(cachedReportsJson as TechnicalReport[])]);
 let lastLiveSync = 0;
 
-// Sync latest 50 reports from Supabase if more than 30s elapsed
+// Sync latest reports from Supabase in safe batches (size 8) to avoid Postgres statement timeouts
 async function syncLatestFromDB() {
   const now = Date.now();
   if (now - lastLiveSync < 30000) return; // 30s throttle
   lastLiveSync = now;
 
   try {
-    const { data, error } = await supabaseInforme
-      .from('informes')
-      .select('id, created_at, data')
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    if (error || !data) return;
-
+    const BATCH_SIZE = 8;
+    const MAX_BATCHES = 4; // Check up to 32 recent reports
     let changed = false;
-    for (const r of data) {
-      const rd = r.data || {};
-      const reportItem: TechnicalReport = {
-        id: r.id,
-        otNumber: rd.otNumber ?? '',
-        clientName: rd.clientName ?? rd.destinatario ?? '',
-        technicianName: rd.technicianName ?? rd.tecnico ?? '',
-        technicianId: rd.technicianId ?? '',
-        diagnosis: rd.diagnosis ?? rd.detalletrabajo ?? '',
-        solution: rd.solution ?? rd.resumenTrabajo ?? '',
-        createdAt: rd.createdAt ?? r.created_at ?? '',
-        fechaInicio: rd.fechaInicio ?? '',
-        fechaFin: rd.fechaFin ?? '',
-        destinatario: rd.destinatario ?? '',
-        direccion: rd.direccion ?? '',
-        ubicacionRef: rd.ubicacionRef ?? '',
-        comuna: rd.comuna ?? '',
-        numeroATM: rd.numeroATM ?? '',
-        serieATM: rd.serieATM ?? '',
-        modeloMMBB: rd.modeloMMBB ?? '',
-        serieMMBB: rd.serieMMBB ?? '',
-        solicitante: rd.solicitante ?? '',
-        valorServicio: rd.valorServicio ?? '',
-        workOrderId: rd.workOrderId ?? '',
-        materialsUsed: rd.materialsUsed ?? [],
-        images: [],
-      };
 
-      const existingIndex = memoryReports.findIndex((item) => item.id === r.id);
-      if (existingIndex >= 0) {
-        memoryReports[existingIndex] = reportItem;
-      } else {
-        memoryReports.push(reportItem);
+    for (let batch = 0; batch < MAX_BATCHES; batch++) {
+      const from = batch * BATCH_SIZE;
+      const to = from + BATCH_SIZE - 1;
+
+      const { data, error } = await supabaseInforme
+        .from('informes')
+        .select('id, created_at, data')
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) {
+        console.error(`Error syncing batch ${batch} from Supabase:`, error);
+        break;
       }
-      changed = true;
+
+      if (!data || data.length === 0) break;
+
+      let allInBatchWereNew = true;
+
+      for (const r of data) {
+        const rd = r.data || {};
+        const reportItem: TechnicalReport = {
+          id: r.id,
+          otNumber: rd.otNumber ?? '',
+          clientName: rd.clientName ?? rd.destinatario ?? '',
+          technicianName: rd.technicianName ?? rd.tecnico ?? '',
+          technicianId: rd.technicianId ?? '',
+          diagnosis: rd.diagnosis ?? rd.detalletrabajo ?? '',
+          solution: rd.solution ?? rd.resumenTrabajo ?? '',
+          createdAt: rd.createdAt ?? r.created_at ?? '',
+          fechaInicio: rd.fechaInicio ?? '',
+          fechaFin: rd.fechaFin ?? '',
+          destinatario: rd.destinatario ?? '',
+          direccion: rd.direccion ?? '',
+          ubicacionRef: rd.ubicacionRef ?? '',
+          comuna: rd.comuna ?? '',
+          numeroATM: rd.numeroATM ?? '',
+          serieATM: rd.serieATM ?? '',
+          modeloMMBB: rd.modeloMMBB ?? '',
+          serieMMBB: rd.serieMMBB ?? '',
+          solicitante: rd.solicitante ?? '',
+          valorServicio: rd.valorServicio ?? '',
+          workOrderId: rd.workOrderId ?? '',
+          materialsUsed: rd.materialsUsed ?? [],
+          images: [],
+        };
+
+        const existingIndex = memoryReports.findIndex((item) => item.id === r.id);
+        if (existingIndex >= 0) {
+          allInBatchWereNew = false;
+          memoryReports[existingIndex] = reportItem;
+        } else {
+          memoryReports.push(reportItem);
+          changed = true;
+        }
+      }
+
+      // If this batch already hit reports that exist in memory, we have caught up with the live data!
+      if (!allInBatchWereNew) {
+        break;
+      }
     }
 
     if (changed) {

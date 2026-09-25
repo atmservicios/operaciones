@@ -64,12 +64,13 @@ export async function getReportsDB(limit = 10, page = 1): Promise<{ reports: Tec
     console.warn("API /api/informes unreachable, falling back to direct Supabase:", e);
   }
 
-  // Fallback: direct Supabase query
+  // Fallback: direct Supabase query (cap at 8 to prevent statement timeouts)
+  const safeLimit = Math.min(limit, 8);
   const { data, error } = await supabaseInforme
     .from(TABLE_NAME)
     .select('id, created_at, data')
     .order('created_at', { ascending: false })
-    .limit(limit);
+    .limit(safeLimit);
 
   if (error) {
     console.error("Error fetching reports from Supabase:", error);
