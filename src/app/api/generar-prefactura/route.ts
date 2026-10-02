@@ -103,25 +103,22 @@ export async function POST(request: NextRequest) {
       sheetNum.cell('C12').value(servicioTarifado);
       sheetNum.cell('D12').value(cantidad);
       sheetNum.cell('E12').value(unidad);
-      if (valorUnitario > 0) {
-        sheetNum.cell('F12').value(valorUnitario);
-      }
-      sheetNum.cell('G12').value(totalNeto);
 
-      // ── Total Neto Celda G24 ──────────────────────────────────────
-      sheetNum.cell('G24').value(totalNeto);
+      // F12 (Valor Unitario): mantener como fórmula dinámica.
+      // Si el usuario borra la información de C12, devuelve automáticamente 0.
+      const fallbackPrice = (valorUnitario !== undefined && valorUnitario !== null && Number(valorUnitario) > 0)
+        ? Number(valorUnitario)
+        : 0;
 
-      // ── Populate corresponding row in "RESUMEN PRE FACTURA" ────────
-      const resumenRow = 4 + i;
-      sheetResumen.cell(`B${resumenRow}`).value(''); // Columna OT vacía
-      sheetResumen.cell(`C${resumenRow}`).value(ticketStr);
-      sheetResumen.cell(`F${resumenRow}`).value(tipoMaquinaStr);
-      sheetResumen.cell(`G${resumenRow}`).value(atmStr);
-      sheetResumen.cell(`H${resumenRow}`).value(localStr);
-      sheetResumen.cell(`I${resumenRow}`).value(tipoTrabajoStr);
-      sheetResumen.cell(`J${resumenRow}`).value(totalNeto);
-      sheetResumen.cell(`K${resumenRow}`).value(fechaStr);
-      sheetResumen.cell(`L${resumenRow}`).value(solicitanteStr);
+      sheetNum.cell('F12').formula(
+        `IF(OR('${sheetName}'!C12="",ISBLANK('${sheetName}'!C12)),0,IFERROR(VLOOKUP('${sheetName}'!C12,'Items Servicios'!A:B,2,0),${fallbackPrice}))`
+      );
+
+      // G12 (Total): fórmula dinámica F12 * D12. Si F12 o D12 es 0 o vacío, da 0.
+      sheetNum.cell('G12').formula(`IFERROR(F12*D12,0)`);
+
+      // G24 (Total Neto): fórmula dinámica suma de items G12:G23
+      sheetNum.cell('G24').formula(`IFERROR(SUM(G12:G23),0)`);
     }
 
     // Generate output file buffer
