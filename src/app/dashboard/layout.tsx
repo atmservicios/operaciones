@@ -18,8 +18,17 @@ interface UserProfile {
   rol: Rol;
 }
 
-// Menú completo con restricciones por rol
-const navItems = [
+interface NavItem {
+  href: string;
+  icon: any;
+  label: string;
+  badge: string | null;
+  roles: Rol[];
+  allowedEmails?: string[];
+}
+
+// Menú completo con restricciones por rol y permisos específicos
+const navItems: NavItem[] = [
   { href: "/dashboard",              icon: LayoutDashboard, label: "Dashboard",           badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/coordinacion", icon: CalendarDays,    label: "Coordinación",        badge: null,  roles: ['administrador','supervisor','operaria'] },
   { href: "/dashboard/prefactura",   icon: FileSpreadsheet, label: "Prefactura",          badge: null,  roles: ['administrador','supervisor','operaria'] },
@@ -32,12 +41,28 @@ const navItems = [
   { href: "/dashboard/orders",       icon: ClipboardList,   label: "Órdenes de Trabajo",  badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/map",          icon: MapPin,          label: "Mapa Operacional",    badge: null,  roles: ['administrador','supervisor'] },
   { href: "/dashboard/inventory",    icon: Package,         label: "Inventario",          badge: null,  roles: ['administrador','supervisor','bodega'] },
-  { href: "/dashboard/cotizaciones",   icon: FileSpreadsheet,   label: "Cotizaciones",           badge: null,  roles: ['administrador'] },
-  { href: "/dashboard/cotizaciones-santander", icon: FileSpreadsheet, label: "Cotizaciones Santander", badge: null, roles: ['administrador'] },
+  { href: "/dashboard/cotizaciones",   icon: FileSpreadsheet,   label: "Cotizaciones",           badge: null,  roles: ['administrador'], allowedEmails: ['carol.urra@atmservicios.cl'] },
+  { href: "/dashboard/cotizaciones-santander", icon: FileSpreadsheet, label: "Cotizaciones Santander", badge: null, roles: ['administrador'], allowedEmails: ['carol.urra@atmservicios.cl'] },
   { href: "/dashboard/executive",      icon: BarChart3,         label: "Reportes Ejecutivos",    badge: null,  roles: ['administrador'] },
   { href: "/dashboard/audit",          icon: ScrollText,        label: "Auditoría",              badge: null,  roles: ['administrador'] },
   { href: "/dashboard/settings",       icon: Settings,          label: "Configuración",          badge: null,  roles: ['administrador'] },
 ];
+
+const canAccessNavItem = (item: NavItem, userProfile: UserProfile | null): boolean => {
+  if (!userProfile) return false;
+  if (item.roles.includes(userProfile.rol)) return true;
+  if (item.allowedEmails) {
+    const email = (userProfile.correo || "").trim().toLowerCase();
+    const name = (userProfile.nombre || "").trim().toLowerCase();
+    if (
+      item.allowedEmails.some((e) => e.trim().toLowerCase() === email) ||
+      name.includes("carol urra")
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -116,11 +141,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (profile) {
       const matchedItem = navItems.find(item => 
-        pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))
+        pathname === item.href || (item.href !== "/dashboard" && (pathname === item.href || pathname.startsWith(item.href + "/")))
       );
       
       if (matchedItem) {
-        if (!matchedItem.roles.includes(profile.rol)) {
+        if (!canAccessNavItem(matchedItem, profile)) {
           if (profile.rol === 'bodega') {
             router.push("/dashboard/inventory");
           } else {
@@ -186,12 +211,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
-  // Filtrar menú según el rol del usuario
+  // Filtrar menú según el rol del usuario o permisos específicos
   const visibleNav = profile
-    ? navItems.filter(item => item.roles.includes(profile.rol))
+    ? navItems.filter(item => canAccessNavItem(item, profile))
     : [];
 
-  const currentPage = navItems.find((n) => pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href)));
+  const currentPage = navItems.find((n) => pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href + "/")));
 
   // Iniciales del nombre
   const initiales = profile?.nombre
@@ -280,7 +305,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {visibleNav.map((item) => {
             const isCoordinacion = item.href === "/dashboard/coordinacion";
             const Icon = item.icon;
-            const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href + "/"));
             
             if (isCoordinacion) {
               const isSubActiveGeneral = pathname === "/dashboard/coordinacion" && !currentSearch.includes("category=CERRAJERIA") && !currentSearch.includes("category=TNS");
