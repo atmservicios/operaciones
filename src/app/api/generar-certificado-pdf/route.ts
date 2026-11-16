@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { firmaB64 } from '@/lib/firmaB64';
 import { logoB64 } from '@/lib/logoB64';
+import { getCertificadoFileName } from '@/lib/utils';
 
 export const runtime = 'nodejs';
 
@@ -174,13 +175,14 @@ export async function POST(request: NextRequest): Promise<Response> {
       pdfDoc.getBuffer((buffer: Buffer) => {
         try {
           const uint8 = new Uint8Array(buffer);
-          const fileName = `Certificado_Anclaje_${cert.folio || 'nuevo'}.pdf`;
+          const fileName = getCertificadoFileName(cert, 'pdf');
+          const asciiFileName = fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
           resolve(
             new Response(uint8, {
               status: 200,
               headers: {
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': `attachment; filename="${fileName}"`,
+                'Content-Disposition': `attachment; filename="${asciiFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`,
                 'Content-Length': uint8.byteLength.toString(),
               },
             })

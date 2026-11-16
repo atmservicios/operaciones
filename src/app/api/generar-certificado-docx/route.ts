@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { generarCertificadoDocx } from '@/lib/generarCertificadoDocx';
+import { getCertificadoFileName } from '@/lib/utils';
 
 export const runtime = 'nodejs';
 
@@ -18,13 +19,14 @@ export async function POST(request: NextRequest) {
     const buffer = await generarCertificadoDocx(certificado);
     const uint8 = new Uint8Array(buffer);
 
-    const fileName = `Certificado_Anclaje_${certificado.folio || 'nuevo'}.docx`;
+    const fileName = getCertificadoFileName(certificado, 'docx');
+    const asciiFileName = fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
     return new Response(uint8, {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'Content-Disposition': `attachment; filename="${fileName}"`,
+        'Content-Disposition': `attachment; filename="${asciiFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`,
         'Content-Length': uint8.byteLength.toString(),
       },
     });

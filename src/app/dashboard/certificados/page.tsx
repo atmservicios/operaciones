@@ -5,7 +5,7 @@ import {
   ShieldCheck, Plus, Download, FileText, Calendar,
   Monitor, Box, Save, X, Edit, Trash2, Search
 } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getCertificadoFileName } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 
 // Interface for the certificate data
@@ -143,7 +143,7 @@ export default function CertificadosPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Certificado_Anclaje_${cert.folio || cert.otNumber || 'nuevo'}.docx`;
+      a.download = getCertificadoFileName(cert, 'docx');
       a.target = '_blank';
       document.body.appendChild(a);
       a.click();
@@ -171,7 +171,7 @@ export default function CertificadosPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Certificado_Anclaje_${cert.folio || cert.otNumber || 'nuevo'}.pdf`;
+      a.download = getCertificadoFileName(cert, 'pdf');
       a.target = '_blank';
       document.body.appendChild(a);
       a.click();

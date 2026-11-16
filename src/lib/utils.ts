@@ -156,3 +156,65 @@ export function getReportFileName(report: any, extension: 'docx' | 'pdf' = 'docx
 
   return `${baseName}.${extension}`;
 }
+
+/**
+ * Genera el nombre del archivo de Certificado de Anclaje según la información ingresada:
+ * Certificado De Anclaje [Marca] [Folio-Año] ATM [N° Cajero] [Ubicación].[ext]
+ * Ejemplo: Certificado De Anclaje NCR 055-2026 ATM 3416 PRONTO COPEC DOÑIHUE.pdf
+ */
+export function getCertificadoFileName(cert: any, extension: 'docx' | 'pdf' = 'docx'): string {
+  if (!cert) return `Certificado De Anclaje.${extension}`;
+
+  const sanitize = (str?: string) =>
+    (str || '')
+      .replace(/[/\\?%*:|"<>]/g, '')
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  // 1. Marca ATM (ej: NCR, HYOSUNG, DIEBOLD, WINCOR)
+  const rawMarca = sanitize(cert.marcaModeloATM).toUpperCase();
+  let marca = 'NCR';
+  if (rawMarca.includes('HYOSUNG')) {
+    marca = 'HYOSUNG';
+  } else if (rawMarca.includes('DIEBOLD')) {
+    marca = 'DIEBOLD';
+  } else if (rawMarca.includes('WINCOR')) {
+    marca = 'WINCOR';
+  } else if (rawMarca.includes('NCR') || rawMarca.includes('SS') || rawMarca.includes('SELFSERV') || !rawMarca) {
+    marca = 'NCR';
+  } else {
+    marca = rawMarca.split(/[\s-]+/)[0] || 'NCR';
+  }
+
+  // 2. Folio + Año (ej: 055-2026)
+  let folioPart = sanitize(cert.folio).replace(/\s*-\s*/g, '-');
+  const fechaStr = sanitize(cert.fechaAnclaje);
+  const yearMatch = fechaStr.match(/^(\d{4})/);
+  const year = yearMatch ? yearMatch[1] : String(new Date().getFullYear());
+
+  if (folioPart && !/-\d{4}$/.test(folioPart)) {
+    folioPart = `${folioPart}-${year}`;
+  }
+
+  // 3. ATM + Número de Cajero (ej: ATM 3416)
+  let atmPart = '';
+  const rawAtm = sanitize(cert.numeroCajero).toUpperCase();
+  if (rawAtm) {
+    atmPart = /^ATM\b/i.test(rawAtm) ? rawAtm : `ATM ${rawAtm}`;
+  }
+
+  // 4. Ubicación (ej: PRONTO COPEC DOÑIHUE)
+  const ubicacionPart = sanitize(cert.ubicacion || cert.comuna || cert.direccion).toUpperCase();
+
+  const parts = [
+    'Certificado De Anclaje',
+    marca,
+    folioPart,
+    atmPart,
+    ubicacionPart,
+  ].filter(Boolean);
+
+  const baseName = parts.join(' ').replace(/\s+/g, ' ').trim();
+  return `${baseName}.${extension}`;
+}
