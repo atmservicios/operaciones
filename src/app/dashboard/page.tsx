@@ -11,7 +11,7 @@ import {
   Zap, Package, ChevronRight, Building2, FileText, Calendar
 } from "lucide-react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { supabase, fetchAllFromTable } from "@/lib/supabase";
 
 // ─── Stat Widget ──────────────────────────────────────────────────────────────
 function StatWidget({ title, value, sub, icon: Icon, color, glow, trend }: {
@@ -86,9 +86,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data: servicios, error } = await supabase
-        .from("servicios")
-        .select("*");
+      const { data: servicios } = await fetchAllFromTable("servicios", "*");
       
       if (servicios) {
         setData(servicios);

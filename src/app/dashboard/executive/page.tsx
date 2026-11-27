@@ -10,7 +10,7 @@ import {
   Search, Zap, MapPin, Activity, Calculator, User, Calendar
 } from "lucide-react";
 import { mockATMs, mockTechnicians, mockWorkOrders, monthlyData } from "@/lib/mock-data";
-import { supabase } from "@/lib/supabase";
+import { supabase, fetchAllFromTable } from "@/lib/supabase";
 
 const slaByBank = [
   { bank: "BancoEstado", sla: 94, ordenes: 87 },
@@ -93,9 +93,10 @@ export default function ExecutivePage() {
   useEffect(() => {
     const fetchData = async () => {
       // Fetch needed fields from services (coordinations)
-      const { data: serviciosData } = await supabase
-        .from('servicios')
-        .select('atm, asignado_a, banco_empresa, tipo_trabajo, comuna, fecha');
+      const { data: serviciosData } = await fetchAllFromTable(
+        'servicios',
+        'atm, asignado_a, banco_empresa, tipo_trabajo, comuna, fecha'
+      );
 
       const servicios = serviciosData || [];
       setAllServices(servicios);

@@ -5,7 +5,7 @@ import {
   Search, Calendar, Clock, MapPin, User, Building2, FileText,
   Hash, ChevronLeft, ChevronRight, X, Plus, Save, Check, Pencil, Trash2, Download, Copy
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, fetchAllFromTable } from "@/lib/supabase";
 import type { Technician } from "@/types";
 import * as XLSX from "xlsx";
 import { useSearchParams } from "next/navigation";
@@ -186,9 +186,7 @@ function CoordinacionContent() {
 
   const fetchServicios = async () => {
     setLoading(true);
-    const { data: servicios, error } = await supabase
-      .from("servicios")
-      .select("*");
+    const { data: servicios, error } = await fetchAllFromTable<ProgramacionRow>("servicios", "*");
       
     if (error) {
       console.error("Error fetching servicios:", error.message);

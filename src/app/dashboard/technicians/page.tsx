@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { getStatusBg } from "@/lib/utils";
 import type { Technician, TechnicianStatus } from "@/types";
-import { supabase } from "@/lib/supabase";
+import { supabase, fetchAllFromTable } from "@/lib/supabase";
 import {
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar,
 } from "recharts";
@@ -717,7 +717,7 @@ export default function TechniciansPage() {
       setLoadingTechs(false);
 
       // Cargar conteo de coordinaciones
-      const { data: coordData } = await supabase.from('servicios').select('asignado_a');
+      const { data: coordData } = await fetchAllFromTable('servicios', 'asignado_a');
       if (coordData) {
         const counts: Record<string, number> = {};
         coordData.forEach(row => {

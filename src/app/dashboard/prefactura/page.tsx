@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, fetchAllFromTable } from "@/lib/supabase";
 import {
   FileSpreadsheet, Download, Search, Filter, RefreshCw,
   CheckSquare, Square, Eye, X, Check, Building2, Calendar,
@@ -73,10 +73,11 @@ export default function PrefacturaPage() {
 
   const fetchServicios = async () => {
     setLoading(true);
-    const { data: servicios, error } = await supabase
-      .from("servicios")
-      .select("*")
-      .ilike("banco_empresa", "%santander%");
+    const { data: servicios, error } = await fetchAllFromTable<ServicioRow>(
+      "servicios",
+      "*",
+      (q) => q.ilike("banco_empresa", "%santander%")
+    );
 
     if (error) {
       console.error("Error fetching servicios:", error.message);
